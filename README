@@ -1,0 +1,29 @@
+#   ---------------------------------
+#  |CYANOGENMOD 10.1 (ANDROID 4.2.2) |
+#   ---------------------------------
+#
+#Device tree for acer liquid (salsa) a1 & e & e ferrari
+#
+#This device tree based on device tree for cm9 by thepasto, by cm7, by cm6 and lenght long away...
+#
+#WARNING need to use kernel with this partitions size:
+#SYSTEM 260 Mb
+#DATA 140 Mb
+#CACHE 41,875Mb
+#
+#Edited to get compileable flashable & bootable cm 10.1 by RomzesRover 
+#4pda (http://4pda.ru/forum/index.php?showuser=1400862)
+#modaco (http://www.modaco.com/user/897644-romzesrover-r/)
+#xda (http://forum.xda-developers.com/member.php?u=4346389) 
+#
+#How to support devoloping to liquid:
+#PayPal
+#YandexMoney
+#QIWI
+#
+#
+#
+#   Thanks to:
+#   ---------------------------------------
+#  |RomzesRover, [ray, Thepasto, dennes554 |
+#   ---------------------------------------

@@ -1,0 +1,27 @@
+#
+# system.prop for generic sdk
+#
+
+# The interfaces to get DNS data from when using mobile data
+# Comma-separated
+mobiledata.interfaces=rmnet0
+
+# Increase SKIA decode memory capability for progressive jpg file
+ro.media.dec.jpeg.memcap=20000000
+
+# Persist default parameters
+persist.sys.use_dithering=1
+persist.sys.purgeable_assets=0
+
+# To get signal strength bars and 2g/3g
+ro.telephony.ril.v3=skipbrokendatacall,signalstrength
+
+# Disable red borders
+persist.sys.strictmode.disable=true
+
+# Set usb type
+persist.sys.usb.config=mass_storage,adb
+
+# Composition
+debug.composition.type=mdp
+

@@ -1,0 +1,81 @@
+diff --git a/packages/apps/Phone/src/com/android/phone/NotificationMgr.java b/packages/apps/Phone/src/com/android/phone/NotificationMgr.java
+index 2370a65..cb489cb 100644
+--- a/packages/apps/Phone/src/com/android/phone/NotificationMgr.java
++++ b/packages/apps/Phone/src/com/android/phone/NotificationMgr.java
+@@ -51,6 +51,8 @@ import com.android.internal.telephony.Phone;
+ import com.android.internal.telephony.PhoneBase;
+ import com.android.internal.telephony.CallManager;
+ 
++import java.io.FileOutputStream;
++
+ /**
+  * NotificationManager-related utility code for the Phone app.
+  *
+@@ -423,6 +425,38 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
+         }
+     }
+ 
++    private static void setLedStatus(int notificationType, Notification note) {
++        String LEDS_FILE;
++        boolean showLights = false;
++
++        if (notificationType == MISSED_CALL_NOTIFICATION) {
++            LEDS_FILE = "/sys/class/leds2/call";
++        }
++        else if (notificationType == VOICEMAIL_NOTIFICATION) {
++            LEDS_FILE = "/sys/class/leds2/mail";
++        }
++        else {
++            Log.w(LOG_TAG, "setLedStatus: Unknown notification type " + notificationType);
++            return;
++        }
++
++        if ((note.flags&Notification.FLAG_SHOW_LIGHTS) == Notification.FLAG_SHOW_LIGHTS) {
++            showLights = true;
++        }
++
++        try {
++            FileOutputStream fos = new FileOutputStream(LEDS_FILE);
++            Log.w(LOG_TAG, "setLedStatus: Writing " + showLights +" to LED file " + LEDS_FILE);
++            byte[] bytes = new byte[2];
++            bytes[0] = (byte)(showLights ? '1' : '0');
++            bytes[1] = '\n';
++            fos.write(bytes);
++            fos.close();
++        } catch (Exception e) {
++            Log.e(LOG_TAG, "setLedStatus: Could not open or write to LED file " + LEDS_FILE + " error:" + e.toString());
++        }
++    }
++
+     /**
+      * Configures a Notification to emit the blinky message-waiting/
+      * missed-call signal.
+@@ -459,6 +493,7 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
+             note.flags |= Notification.FLAG_SHOW_LIGHTS;
+             note.flags |= Notification.FLAG_FORCE_LED_SCREEN_OFF;
+         }
++        setLedStatus(notificationType, note);
+     }
+ 
+     /**
+@@ -543,6 +578,9 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
+         // reset the number of missed calls to 0.
+         mNumberMissedCalls = 0;
+         mNotificationManager.cancel(MISSED_CALL_NOTIFICATION);
++        Notification note = new Notification();
++        note.flags &= ~Notification.FLAG_SHOW_LIGHTS;
++        setLedStatus(MISSED_CALL_NOTIFICATION, note);
+     }
+ 
+     private void notifySpeakerphone() {
+@@ -1201,6 +1239,10 @@ public class NotificationMgr implements CallerInfoAsyncQuery.OnQueryCompleteList
+             mNotificationManager.notify(VOICEMAIL_NOTIFICATION, notification);
+         } else {
+             mNotificationManager.cancel(VOICEMAIL_NOTIFICATION);
++
++            Notification note = new Notification();
++            note.flags &= ~Notification.FLAG_SHOW_LIGHTS;
++            setLedStatus(VOICEMAIL_NOTIFICATION, note);
+         }
+     }
+ 

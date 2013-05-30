@@ -173,7 +173,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Speed up scrolling # Edited RomzesRover
 PRODUCT_PROPERTY_OVERRIDES += \
-    windowsmgr.max_events_per_sec=60
+    windowsmgr.max_events_per_sec=120
 
 # Default network type.
 # 0 => WCDMA preferred, 3 => GSM/AUTO (PRL) preferred

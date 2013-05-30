@@ -417,7 +417,7 @@ static void mddi_report_state_change(uint32 int_reg)
 void mddi_host_timer_service(unsigned long data)
 {
 #if !defined(FEATURE_MDDI_DISABLE_REVERSE) &&\
-		!defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+		!defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
 	unsigned long flags;
 #endif
 
@@ -437,7 +437,7 @@ void mddi_host_timer_service(unsigned long data)
 		pmhctl = &(mhctl[host_idx]);
 		mddi_log_stats_counter += (uint32) time_ms;
 #if !defined(FEATURE_MDDI_DISABLE_REVERSE) &&\
-		!defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+		!defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
 		pmhctl->rtd_counter += (uint32) time_ms;
 		pmhctl->client_status_cnt += (uint32) time_ms;
 
@@ -1473,7 +1473,7 @@ static void mddi_host_initialize_registers(mddi_host_type host_idx)
 	mddi_host_reg_out(PAD_CTL, 0xa850f);
 #endif
 
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+#if defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
 	pad_reg_val = 0x00cc0020;
 #else
 	pad_reg_val = 0x00220020;

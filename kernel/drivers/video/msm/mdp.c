@@ -833,7 +833,7 @@ static int mdp_off(struct platform_device *pdev)
 	return ret;
 }
 
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+#if defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
 static DEFINE_MUTEX(mdp_on_mutex);
 #endif
 
@@ -844,7 +844,7 @@ static int mdp_on(struct platform_device *pdev)
 #endif
 
 	int ret = 0;
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+#if defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
 	int i;
 #endif
 
@@ -852,7 +852,7 @@ static int mdp_on(struct platform_device *pdev)
 	mdp_hw_vsync_clk_enable(mfd);
 #endif
 
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+#if defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
 	mutex_lock(&mdp_on_mutex);
 	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
 	for (i = 0; i < MDP_CCS_SIZE; i++)

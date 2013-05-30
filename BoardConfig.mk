@@ -62,12 +62,7 @@ BOARD_USES_QCOM_HARDWARE := true
 
 # We only have 2 buffers (Added by RomzesRover to fix jumping screen #---# not help)
 #TARGET_DISABLE_TRIPLE_BUFFERING := true
-#BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true
-
-#Qcom added by RomzesRover
-#TARGET_QCOM_DISPLAY_VARIANT := legacy
-#TARGET_QCOM_AUDIO_VARIANT := legacy
-#TARGET_QCOM_GPS_VARIANT := legacy
+BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true
  
 USE_OPENGL_RENDERER := true
 #TARGET_USE_OVERLAY      := false

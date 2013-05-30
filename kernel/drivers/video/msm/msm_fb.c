@@ -640,7 +640,7 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 	switch (blank_mode) {
 	case FB_BLANK_UNBLANK:
 		if (!mfd->panel_power_on) {
-#if !defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
+#if !defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
 			mdelay(16);
 #endif
 			ret = pdata->on(mfd->pdev);
@@ -1217,7 +1217,7 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 
 #ifdef CONFIG_FB_MSM_LOGO
 	ret = load_565rle_image(INIT_IMAGE_FILE);	/* Flip buffer */
-#if defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
+#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
 	if (!ret) {
 		struct fb_var_screeninfo var;
 		int ret;

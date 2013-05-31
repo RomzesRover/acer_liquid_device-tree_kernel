@@ -9,14 +9,11 @@
 #undef DEBUG
 
 #include <linux/interrupt.h>
-#include <linux/oom.h>
 #include <linux/suspend.h>
 #include <linux/module.h>
 #include <linux/syscalls.h>
 #include <linux/freezer.h>
-#include <linux/delay.h>
 #include <linux/wakelock.h>
-#include "power.h"
 
 /* 
  * Timeout for stopping processes
@@ -45,7 +42,7 @@ static int try_to_freeze_tasks(bool sig_only)
 	do_gettimeofday(&start);
 
 	end_time = jiffies + TIMEOUT;
-	while (true) {
+	do {
 		todo = 0;
 		read_lock(&tasklist_lock);
 		do_each_thread(g, p) {
@@ -66,19 +63,14 @@ static int try_to_freeze_tasks(bool sig_only)
 				todo++;
 		} while_each_thread(g, p);
 		read_unlock(&tasklist_lock);
+		yield();			/* Yield is okay here */
 		if (todo && has_wake_lock(WAKE_LOCK_SUSPEND)) {
 			wakeup = 1;
 			break;
 		}
-		if (!todo || time_after(jiffies, end_time))
+		if (time_after(jiffies, end_time))
 			break;
-
-		/*
-		 * We need to retry, but first give the freezing tasks some
-		 * time to enter the regrigerator.
-		 */
-		msleep(10);
-	}
+	} while (todo);
 
 	do_gettimeofday(&end);
 	elapsed_csecs64 = timeval_to_ns(&end) - timeval_to_ns(&start);
@@ -91,23 +83,19 @@ static int try_to_freeze_tasks(bool sig_only)
 		 * and caller must call thaw_processes() if something fails),
 		 * but it cleans up leftover PF_FREEZE requests.
 		 */
-		if(wakeup) {
-			printk("\n");
-			printk(KERN_ERR "Freezing of %s aborted\n",
-					sig_only ? "user space " : "tasks ");
-		}
-		else {
-			printk("\n");
-			printk(KERN_ERR "Freezing of tasks failed after %d.%02d seconds "
-					"(%d tasks refusing to freeze):\n",
-					elapsed_csecs / 100, elapsed_csecs % 100, todo);
-		}
+		printk("\n");
+		printk(KERN_ERR "Freezing of tasks %s after %d.%02d seconds "
+				"(%d tasks refusing to freeze):\n",
+				wakeup ? "aborted" : "failed",
+				elapsed_csecs / 100, elapsed_csecs % 100, todo);
+		if(!wakeup)
+			show_state();
 		read_lock(&tasklist_lock);
 		do_each_thread(g, p) {
 			task_lock(p);
 			if (freezing(p) && !freezer_should_skip(p) &&
-				elapsed_csecs > 100)
-				sched_show_task(p);
+							elapsed_csecs > 100)
+				printk(KERN_ERR " %s\n", p->comm);
 			cancel_freezing(p);
 			task_unlock(p);
 		} while_each_thread(g, p);
@@ -133,21 +121,14 @@ int freeze_processes(void)
 		goto Exit;
 	printk("done.\n");
 
-	error = suspend_sys_sync_wait();
-	if (error)
-		goto Exit;
-
 	printk("Freezing remaining freezable tasks ... ");
 	error = try_to_freeze_tasks(false);
 	if (error)
 		goto Exit;
 	printk("done.");
-
-	oom_killer_disable();
  Exit:
 	BUG_ON(in_atomic());
 	printk("\n");
-
 	return error;
 }
 
@@ -173,8 +154,6 @@ static void thaw_tasks(bool nosig_only)
 
 void thaw_processes(void)
 {
-	oom_killer_enable();
-
 	printk("Restarting tasks ... ");
 	thaw_tasks(true);
 	thaw_tasks(false);

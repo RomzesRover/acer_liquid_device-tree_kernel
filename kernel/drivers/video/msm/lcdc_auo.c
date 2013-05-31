@@ -595,6 +595,7 @@ static int __init lcdc_auo_init(void)
 	pinfo->pdest = DISPLAY_1;
 	pinfo->wait_cycle = 0;
 	pinfo->bpp = 16;
+	//3 buffers need this action (RomzesRover)
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 	pinfo->fb_num = 3;
 #else
@@ -603,13 +604,14 @@ static int __init lcdc_auo_init(void)
 	pinfo->clk_rate = 24576000;
 	//pinfo->bl_max = MAX_BACKLIGHT_LEVEL;
 	//pinfo->bl_min = 1;
-
-	pinfo->lcdc.h_back_porch = 21;
-	pinfo->lcdc.h_front_porch = 81;
-	pinfo->lcdc.h_pulse_width = 60;
-	pinfo->lcdc.v_back_porch = 18;
-	pinfo->lcdc.v_front_porch = 27;
-	pinfo->lcdc.v_pulse_width = 60;
+	
+	// here edited to beat display flickering ([ray, RomzesRover)
+	pinfo->lcdc.h_back_porch = 12;
+	pinfo->lcdc.h_front_porch = 16;
+	pinfo->lcdc.h_pulse_width = 40;
+	pinfo->lcdc.v_back_porch = 4;
+	pinfo->lcdc.v_front_porch = 3;
+	pinfo->lcdc.v_pulse_width = 40;
 	pinfo->lcdc.border_clr = 0;	/* blk */
 	pinfo->lcdc.underflow_clr = 0xff;	/* blue */
 	pinfo->lcdc.hsync_skew = 0;

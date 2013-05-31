@@ -117,19 +117,6 @@ frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/han
     frameworks/native/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml \
     frameworks/native/data/etc/android.hardware.telephony.gsm.xml:system/etc/permissions/android.hardware.telephony.gsm.xml
 
-# Configs
-
--include device/semc/msm7x30-common/prebuilt/resources-hdpi.mk
-# Added by RomzesRover to get compileable cm10
-PRODUCT_COPY_FILES += \
-    device/acer/salsa/jb_rover_r/media_codecs.xml:system/etc/media_codecs.xml \
-    device/acer/salsa/jb_rover_r/audio_policy.conf:system/etc/audio_policy.conf
-
-# Misc
-# Added by RomzesRover to get compileable cm10
-PRODUCT_COPY_FILES += \
-    device/acer/salsa/jb_rover_r/init.power.rc:root/init.power.rc
-
 ## (3)  Finally, the least specific parts, i.e. the non-GSM-specific aspects
 # Additional settings used in AOSP builds
 PRODUCT_PROPERTY_OVERRIDES += \
@@ -173,7 +160,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Speed up scrolling # Edited RomzesRover
 PRODUCT_PROPERTY_OVERRIDES += \
-    windowsmgr.max_events_per_sec=120
+    windowsmgr.max_events_per_sec=60
 
 # Default network type.
 # 0 => WCDMA preferred, 3 => GSM/AUTO (PRL) preferred
@@ -197,7 +184,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Added by RomzesRover to get bootable cm10_1
 PRODUCT_PROPERTY_OVERRIDES += \
     debug.composition.type=mdp
- #   debug.gr.numframebuffers=2
+    debug.gr.numframebuffers=3
 
 # proprietary side of the device
 $(call inherit-product-if-exists, device/acer/salsa/SalsaProprietary.mk)

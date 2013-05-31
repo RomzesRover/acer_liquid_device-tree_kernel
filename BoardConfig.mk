@@ -75,7 +75,7 @@ COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE -DBINDER_COMPAT -DANCIENT_GL
 COMMON_GLOBAL_CFLAGS += -DQCOM_LEGACY_OMX
 #TARGET_NO_BYPASS_CROPPING := true
 
-BOARD_EGL_CFG := device/acer/salsa/proprietary/adreno_jb/system/lib/egl/egl.cfg
+BOARD_EGL_CFG := device/acer/salsa/proprietary/system/lib/egl/egl.cfg
 # Added by RomzesRover to get bootable cm10_1 (GPU)
 BOARD_NEEDS_MEMORYHEAPPMEM := true
 TARGET_NO_HW_VSYNC := true

@@ -38,12 +38,11 @@ add_lunch_combo cm_salsa-user
 #for p in $(find device/acer/salsa/patches/ -name "*.diff") 
 #	do 
 #		echo -n "Apply patch "$(basename $p | awk -F"." '{print $1}')
-##		patch -p1 < $p > /dev/null 2>&1
+#		patch -p1 < $p > /dev/null 2>&1
 #		if [ $? == 0 ]; then
-#			echo "     [DONE]"
-#		else
-##			echo "     [FAIL]"
+#			echo "     [DONE]"		else
+#			echo "     [FAIL]"
 #		fi
 #		echo "" 
 #	done
-
+#

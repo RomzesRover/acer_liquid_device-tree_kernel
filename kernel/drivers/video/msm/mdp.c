@@ -83,7 +83,7 @@
 
 #include <linux/autoconf.h>
 
-#ifdef CONFIG_FB_MSM_LCDC_AUO_WVGA
+#ifdef CONFIG_FB_MSM_MDDI_TMD_NT35580
 #include "mddi_tmd_nt35580.h"
 #endif
 
@@ -675,7 +675,7 @@ irqreturn_t mdp_isr(int irq, void *ptr)
 			mdp_pipe_ctrl(MDP_DMA2_BLOCK, MDP_BLOCK_POWER_OFF,
 				      TRUE);
 			complete(&dma->comp);
-#ifdef CONFIG_FB_MSM_LCDC_AUO_WVGA
+#ifdef CONFIG_FB_MSM_MDDI_TMD_NT35580
 			mddi_nt35580_lcd_display_on();
 #endif
 		}

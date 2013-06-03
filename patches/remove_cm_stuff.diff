@@ -1,0 +1,20 @@
+diff --git a/vendor/cm/config/common.mk b/vendor/cm/config/common.mk
+index 56cd33d..071132e 100644
+--- a/vendor/cm/config/common.mk
++++ b/vendor/cm/config/common.mk
+@@ -133,7 +133,6 @@ PRODUCT_PACKAGES += \
+ 
+ # Optional CM packages
+ PRODUCT_PACKAGES += \
+-    VideoEditor \
+     VoiceDialer \
+     SoundRecorder \
+     Basic
+@@ -146,7 +145,6 @@ PRODUCT_PACKAGES += \
+     audio_effects.conf \
+-    CMWallpapers \
+     Apollo \
+-    CMUpdater \
+     CMFileManager
+ 
+ # Extra tools in CM

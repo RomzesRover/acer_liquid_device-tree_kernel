@@ -60,9 +60,13 @@ BOARD_USES_QCOM_LIBS := true
 BOARD_USES_QCOM_LIBRPC := true
 BOARD_USES_QCOM_HARDWARE := true
 
-# We only have 2 buffers (Added by RomzesRover to fix jumping screen #---# not help)
+# We only have 2 buffers, nope we can use 3 buffers (RomzesRover)
 #TARGET_DISABLE_TRIPLE_BUFFERING := true
 BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true
+BOARD_USES_LEGACY_OVERLAY := true
+
+# Try to get radio working
+BOARD_USES_LEGACY_RIL := true
  
 USE_OPENGL_RENDERER := true
 #TARGET_USE_OVERLAY      := false

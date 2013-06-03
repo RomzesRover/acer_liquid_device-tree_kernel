@@ -45,6 +45,11 @@ PRODUCT_PACKAGES += \
         liboverlay \
         librs_jni
 
+# Gsm (thepasto, RomzesRover)
+PRODUCT_PACKAGES += \
+    	rild
+
+
 #Audio
 PRODUCT_PACKAGES += \
    	 audio.a2dp.default \

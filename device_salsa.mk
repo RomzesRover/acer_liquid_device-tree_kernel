@@ -80,6 +80,10 @@ PRODUCT_PACKAGES += \
    wlan_cu \
    dhcpcd.conf
 
+# Sensors (RomzesRover)
+PRODUCT_PACKAGES += \
+   sensors.default
+
 
 $(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
 #for liquid a1 with 256mb (24 and 32m) Added by RomzesRover to get faster system

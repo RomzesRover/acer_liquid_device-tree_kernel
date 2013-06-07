@@ -56,12 +56,16 @@ extern int load_565rle_image(char *filename);
 
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_NUM	3
+static bool align_buffer = true;
+#else
+#define MSM_FB_NUM	2
+static bool align_buffer = false;
 #endif
 
 static unsigned char *fbram;
 static unsigned char *fbram_phys;
 static int fbram_size;
-static bool align_buffer = false;
+
 
 static struct platform_device *pdev_list[MSM_FB_MAX_DEV_LIST];
 static int pdev_list_cnt;
@@ -721,11 +725,11 @@ int calc_fb_offset(struct msm_fb_data_type *mfd, struct fb_info *fbi, int bpp)
 {
 	struct msm_panel_info *panel_info = &mfd->panel_info;
 	int remainder, yres, offset;
-/*
+
 if (!align_buffer)
     {
         return fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length;
-    }*/
+    }
 
 	yres = panel_info->yres;
 	remainder = (fbi->fix.line_length*yres) & (PAGE_SIZE - 1);

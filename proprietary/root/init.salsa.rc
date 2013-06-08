@@ -1,5 +1,6 @@
 import init.salsa.usb.rc
 import init.power.rc
+import ueventd.salsa.rc
 
 on fs
     # mount mtd partitions
@@ -71,6 +72,11 @@ on boot
 
 # Ril
     mkdir /data/radio 0777 system system
+
+# Fast dormancy settings
+    setprop ro.ril.fast.dormancy.rule 1
+    setprop ro.ril.fd.scron.timeout 4
+    setprop ro.ril.fd.scroff.timeout 3
 
 class_start default
 

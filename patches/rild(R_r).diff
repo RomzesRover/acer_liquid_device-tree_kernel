@@ -1,0 +1,47 @@
+From 0a2249ca915492eb6f832804003a6a4bee033d24 Mon Sep 17 00:00:00 2001
+From: kamarush <kamarush@windowslive.com>
+Date: Sat, 21 Jul 2012 22:31:25 +0200
+Subject: [PATCH] Ril Fix by tbalden
+
+---
+ rild/Android.mk |    4 ++++
+ rild/rild.c     |    2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/hardware/ril/rild/Android.mk b/rild/Android.mk
+index a94da12..893550e 100644
+--- a/hardware/ril/rild/Android.mk
++++ b/hardware/ril/rild/Android.mk
+@@ -17,6 +17,10 @@ endif # arm
+ 
+ LOCAL_CFLAGS := -DRIL_SHLIB
+ 
++ifdef BOARD_FORCE_RILD_AS_ROOT
++LOCAL_CFLAGS += -DFORCE_RILD_AS_ROOT
++endif
++
+ LOCAL_MODULE:= rild
+ LOCAL_MODULE_TAGS := optional
+ 
+diff --git a/hardware/ril/rild/rild.c b/rild/rild.c
+index 77dec1e..927dd45 100644
+--- a/hardware/ril/rild/rild.c
++++ b/hardware/ril/rild/rild.c
+@@ -85,6 +85,7 @@ static int make_argv(char * args, char ** argv)
+  * Our group, cache, was set by init.
+  */
+ void switchUser() {
++#ifndef FORCE_RILD_AS_ROOT
+     prctl(PR_SET_KEEPCAPS, 1, 0, 0, 0);
+     setuid(AID_RADIO);
+ 
+@@ -95,6 +96,7 @@ void switchUser() {
+     cap.effective = cap.permitted = (1 << CAP_NET_ADMIN) | (1 << CAP_NET_RAW);
+     cap.inheritable = 0;
+     capset(&header, &cap);
++#endif
+ }
+ 
+ int main(int argc, char **argv)
+-- 
+1.7.9.5

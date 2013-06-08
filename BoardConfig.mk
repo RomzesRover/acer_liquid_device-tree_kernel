@@ -64,9 +64,6 @@ BOARD_USES_QCOM_HARDWARE := true
 #TARGET_DISABLE_TRIPLE_BUFFERING := true
 BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true
 BOARD_USES_LEGACY_OVERLAY := true
-
-# Try to get radio working
-BOARD_USES_LEGACY_RIL := true
  
 USE_OPENGL_RENDERER := true
 #TARGET_USE_OVERLAY      := false
@@ -86,6 +83,12 @@ TARGET_NO_HW_VSYNC := true
 COMMON_GLOBAL_CFLAGS += -DQCOM_ICS_COMPAT -DQCOM_NO_SECURE_PLAYBACK -DUSES_LEGACY_EGL
 # Added by RomzesRover to get bootable cm10_1 (webkit)
 ENABLE_WEBGL := true
+
+# Try to get radio working (Legacy ril) RomzesRover
+# Enable gsm and network search
+COMMON_GLOBAL_CFLAGS += -DFORCE_RILD_AS_ROOT # Not sure if this is needed
+BOARD_FORCE_RILD_AS_ROOT := true
+BOARD_USES_LEGACY_RIL := true
  
 # to enable the GPS HAL
 BOARD_USES_QCOM_GPS := true

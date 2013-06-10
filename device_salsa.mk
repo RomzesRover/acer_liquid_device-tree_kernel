@@ -104,7 +104,7 @@ PRODUCT_AAPT_CONFIG := normal hdpi
 PRODUCT_AAPT_PREF_CONFIG := hdpi
 
 # Check generic.mk/languages_full.mk to see what applications/languages are installed turns out all languages get included if I don't specify, but some seem to be missing the actuall translation.
-$(call inherit-product, build/target/product/languages_full.mk)
+$(call inherit-product, build/target/product/languages_small.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
 $(call inherit-product, device/common/gps/gps_eu_supl.mk)
 

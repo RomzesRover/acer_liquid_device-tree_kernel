@@ -32,14 +32,18 @@ TARGET_BOARD_PLATFORM := qsd8k
 TARGET_BOARD_PLATFORM_GPU := qcom-adreno200
 TARGET_CPU_ABI  := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
+
+BOARD_USES_GENERIC_AUDIO := false
  
 # Neon stuff
+#TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
 ARCH_ARM_HAVE_TLS_REGISTER := true
 ARCH_ARM_HAVE_ARMV7A_BUG := true
 ARCH_ARM_HAVE_NEON := true
 TARGET_USE_SCORPION_BIONIC_OPTIMIZATION := true
 
+#WiFi
 BOARD_WPA_SUPPLICANT_DRIVER := WEXT
 BOARD_WPA_SUPPLICANT_PRIVATE_LIB := lib_driver_cmd_wext
 WPA_SUPPLICANT_VERSION      := VER_0_8_X
@@ -49,39 +53,49 @@ WIFI_DRIVER_FW_PATH_STA     := "/etc/firmware/BCM4325.bin"
 WIFI_DRIVER_FW_PATH_AP      := "/etc/firmware/BCM4325_apsta.bin"
 WIFI_DRIVER_MODULE_ARG      := "firmware_path=/etc/wifi/BCM4325.bin nvram_path=/etc/wifi/nvram.txt"
 WIFI_DRIVER_MODULE_NAME     := "bcm4329"
-
-BOARD_USES_GENERIC_AUDIO := false
  
+#BT
 BOARD_HAVE_BLUETOOTH := true
 BOARD_HAVE_BLUETOOTH_BCM := true
+
+#Fm radio
 BOARD_HAVE_FM_RADIO := false
+
+#GPS
 BOARD_VENDOR_QCOM_AMSS_VERSION := 6225
 BOARD_USES_QCOM_LIBS := true
 BOARD_USES_QCOM_LIBRPC := true
 BOARD_USES_QCOM_HARDWARE := true
+# to enable the GPS HAL
+BOARD_USES_QCOM_GPS := true
+BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := salsa
+# AMSS version to use for GPS
+BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 1240
+TARGET_PROVIDES_LIBAUDIO := true
 
-# We only have 2 buffers, nope we can use 3 buffers (RomzesRover)
-#TARGET_DISABLE_TRIPLE_BUFFERING := true
-BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true
-BOARD_USES_LEGACY_OVERLAY := true
- 
-USE_OPENGL_RENDERER := true
-#TARGET_USE_OVERLAY      := false
+#Qcom
 TARGET_HAVE_BYPASS      := false
 #TARGET_USES_C2D_COMPOSITION := false
 TARGET_USES_GENLOCK := true
 TARGET_GRALLOC_USES_ASHMEM := true
-TARGET_FORCE_CPU_UPLOAD := true
 COMMON_GLOBAL_CFLAGS += -DQCOM_HARDWARE -DBINDER_COMPAT -DANCIENT_GL
 COMMON_GLOBAL_CFLAGS += -DQCOM_LEGACY_OMX
-#TARGET_NO_BYPASS_CROPPING := true
-
-BOARD_EGL_CFG := device/acer/salsa/proprietary/system/lib/egl/egl.cfg
-# Added by RomzesRover to get bootable cm10_1 (GPU)
 BOARD_NEEDS_MEMORYHEAPPMEM := true
+
+#GPU (Graphics)
+BOARD_EGL_CFG := device/acer/salsa/proprietary/system/lib/egl/egl.cfg
+BOARD_ADRENO_DECIDE_TEXTURE_TARGET := true
+BOARD_USES_LEGACY_OVERLAY := true
+USE_OPENGL_RENDERER := true
 TARGET_NO_HW_VSYNC := true
+TARGET_NO_HW_OVERLAY := true
+TARGET_QCOM_DISPLAY_VARIANT := legacy
+TARGET_USES_ION := false
+BOARD_HAVE_HDMI_SUPPORT := false
 COMMON_GLOBAL_CFLAGS += -DQCOM_ICS_COMPAT -DQCOM_NO_SECURE_PLAYBACK -DUSES_LEGACY_EGL
-# Added by RomzesRover to get bootable cm10_1 (webkit)
+
+#WEBkit
+TARGET_FORCE_CPU_UPLOAD := true
 ENABLE_WEBGL := true
 
 # Try to get radio working (Legacy ril) RomzesRover
@@ -90,29 +104,19 @@ COMMON_GLOBAL_CFLAGS += -DFORCE_RILD_AS_ROOT # Not sure if this is needed
 BOARD_FORCE_RILD_AS_ROOT := true
 BOARD_USES_LEGACY_RIL := true
  
-# to enable the GPS HAL
-BOARD_USES_QCOM_GPS := true
-BOARD_VENDOR_QCOM_GPS_LOC_API_HARDWARE := salsa
- 
-# AMSS version to use for GPS
-BOARD_VENDOR_QCOM_GPS_LOC_API_AMSS_VERSION := 1240
-TARGET_PROVIDES_LIBAUDIO := true
- 
 #sensors
 TARGET_USES_OLD_LIBSENSORS_HAL := true
 
 #kernel
+TARGET_KERNEL_SOURCE := device/acer/salsa/kernel
 TARGET_KERNEL_CONFIG := cyanogenmod_salsa_defconfig
 BOARD_KERNEL_CMDLINE := console=null
 BOARD_KERNEL_BASE := 0x20000000
 BOARD_KERNEL_PAGESIZE := 4096
 
-#mmc
-BOARD_SDCARD_INTERNAL_DEVICE := /dev/block/mmcblk0p1
-#TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun0"
-BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
-
 #recovery
+BOARD_SDCARD_INTERNAL_DEVICE := /dev/block/mmcblk0p1
+BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 #BOARD_HAS_NO_MISC_PARTITION := true
 #BOARD_USES_RECOVERY_CHARGEMODE := false
 #BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/acer/salsa/recovery/recovery_keys.c
@@ -120,17 +124,13 @@ BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 #TARGET_RECOVERY_INITRC := device/acer/salsa/recovery.rc
 #TARGET_PREBUILT_RECOVERY_KERNEL := device/acer/salsa/recovery_kernel
 #TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun"
-
 #twrp recovery
 TARGET_RECOVERY_INITRC := device/acer/salsa/recovery.rc
 TARGET_RECOVERY_PIXEL_FORMAT := "RGB_565"
 DEVICE_RESOLUTION := 480x800
 TW_FLASH_FROM_STORAGE := true
 
-#Added by RomzesRover to get compileable cm10-1 (4.2.2)
-#TARGET_ARCH := arm   ARCH DO NEED FOT CM10 (4.1.2)
-TARGET_KERNEL_SOURCE := device/acer/salsa/kernel
-#Added by RomzesRover to get compileable cm10 & flashable device salsa & also edited kernel recovery and kernel for cm by [ray
+#fs
 BOARD_BOOTIMAGE_PARTITION_SIZE     := 0x00500000
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x00500000
 #System setup to 260mb

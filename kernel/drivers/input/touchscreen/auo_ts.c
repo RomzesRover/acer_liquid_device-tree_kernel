@@ -114,8 +114,8 @@ static struct h353vl01_data *h353_data;
 
 #if defined(CONFIG_PM) || defined(CONFIG_HAS_EARLYSUSPEND)
 #define CONFIG_AUO_TS_ADVANCED_SUSPEND 1
-static void h353vl01_device_suspend();
-static void h353vl01_device_resume();
+static void h353vl01_device_suspend(void);
+static void h353vl01_device_resume(void);
 #endif
 
 #if USE_FS
@@ -267,9 +267,10 @@ i2c_err:
 
 static inline bool speedch (int speed, int oldspeed) //check speed changing
 {
-	if ((!speed)||(!oldspeed)) return 0;
 	bool sign1;
 	bool sign2;
+
+	if ((!speed)||(!oldspeed)) return 0;
 	sign1=(speed >= 0) ? 1 : 0;
 	sign2=(oldspeed >= 0) ? 1 : 0;
 	if (unlikely(sign1!=sign2)) return 1;
@@ -516,7 +517,7 @@ static int __init h353vl01_register_input(struct input_dev *input)
 }
 
 #if defined(CONFIG_PM) || defined(CONFIG_HAS_EARLYSUSPEND)
-static void h353vl01_device_suspend()
+static void h353vl01_device_suspend(void)
 {
 	disable_irq(h353_data->client->irq);
 	h353_data->status = SUSPENDING;
@@ -526,7 +527,7 @@ static void h353vl01_device_suspend()
 	enable_irq(h353_data->client->irq);
 }
 
-static void h353vl01_device_resume()
+static void h353vl01_device_resume(void)
 {
 	h353_data->status = RESUME;
 	if(h353_data->version >= VERSION_4_3) {

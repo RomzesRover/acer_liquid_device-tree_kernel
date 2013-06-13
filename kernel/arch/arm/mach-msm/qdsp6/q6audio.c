@@ -60,7 +60,7 @@ static struct q6_hw_info q6_audio_hw[Q6_HW_COUNT] = {
 	},
 	[Q6_HW_SPEAKER] = {
 		.min_gain = -700,
-		.max_gain = 400,
+		.max_gain = 500,
 	},
 	[Q6_HW_TTY] = {
 		.min_gain = -1400,

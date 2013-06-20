@@ -142,26 +142,3 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/etc/media_codecs.xml:system/etc/media_codecs.xml \
     device/acer/salsa/proprietary/system/etc/audio_policy.conf:system/etc/audio_policy.conf
-
-## (14) # gapps
-# Added by RomzesRover
-PRODUCT_COPY_FILES += \
-    device/acer/salsa/proprietary/gapps/system/app/GoogleBackupTransport.apk:system/app/GoogleBackupTransport.apk \
-    device/acer/salsa/proprietary/gapps/system/app/GoogleCalendarSyncAdapter.apk:system/app/GoogleCalendarSyncAdapter.apk \
-    device/acer/salsa/proprietary/gapps/system/app/GoogleContactsSyncAdapter.apk:system/app/GoogleContactsSyncAdapter.apk \
-    device/acer/salsa/proprietary/gapps/system/app/GoogleFeedback.apk:system/app/GoogleFeedback.apk \
-    device/acer/salsa/proprietary/gapps/system/app/GoogleLoginService.apk:system/app/GoogleLoginService.apk \
-    device/acer/salsa/proprietary/gapps/system/app/GooglePartnerSetup.apk:system/app/GooglePartnerSetup.apk \
-    device/acer/salsa/proprietary/gapps/system/app/GoogleServicesFramework.apk:system/app/GoogleServicesFramework.apk \
-    device/acer/salsa/proprietary/gapps/system/app/MediaUploader.apk:system/app/MediaUploader.apk \
-    device/acer/salsa/proprietary/gapps/system/app/NetworkLocation.apk:system/app/NetworkLocation.apk \
-    device/acer/salsa/proprietary/gapps/system/app/Phonesky.apk:system/app/Phonesky.apk \
-    device/acer/salsa/proprietary/gapps/system/app/SetupWizard.apk:system/app/SetupWizard.apk \
-    device/acer/salsa/proprietary/gapps/system/framework/com.google.android.maps.jar:system/framework/com.google.android.maps.jar \
-    device/acer/salsa/proprietary/gapps/system/framework/com.google.android.media.effects.jar:system/framework/com.google.android.media.effects.jar \
-    device/acer/salsa/proprietary/gapps/system/framework/com.google.widevine.software.drm.jar:system/framework/com.google.widevine.software.drm.jar \
-    device/acer/salsa/proprietary/gapps/system/etc/g.prop:system/etc/g.prop \
-    device/acer/salsa/proprietary/gapps/system/etc/permissions/com.google.android.maps.xml:system/etc/permissions/com.google.android.maps.xml \
-    device/acer/salsa/proprietary/gapps/system/etc/permissions/com.google.android.media.effects.xml:system/etc/permissions/com.google.android.media.effects.xml \
-    device/acer/salsa/proprietary/gapps/system/etc/permissions/com.google.widevine.software.drm.xml:system/etc/permissions/com.google.widevine.software.drm.xml \
-    device/acer/salsa/proprietary/gapps/system/etc/permissions/features.xml:system/etc/permissions/features.xml

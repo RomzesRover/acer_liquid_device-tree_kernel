@@ -12,11 +12,11 @@ Not working in this stuff:
 
 How to compile:
 ```
-#1 first you need to download cyanogenmod 10 sources into (/sources/cm10):
+#1 first you need to download cyanogenmod 10 sources into (~/sources/cm10):
 "repo init -u git://github.com/CyanogenMod/android.git -b jellybean"
 
 #2 then goto cm10, device folder:
-"cd /sources/cm10/device"
+"cd ~/sources/cm10/device"
 
 #3 and make and move folder named "acer":
 "mkdir acer"
@@ -26,19 +26,20 @@ How to compile:
 "git clone https://github.com/RomzesRover/acer_liquid_device-tree_kernel.git -b cm10"
 
 #5 and rename folder "acer_liquid_device-tree_kernel" to "salsa":
-"mv -R /sources/cm10/device/acer/acer_liquid_device-tree_kernel  /sources/cm10/device/acer/salsa"
+"mv -R ~/sources/cm10/device/acer/acer_liquid_device-tree_kernel  ~/sources/cm10/device/acer/salsa"
 
 #6 then move to cm10 root directory:
-"cd /sources/cm10"
+"cd ~/sources/cm10"
 
 #7 and prepare to compile cm10;
-"/sources/cm10_1/vendor/cm/get-prebuilts"
+"~/sources/cm10/vendor/cm/get-prebuilts"
+"cd ~/sources/cm10"
 ". build/envsetup.sh"
 
 #8 and now you can compile cm10 for liquid:
 "brunch salsa -j5"
 
-#9 That's all the result will be in /sources/cm10/out/target/salsa
+#9 That's all the result will be in ~/sources/cm10/out/target/salsa
 thx.
 ```
 

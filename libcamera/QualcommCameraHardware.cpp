@@ -3924,7 +3924,7 @@ void QualcommCameraHardware::receiveRawPicture()
         if (mDataCallback && (mMsgEnabled & CAMERA_MSG_RAW_IMAGE)) {
                 ALOGV("checking for NULL datacallback");
                 if ((mDisplayHeap == NULL) || (mDisplayHeap->mBuffers[0] == NULL))
-                    ALOGV("display heap is NULL: 0x%x", mDisplayHeap);
+                    ALOGV("display heap is NULL");
 
                 ALOGV("calling datacallback");
                 mDataCallback(CAMERA_MSG_RAW_IMAGE, mDisplayHeap->mBuffers[0],

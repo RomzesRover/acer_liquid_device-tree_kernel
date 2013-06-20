@@ -70,10 +70,6 @@ PRODUCT_PACKAGES += \
     badblocks \
     e2fsck
 
-# Misc Added by RomzesRover to get bootable cm10_1
-PRODUCT_PACKAGES += \
-    power.qsd8k
-
 #WLAN Added by RomzesRover to get bootable cm10_1
 PRODUCT_PACKAGES += \
    wlan_loader \

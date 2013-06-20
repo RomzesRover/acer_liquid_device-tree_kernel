@@ -143,9 +143,4 @@ PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/etc/media_codecs.xml:system/etc/media_codecs.xml \
     device/acer/salsa/proprietary/system/etc/audio_policy.conf:system/etc/audio_policy.conf
 
-## (14) Misc
-# Added by RomzesRover to get compileable cm10
-PRODUCT_COPY_FILES += \
-   device/acer/salsa/proprietary/root/init.power.rc:root/init.power.rc
-   
    

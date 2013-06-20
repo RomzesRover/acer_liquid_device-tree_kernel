@@ -1,11 +1,11 @@
 diff --git a/frameworks/base/cmds/servicemanager/service_manager.c b/frameworks/base/cmds/servicemanager/service_manager.c
 index 5c9a8b3..b23c1d1 100644
---- a/frameworks/base/cmds/servicemanager/service_manager.c	2013-06-14 18:27:47.347765757 +0600
-+++ b/cm10/frameworks/base/cmds/servicemanager/service_manager.c	2013-06-14 18:31:22.577765675 +0600
-@@ -27,6 +27,7 @@
-     unsigned uid;
-     const char *name;
- } allowed[] = {
+--- a/frameworks/base/cmds/servicemanager/service_manager.c
++++ b/frameworks/base/cmds/servicemanager/service_manager.c
+@@ -30,6 +30,7 @@ static struct {
+ #ifdef LVMX
+     { AID_MEDIA, "com.lifevibes.mx.ipc" },
+ #endif
 +    { AID_COMPASS, "yamaha.hardware.sensors" },
      { AID_MEDIA, "media.audio_flinger" },
      { AID_MEDIA, "media.player" },

@@ -1,8 +1,8 @@
-diff --git a/frameworks/native/include/ui/IOverlay.h b/frameworks/native/include/ui/IOverlay.h
+diff --git a/frameworks/base/include/ui/IOverlay.h b/frameworks/base/include/ui/IOverlay.h
 new file mode 100755
 index 0000000..af3add1
 --- /dev/null
-+++ b/frameworks/native/include/ui/IOverlay.h
++++ b/frameworks/base/include/ui/IOverlay.h
 @@ -0,0 +1,53 @@
 +/*
 + * Copyright (C) 2007 The Android Open Source Project
@@ -57,11 +57,11 @@ index 0000000..af3add1
 +}; // namespace android
 +
 +#endif // ANDROID_IOVERLAY_H
-diff --git a/frameworks/native/include/ui/Overlay.h b/frameworks/native/include/ui/Overlay.h
+diff --git a/frameworks/base/include/ui/Overlay.h b/frameworks/base/include/ui/Overlay.h
 new file mode 100755
 index 0000000..48c58bc
 --- /dev/null
-+++ b/frameworks/native/include/ui/Overlay.h
++++ b/frameworks/base/include/ui/Overlay.h
 @@ -0,0 +1,122 @@
 +/*
 + * Copyright (C) 2007 The Android Open Source Project

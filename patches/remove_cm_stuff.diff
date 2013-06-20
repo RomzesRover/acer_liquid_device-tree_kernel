@@ -14,14 +14,13 @@ index 56cd33d..071132e 100644
      audio_effects.conf \
 -    CMWallpapers \
      Apollo \
-     CMUpdater \
-     CMFileManager
+     CMUpdater
  
  # Extra tools in CM
-diff --git a/vendor/cm/config/common_full.mk b/vendor/cm/config/common_full.mk
+diff --git a/vendor/cm/config/common_full_phone.mk b/vendor/cm/config/common_full_phone.mk
 index 8d69ead..342b1c7 100644
---- a/vendor/cm/config/common_full.mk
-+++ b/vendor/cm/config/common_full.mk
+--- a/vendor/cm/config/common_full_phone.mk
++++ b/vendor/cm/config/common_full_phone.mk
 @@ -8,7 +8,7 @@ include frameworks/base/data/sounds/NewAudio.mk
  include frameworks/base/data/sounds/AudioPackageNewWave.mk
  

@@ -69,7 +69,7 @@ static int write_int(char const* path, int value) {
 		return amt == -1 ? -errno : 0;
 	} else {
 		if (already_warned == 0) {
-			ALOGE("write_int failed to open %s\n", path);
+			LOGE("write_int failed to open %s\n", path);
 			already_warned = 1;
 		}
 		return -errno;
@@ -122,7 +122,7 @@ static int set_light_battery(struct light_device_t* dev,
 	write_int(POWER_LED_FILE, led_state);
 	pthread_mutex_unlock(&g_lock);
 
-	ALOGE("Light battery: %p\n", state->color);
+	LOGE("Light battery: %p\n", state->color);
 	return 0;
 }
 
@@ -134,7 +134,7 @@ static int set_light_notifications(struct light_device_t* dev,
 			if(state->color == 0xffffff) {
 				//Notification on
 				//Slow blink
-				ALOGE("MAIL WRITE");
+				LOGE("MAIL WRITE");
 				//write_int(CALL_LED_FILE, 3);
 				notification_type = MAIL_NOTIFICATION;
 				led_state = SLOW_BLINKING;
@@ -142,7 +142,7 @@ static int set_light_notifications(struct light_device_t* dev,
 			else if(state->color == 0x00) {
 				//Notification off
 				//Off
-				ALOGE("OFF");
+				LOGE("OFF");
 				notification_type = MAIL_NOTIFICATION | CALL_NOTIFICATION;
 				led_state = LED_OFF;
 			} 
@@ -150,7 +150,7 @@ static int set_light_notifications(struct light_device_t* dev,
 				//Notification on
 				//Slow blink
 				//write_int(MAIL_LED_FILE, 0);
-				ALOGE("CALL WRITE");
+				LOGE("CALL WRITE");
 				notification_type = CALL_NOTIFICATION;
 				led_state = SLOW_BLINKING;
 			}
@@ -167,7 +167,7 @@ static int set_light_notifications(struct light_device_t* dev,
 				pthread_mutex_unlock(&g_lock);
 			}
 
-	ALOGE("Notification led: %p(%d,%d,%d)\n", state->color, state->flashMode, state->flashOnMS, state->flashOffMS);
+	LOGE("Notification led: %p(%d,%d,%d)\n", state->color, state->flashMode, state->flashOnMS, state->flashOffMS);
 	return 0;
 }
 
@@ -235,7 +235,7 @@ static struct hw_module_methods_t lights_module_methods = {
 /*
  * The lights Module
  */
-struct hw_module_t HAL_MODULE_INFO_SYM = {
+const struct hw_module_t HAL_MODULE_INFO_SYM = {
 	.tag = HARDWARE_MODULE_TAG,
 	.version_major = 1,
 	.version_minor = 0,

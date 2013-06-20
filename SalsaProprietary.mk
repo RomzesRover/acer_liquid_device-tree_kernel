@@ -80,9 +80,9 @@ PRODUCT_COPY_FILES += \
 ## (8) Camera
 PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/lib/liboemcamera.so:system/lib/liboemcamera.so \
-    device/acer/salsa/proprietary/system/lib/liboemcamera.so:obj/lib/liboemcamera.so \
-    device/acer/salsa/proprietary/system/lib/libcamera.so:system/lib/libcamera.so \
-    device/acer/salsa/proprietary/system/lib/libcamera.so:obj/lib/libcamera.so
+    device/acer/salsa/proprietary/system/lib/liboemcamera.so:obj/lib/liboemcamera.so
+#   device/acer/salsa/proprietary/system/lib/libcamera.so:system/lib/libcamera.so \
+#   device/acer/salsa/proprietary/system/lib/libcamera.so:obj/lib/libcamera.so
 
 ## (9) WiFi
 PRODUCT_COPY_FILES += \

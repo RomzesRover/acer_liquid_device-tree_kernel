@@ -122,7 +122,11 @@ BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 #BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/acer/salsa/recovery/recovery_keys.c
 #TARGET_RECOVERY_PRE_COMMAND := "touch /cache/recovery/boot;sync;"
 #TARGET_RECOVERY_INITRC := device/acer/salsa/recovery.rc
-#TARGET_PREBUILT_RECOVERY_KERNEL := device/acer/salsa/recovery_kernel
+#  ------------------------------------------------------------------------------------------------------------
+# | !!! WARNING !!! If you want to copmile recovery you need to use only this prebuilt kernel !!! See it below |
+# | 			Also you need to comment line 111 in this file TARGET_KERNEL_SOURCE                    |
+#  ------------------------------------------------------------------------------------------------------------
+#TARGET_PREBUILT_RECOVERY_KERNEL := device/acer/salsa/recoverySpecialKernel
 #TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun"
 #twrp recovery
 TARGET_RECOVERY_INITRC := device/acer/salsa/recovery.rc

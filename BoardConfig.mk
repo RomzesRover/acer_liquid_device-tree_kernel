@@ -108,7 +108,7 @@ BOARD_USES_LEGACY_RIL := true
 TARGET_USES_OLD_LIBSENSORS_HAL := true
 
 #kernel
-TARGET_KERNEL_SOURCE := device/acer/salsa/kernel
+#TARGET_KERNEL_SOURCE := device/acer/salsa/kernel
 TARGET_KERNEL_CONFIG := cyanogenmod_salsa_defconfig
 BOARD_KERNEL_CMDLINE := console=null
 BOARD_KERNEL_BASE := 0x20000000
@@ -126,7 +126,7 @@ BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 # | !!! WARNING !!! If you want to copmile recovery you need to use only this prebuilt kernel !!! See it below |
 # | 			Also you need to comment line 111 in this file TARGET_KERNEL_SOURCE                    |
 #  ------------------------------------------------------------------------------------------------------------
-#TARGET_PREBUILT_RECOVERY_KERNEL := device/acer/salsa/recoverySpecialKernel
+TARGET_PREBUILT_RECOVERY_KERNEL := device/acer/salsa/recoverySpecialKernel
 #TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun"
 #twrp recovery
 TARGET_RECOVERY_INITRC := device/acer/salsa/recovery.rc
@@ -137,9 +137,9 @@ TW_FLASH_FROM_STORAGE := true
 #fs
 BOARD_BOOTIMAGE_PARTITION_SIZE     := 0x00500000
 BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x00500000
-#System setup to 230mb
-BOARD_SYSTEMIMAGE_PARTITION_SIZE   := 0xE600000
-#UserData setup to 170Mb
-BOARD_USERDATAIMAGE_PARTITION_SIZE := 0xAA00000 
+#System setup to 250mb
+BOARD_SYSTEMIMAGE_PARTITION_SIZE   := 0xFA00000
+#UserData setup to 150Mb
+BOARD_USERDATAIMAGE_PARTITION_SIZE := 0x9600000 
 BOARD_FLASH_BLOCK_SIZE := 4096
 

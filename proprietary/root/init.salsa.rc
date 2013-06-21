@@ -1,5 +1,4 @@
 import init.salsa.usb.rc
-import init.power.rc
 import ueventd.salsa.rc
 
 on fs

@@ -108,7 +108,7 @@ BOARD_USES_LEGACY_RIL := true
 TARGET_USES_OLD_LIBSENSORS_HAL := true
 
 #kernel
-#TARGET_KERNEL_SOURCE := device/acer/salsa/kernel
+TARGET_KERNEL_SOURCE := device/acer/salsa/kernel
 TARGET_KERNEL_CONFIG := cyanogenmod_salsa_defconfig
 BOARD_KERNEL_CMDLINE := console=null
 BOARD_KERNEL_BASE := 0x20000000
@@ -126,7 +126,7 @@ BOARD_UMS_LUNFILE := "/sys/devices/platform/msm_hsusb/gadget/lun0/file"
 # | !!! WARNING !!! If you want to copmile recovery you need to use only this prebuilt kernel !!! See it below |
 # | 			Also you need to comment line 111 in this file TARGET_KERNEL_SOURCE                    |
 #  ------------------------------------------------------------------------------------------------------------
-TARGET_PREBUILT_RECOVERY_KERNEL := device/acer/salsa/recoverySpecialKernel
+#TARGET_PREBUILT_RECOVERY_KERNEL := device/acer/salsa/recoverySpecialKernel
 #TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun"
 #twrp recovery
 TARGET_RECOVERY_INITRC := device/acer/salsa/recovery.rc

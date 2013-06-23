@@ -5,8 +5,7 @@ Not working in this stuff:
 ```
 # sensors
 # camera
-# wifi
-# tether.
+# wifi, usb tether.
 # may be anything else, need more testers..
 ```
 
@@ -26,7 +25,7 @@ How to compile:
 "git clone https://github.com/RomzesRover/acer_liquid_device-tree_kernel.git -b cm10"
 
 #5 and rename folder "acer_liquid_device-tree_kernel" to "salsa":
-"mv -R ~/sources/cm10/device/acer/acer_liquid_device-tree_kernel  ~/sources/cm10/device/acer/salsa"
+"mv ~/sources/cm10/device/acer/acer_liquid_device-tree_kernel  ~/sources/cm10/device/acer/salsa"
 
 #6 then move to cm10 root directory:
 "cd ~/sources/cm10"

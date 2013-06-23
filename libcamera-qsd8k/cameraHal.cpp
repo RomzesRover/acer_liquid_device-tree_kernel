@@ -377,10 +377,10 @@ CameraHAL_GetNum_Cameras(void)
    int numCameras = 1;
 
    ALOGE("CameraHAL_GetNum_Cameras:\n");
-   void *libcameraHandle = ::dlopen("libcamerafromsemc.so", RTLD_NOW);
+   void *libcameraHandle = ::dlopen("libcamera.so", RTLD_NOW);
    ALOGD("CameraHAL_GetNum_Cameras: loading libcamera at %p", libcameraHandle);
    if (!libcameraHandle) {
-       ALOGE("FATAL ERROR: could not dlopen libcamerafromsemc.so: %s", dlerror());
+       ALOGE("FATAL ERROR: could not dlopen libcamera.so: %s", dlerror());
    } else {
       if (::dlsym(libcameraHandle, "HAL_getNumberOfCameras") != NULL) {
          *(void**)&LINK_getNumberofCameras =
@@ -398,10 +398,10 @@ CameraHAL_GetCam_Info(int camera_id, struct camera_info *info)
 {
    bool dynamic = false;
    ALOGE("CameraHAL_GetCam_Info:\n");
-   void *libcameraHandle = ::dlopen("libcamerafromsemc.so", RTLD_NOW);
+   void *libcameraHandle = ::dlopen("libcamera.so", RTLD_NOW);
    ALOGD("CameraHAL_GetNum_Cameras: loading libcamera at %p", libcameraHandle);
    if (!libcameraHandle) {
-       ALOGE("FATAL ERROR: could not dlopen libcamerafromsemc.so: %s", dlerror());
+       ALOGE("FATAL ERROR: could not dlopen libcamera.so: %s", dlerror());
        return EINVAL;
    } else {
       if (::dlsym(libcameraHandle, "HAL_getCameraInfo") != NULL) {
@@ -786,10 +786,10 @@ qcamera_device_open(const hw_module_t* module, const char* name,
    ALOGI("qcamera_device_open: name:%s device:%p cameraId:%d\n",
         name, device, cameraId);
 
-   libcameraHandle = ::dlopen("libcamerafromsemc.so", RTLD_NOW);
+   libcameraHandle = ::dlopen("libcamera.so", RTLD_NOW);
    ALOGI("loading libcamera at %p", libcameraHandle);
    if (!libcameraHandle) {
-       ALOGE("FATAL ERROR: could not dlopen libcamerafromsemc.so: %s", dlerror());
+       ALOGE("FATAL ERROR: could not dlopen libcamera.so: %s", dlerror());
        return false;
    }
 

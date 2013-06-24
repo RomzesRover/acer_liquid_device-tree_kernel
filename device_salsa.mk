@@ -2,7 +2,7 @@
 #                                                                           #
 #     Acer liquid build file, based on codeaurora tree qsd8250_ffa          #
 #                                                                           #
-#     Created by Koudelka and xian1243                                      #
+#     Created by Koudelka and xian1243 modified by RomzesRover              #
 #                                                                           #
 #############################################################################
 

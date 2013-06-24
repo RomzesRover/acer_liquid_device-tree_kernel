@@ -80,12 +80,12 @@ static int __init parse_tag_msm_partition(const struct tag *tag)
 		
 		if (!strcmp(name, "userdata")){
 			ptn->offset = 0x218;
-			ptn->size = 0x460;
+			ptn->size = 0x640;
 		}
 		else if (!strcmp(name, "system"))
 		{
-			ptn->offset = 0x678;
-			ptn->size = 0x820;
+			ptn->offset = 0x858;
+			ptn->size = 0x640;
 		}
 		else if (!strcmp(name, "cache"))
 		{

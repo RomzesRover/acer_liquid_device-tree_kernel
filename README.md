@@ -1,53 +1,60 @@
-This is Device tree to compile Cyanogenmod 10 for acer liquid (salsa)
+Device tree to compile Cyanogenmod 9 for acer liquid (salsa)
+=========================================
 
-~~~~~~~~Not working in this stuff:~~~~~~~~~
+Not working in this stuff:
+```
+# camera (works, but laggy)
+# wifi,tether.
+# may be anything else, need more testers..
+```
 
-sensors, camera, wifi tether. may be anything else, need more testers..
+How to compile:
+```
+#1 first you need to download cyanogenmod 9 sources into (~/sources/cm9):
+"repo init -u git://github.com/CyanogenMod/android.git -b ics"
 
-~~~~~~~~How to compile:~~~~~~~~~
+#2 then goto cm9, device folder:
+"cd ~/sources/cm9/device"
 
-first you need to download cyanogenmod 10 sources into (~/sources/cm10):
-"repo init -u git://github.com/CyanogenMod/android.git -b jellybean"
-
-then goto cm10, device folder:
-"cd ~/sources/cm10/device"
-
-and make and move folder named "acer":
+#3 and make and move folder named "acer":
 "mkdir acer"
 "cd acer"
 
-then clone this sources:
-"git clone https://github.com/RomzesRover/acer_liquid_device-tree_kernel.git -b cm10"
+#4 then clone this sources:
+"git clone https://github.com/RomzesRover/acer_liquid_device-tree_kernel.git -b cm9"
 
-and rename folder "acer_liquid_device-tree_kernel" to "salsa":
-"mv -R ~/sources/cm10/device/acer/acer_liquid_device-tree_kernel  ~/sources/cm10/device/acer/salsa"
+#5 and rename folder "acer_liquid_device-tree_kernel" to "salsa":
+"mv ~/sources/cm9/device/acer/acer_liquid_device-tree_kernel  ~/sources/cm9/device/acer/salsa"
 
-then move to cm10 root directory:
-"cd ~/sources/cm10"
+#6 then move to cm9 root directory:
+"cd ~/sources/cm9"
 
-and prepare to compile cm10;
-"~/sources/cm10_1/vendor/cm/get-prebuilts"
+#7 and prepare to compile cm9;
+"~/sources/cm9/vendor/cm/get-prebuilts"
+"cd ~/sources/cm9"
 ". build/envsetup.sh"
 
-and now you can compile cm10 for liquid:
+#8 and now you can compile cm9 for liquid:
 "brunch salsa -j5"
 
-That's all the result will be in ~/sources/cm10/out/target/salsa
+#9 That's all the result will be in ~/sources/cm9/out/target/salsa
 thx.
+```
 
-~~~~~~~~Credits~~~~~~~~
+Credits:
+```
+#RomzesRover
+#[ray
+#thepasto
+```
 
-RomzesRover
-[ray
-thepasto
-
-~~~~~~~~Usefull commands with commets in russian language~~~~~~~~
-
+Usefull commands with commets in russian language:
+```
 						- # для компилирования andr
 repo forall -c git reset --hard			- Очистка исходников android от патчей
 make clean					- Очистка от итогов компиляции (для ядра и android)
 make mrproper					- Очистка ядра от конфигов (ВАЖНО если компилируешь в первый раз)
-~/sources/cm10_1/vendor/cm/get-prebuilts	- Получить пребуилтс (Приложения, которые не собираются из исходников)
+/sources/cm9/vendor/cm/get-prebuilts	- Получить пребуилтс (Приложения, которые не собираются из исходников)
 . build/envsetup.sh				- Обязательно перед компиляцией
 brunch salsa -j5				- Собрать прошивку для ливкида (на 4х ядерном хосте)
 
@@ -78,4 +85,4 @@ git remote add origin https://github.com/RomzesRover/acer_liquid_device-tree_ker
 git push -u origin master			- обновить файлы на сервере с твоими исходниками.. (попросит логин, пароль)
 
 git checkout -b master				- Переключить бранч
-
+```

@@ -350,8 +350,8 @@ enum rpm_status {
 
 struct dev_pm_info {
 	pm_message_t		power_state;
-	unsigned int		can_wakeup:1;
-	unsigned int		should_wakeup:1;
+	unsigned		can_wakeup:1;
+	unsigned		should_wakeup:1;
 	enum dpm_state		status;		/* Owned by the PM core */
 #ifdef	CONFIG_PM_SLEEP
 	struct list_head	entry;

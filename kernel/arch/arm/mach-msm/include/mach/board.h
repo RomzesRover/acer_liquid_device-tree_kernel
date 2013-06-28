@@ -44,16 +44,10 @@ struct msm_camera_io_ext {
 	uint32_t csiirq;
 };
 
-struct msm_camera_io_clk {
-	uint32_t mclk_clk_rate;
-	uint32_t vfe_clk_rate;
-};
-
 struct msm_camera_device_platform_data {
 	void (*camera_gpio_on) (void);
 	void (*camera_gpio_off)(void);
 	struct msm_camera_io_ext ioext;
-	struct msm_camera_io_clk ioclk;
 };
 enum msm_camera_csi_data_format {
 	CSI_8BIT,
@@ -85,7 +79,6 @@ struct msm_camera_legacy_device_platform_data {
 #define MSM_CAMERA_FLASH_SRC_PWM  (0x00000001<<1)
 
 struct msm_camera_sensor_flash_pmic {
-	uint8_t num_of_src;
 	uint32_t low_current;
 	uint32_t high_current;
 };
@@ -161,7 +154,6 @@ enum msm_adspdec_concurrency {
 	MSM_ADSP_CODEC_WMAPRO = 13,
 	MSM_ADSP_MODE_TUNNEL = 24,
 	MSM_ADSP_MODE_NONTUNNEL = 25,
-	MSM_ADSP_MODE_LP = 26,
 	MSM_ADSP_OP_DMA = 28,
 	MSM_ADSP_OP_DM = 29,
 };
@@ -190,107 +182,39 @@ struct msm_adspdec_database {
 	struct dec_instance_table *dec_instance_list;
 };
 
-enum msm_mdp_hw_revision {
-        MDP_REV_20 = 1,
-        MDP_REV_22,
-        MDP_REV_30,
-        MDP_REV_303,
-        MDP_REV_31,
-        MDP_REV_40,
-        MDP_REV_41,
-        MDP_REV_42,
-};
-
 struct msm_panel_common_pdata {
-	uintptr_t hw_revision_addr;
 	int gpio;
 	int (*backlight_level)(int level, int max, int min);
 	int (*pmic_backlight)(int level);
 	int (*panel_num)(void);
 	void (*panel_config_gpio)(int);
-	int (*vga_switch)(int select_vga);
 	int *gpio_num;
 	int mdp_core_clk_rate;
 	unsigned num_mdp_clk;
 	int *mdp_core_clk_table;
-#ifdef CONFIG_MSM_BUS_SCALING
-	struct msm_bus_scale_pdata *mdp_bus_scale_table;
-#endif
-        int mdp_rev;
-        u32 ov0_wb_size;  /* overlay0 writeback size */
-        u32 ov1_wb_size;  /* overlay1 writeback size */
-        u32 mem_hid;
-        char cont_splash_enabled;
 };
 
 struct lcdc_platform_data {
 	int (*lcdc_gpio_config)(int on);
-	int (*lcdc_power_save)(int);
-	unsigned int (*lcdc_get_clk)(void);
-#ifdef CONFIG_MSM_BUS_SCALING
-	struct msm_bus_scale_pdata *bus_scale_table;
-#endif
+	void (*lcdc_power_save)(int);
 };
 
 struct tvenc_platform_data {
-	int poll;
 	int (*pm_vid_en)(int on);
-#ifdef CONFIG_MSM_BUS_SCALING
-	struct msm_bus_scale_pdata *bus_scale_table;
-#endif
 };
 
 struct mddi_platform_data {
-	int (*mddi_power_save)(int on);
+	void (*mddi_power_save)(int on);
 	int (*mddi_sel_clk)(u32 *clk_rate);
-	int (*mddi_client_power)(u32 client_id);
 };
 
 struct mipi_dsi_platform_data {
 	int (*dsi_power_save)(int on);
-	int (*dsi_client_reset)(void);
-	int (*get_lane_config)(void);
-	int target_type;
 };
 
-enum mipi_dsi_3d_ctrl {
-	FPGA_EBI2_INTF,
-	FPGA_SPI_INTF,
-};
-
-/* DSI PHY configuration */
-struct mipi_dsi_phy_ctrl {
-	uint32_t regulator[5];
-	uint32_t timing[12];
-	uint32_t ctrl[4];
-	uint32_t strength[4];
-	uint32_t pll[21];
-};
-
-struct mipi_dsi_panel_platform_data {
-	int fpga_ctrl_mode;
-	int fpga_3d_config_addr;
-	int *gpio;
-	struct mipi_dsi_phy_ctrl *phy_ctrl_settings;
-};
-
-#define PANEL_NAME_MAX_LEN 50
 struct msm_fb_platform_data {
 	int (*detect_client)(const char *name);
 	int mddi_prescan;
-	int (*allow_set_offset)(void);
-        char prim_panel_name[PANEL_NAME_MAX_LEN];
-        char ext_panel_name[PANEL_NAME_MAX_LEN];
-};
-
-struct msm_hdmi_platform_data {
-	int irq;
-	int (*cable_detect)(int insert);
-	int (*comm_power)(int on, int show);
-	int (*enable_5v)(int on);
-	int (*core_power)(int on);
-	int (*cec_power)(int on);
-	int (*init_irq)(void);
 };
 
 struct msm_i2c_platform_data {
@@ -304,27 +228,7 @@ struct msm_i2c_platform_data {
 	int aux_dat;
 	const char *clk;
 	const char *pclk;
-	int src_clk_rate;
-	int use_gsbi_shared_mode;
 	void (*msm_i2c_config_gpio)(int iface, int config_type);
-};
-
-enum msm_ssbi_controller_type {
-	MSM_SBI_CTRL_SSBI = 0,
-	MSM_SBI_CTRL_SSBI2,
-	MSM_SBI_CTRL_PMIC_ARBITER,
-};
-
-struct msm_vidc_platform_data {
-	int memtype;
-	u32 enable_ion;
-	int disable_dmx;
-	int disable_fullhd;
-	u32 cp_enabled;
-#ifdef CONFIG_MSM_BUS_SCALING
-	struct msm_bus_scale_pdata *vidc_bus_client_pdata;
-#endif
-	int cont_mode_dpb_count;
 };
 
 /* common init routines for use by arch/arm/mach-msm/board-*.c */
@@ -354,21 +258,12 @@ static inline void msm_hsusb_set_vbus_state(int online) {}
 #endif
 
 void __init msm_snddev_init(void);
-void __init msm_snddev_init_timpani(void);
 void msm_snddev_poweramp_on(void);
 void msm_snddev_poweramp_off(void);
 void msm_snddev_hsed_pamp_on(void);
 void msm_snddev_hsed_pamp_off(void);
 void msm_snddev_tx_route_config(void);
 void msm_snddev_tx_route_deconfig(void);
-void msm_snddev_rx_route_config(void);
-void msm_snddev_rx_route_deconfig(void);
-void msm_snddev_enable_amic_power(void);
-void msm_snddev_disable_amic_power(void);
-void msm_snddev_enable_dmic_power(void);
-void msm_snddev_disable_dmic_power(void);
-void msm_snddev_enable_dmic_sec_power(void);
-void msm_snddev_disable_dmic_sec_power(void);
 
 extern unsigned int msm_shared_ram_phys; /* defined in arch/arm/mach-msm/io.c */
 

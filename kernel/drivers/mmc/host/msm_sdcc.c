@@ -76,10 +76,10 @@ static unsigned int msmsdcc_fmin = 144000;
 static unsigned int msmsdcc_fmid = 24576000;
 static unsigned int msmsdcc_temp = 25000000;
 #if defined(CONFIG_MACH_Q8K_A1_EVT)
-static unsigned int msmsdcc_fmax = 40000000;
+static unsigned int msmsdcc_fmax = 50000000;
 #else
-/* HW EE ESD issue, set to 45MHz */
-static unsigned int msmsdcc_fmax = 45000000;
+/* HW EE ESD issue, set to 64MHz */
+static unsigned int msmsdcc_fmax = 64000000;
 #endif
 static unsigned int msmsdcc_pwrsave = 1;
 #if defined (CONFIG_MACH_ACER_A1)

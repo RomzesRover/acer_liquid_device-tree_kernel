@@ -124,9 +124,9 @@
 
 #define MSM_PMEM_ADSP_SIZE	0x800000
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
-#define MSM_FB_SIZE     0x00278780
+#define MSM_FB_SIZE     0x2EE000
 #else
-#define MSM_FB_SIZE     0x001B0500
+#define MSM_FB_SIZE     0x177000
 #endif
 
 #define MSM_AUDIO_SIZE		0x80000

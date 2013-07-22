@@ -33,8 +33,4 @@ int msm_arch_idle(void);
 int msm_pm_collapse(void);
 void msm_pm_collapse_exit(void);
 
-#ifdef CONFIG_CPU_V7
-extern unsigned long msm_pm_pc_pgd;
-#endif
-
 #endif

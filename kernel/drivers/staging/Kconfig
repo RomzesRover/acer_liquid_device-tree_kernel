@@ -95,8 +95,6 @@ source "drivers/staging/android/Kconfig"
 
 endif # !STAGING_EXCLUDE_BUILD
 
-source "drivers/staging/zram/Kconfig"
- 
-source "drivers/staging/snappy/Kconfig"
+source "drivers/staging/ramzswap/Kconfig"
 
 endif # STAGING

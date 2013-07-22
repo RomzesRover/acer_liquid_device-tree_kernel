@@ -122,13 +122,8 @@
 
 #define SMEM_SPINLOCK_I2C	"S:6"
 
-#define MSM_PMEM_ADSP_SIZE	0x800000
-#ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
-#define MSM_FB_SIZE     0x2EE000
-#else
-#define MSM_FB_SIZE     0x177000
-#endif
-//#define MSM_FB_SIZE        	0x465000
+#define MSM_PMEM_ADSP_SIZE	0xFFF000
+#define MSM_FB_SIZE         	0x2EE000
 #define MSM_AUDIO_SIZE		0x80000
 
 #ifdef CONFIG_MSM_SOC_REV_A
@@ -137,9 +132,9 @@
 #define MSM_SMI_BASE		0x00000000
 #endif
 
-#define MSM_SHARED_RAM_PHYS	0x00100000
+#define MSM_SHARED_RAM_PHYS	(MSM_SMI_BASE + 0x00100000)
 
-#define MSM_PMEM_SMI_BASE	0x02B00000
+#define MSM_PMEM_SMI_BASE	(MSM_SMI_BASE + 0x02B00000)
 #define MSM_PMEM_SMI_SIZE	0x01500000
 
 #define MSM_FB_BASE		MSM_PMEM_SMI_BASE
@@ -1726,18 +1721,18 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.pwr_data = {
 		.pwrlevel = {
 			{
-				.gpu_freq = 160000000,
+				.gpu_freq = 128000000,
 				.bus_freq = 128000000,
 			},
 			{
-				.gpu_freq = 160000000,
+				.gpu_freq = 128000000,
 				.bus_freq = 0,
 			},
 		},
 		.init_level = 0,
 		.num_levels = 2,
 		.set_grp_async = NULL,
-		.idle_timeout = HZ/12,
+		.idle_timeout = HZ/20,
 		.nap_allowed = true,
 	},
 	.clk = {
@@ -3032,7 +3027,7 @@ msm_i2c_gpio_config(int iface, int config_type)
 }
 
 static struct msm_i2c_platform_data msm_i2c_pdata = {
-	.clk_freq = 128000,
+	.clk_freq = 100000,
 	.rsl_id = SMEM_SPINLOCK_I2C,
 	.pri_clk = 95,
 	.pri_dat = 96,

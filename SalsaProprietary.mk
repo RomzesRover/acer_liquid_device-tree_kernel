@@ -142,3 +142,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/etc/media_codecs.xml:system/etc/media_codecs.xml \
     device/acer/salsa/proprietary/system/etc/audio_policy.conf:system/etc/audio_policy.conf
+
+## (14) # LiquidParts
+# Added by RomzesRover
+PRODUCT_COPY_FILES += \
+    device/acer/salsa/proprietary/system/app/LiquidParts2.apk:system/app/LiquidParts2.apk

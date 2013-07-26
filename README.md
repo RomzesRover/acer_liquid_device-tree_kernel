@@ -3,9 +3,8 @@ Device tree to compile Cyanogenmod 9 for acer liquid (salsa)
 
 Not working in this stuff:
 ```
-# deep sleep
-# camera
-# wifi, usb tether.
+# camera (photo works, but laggy. pano and video stacked)
+# usb tether (I check it, but I found this https://github.com/thepasto/android_device_acer_salsa/commit/8bee993d41b78d30dadfb3d9811d2fe078c5d4c7).
 # may be anything else, need more testers..
 ```
 

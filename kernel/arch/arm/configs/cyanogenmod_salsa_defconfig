@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.29.6
-# Fri Jun 28 18:00:35 2013
+# Fri Jul 26 16:46:30 2013
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -923,7 +923,8 @@ CONFIG_TUN=m
 # CONFIG_WLAN_80211 is not set
 # CONFIG_LIBRA_SDIOIF is not set
 # CONFIG_IWLWIFI_LEDS is not set
-CONFIG_BCM4325=m
+# CONFIG_BCM4325 is not set
+CONFIG_BCM4329=y
 
 #
 # Enable WiMAX (Networking options) to see the WiMAX drivers

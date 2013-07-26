@@ -1,0 +1,104 @@
+diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java b/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java
+--- a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java	2013-07-27 04:20:10.881842101 +0600
++++ b/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.java	2013-07-27 04:13:40.931842000 +0600
+@@ -40,6 +40,7 @@
+ import android.os.Bundle;
+ import android.os.Handler;
+ import android.os.Message;
++import android.os.CountDownTimer;
+ import android.preference.Preference;
+ import android.preference.PreferenceActivity;
+ import android.preference.PreferenceScreen;
+@@ -82,6 +83,31 @@
+  */
+ public class WifiSettings extends SettingsPreferenceFragment
+         implements DialogInterface.OnClickListener  {
++
++
++	// for timer
++    	private timer CountDownTimer;					
++	public class timer extends CountDownTimer{
++
++		public timer(long millisInFuture, long countDownInterval) {
++			super(millisInFuture, countDownInterval);
++		}
++
++		@Override
++		public void onFinish() {
++		mWifiEnabler.pause();
++		Log.i("ROMZESROVER_WIFI_FIX", "timer Finish, try to reload wifi module");
++		mWifiManager.setWifiEnabled(false);
++		mWifiManager.setWifiEnabled(true);
++		mWifiEnabler.resume();
++		}
++
++		@Override
++		public void onTick(long arg0) {}
++	}
++	// for timer
++
++
+     private static final String TAG = "WifiSettings";
+     private static final int MENU_ID_SCAN = Menu.FIRST;
+     private static final int MENU_ID_ADD_NETWORK = Menu.FIRST + 1;
+@@ -247,6 +273,8 @@
+         if (mKeyStoreNetworkId != INVALID_NETWORK_ID &&
+                 KeyStore.getInstance().state() == KeyStore.State.UNLOCKED) {
+             mWifiManager.connectNetwork(mKeyStoreNetworkId);
++		CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
++         	CountDownTimer.start();
+         }
+         mKeyStoreNetworkId = INVALID_NETWORK_ID;
+ 
+@@ -303,6 +331,8 @@
+             case MENU_ID_SCAN:
+                 if (mWifiManager.isWifiEnabled()) {
+                     mScanner.forceScan();
++			CountDownTimer = new timer (1000, 1000);
++			CountDownTimer.start();
+                 }
+                 return true;
+             case MENU_ID_ADD_NETWORK:
+@@ -358,11 +388,15 @@
+                 if (mSelectedAccessPoint.networkId != INVALID_NETWORK_ID) {
+                     if (!requireKeyStore(mSelectedAccessPoint.getConfig())) {
+                         mWifiManager.connectNetwork(mSelectedAccessPoint.networkId);
++			CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
++         		CountDownTimer.start();
+                     }
+                 } else if (mSelectedAccessPoint.security == AccessPoint.SECURITY_NONE) {
+                     /** Bypass dialog for unsecured networks */
+                     mSelectedAccessPoint.generateOpenNetworkConfig();
+                     mWifiManager.connectNetwork(mSelectedAccessPoint.getConfig());
++			CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
++         		CountDownTimer.start();
+                 } else {
+                     showConfigUi(mSelectedAccessPoint, true);
+                 }
+@@ -389,6 +423,8 @@
+                     mSelectedAccessPoint.networkId == INVALID_NETWORK_ID) {
+                 mSelectedAccessPoint.generateOpenNetworkConfig();
+                 mWifiManager.connectNetwork(mSelectedAccessPoint.getConfig());
++		CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
++         	CountDownTimer.start();
+             } else {
+                 showConfigUi(mSelectedAccessPoint, false);
+             }
+@@ -780,6 +816,8 @@
+                             && !requireKeyStore(mSelectedAccessPoint.getConfig())
+                             && mSelectedAccessPoint.networkId != INVALID_NETWORK_ID) {
+                         mWifiManager.connectNetwork(mSelectedAccessPoint.networkId);
++			CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
++         		CountDownTimer.start();
+                     }
+                 } else if (config.networkId != INVALID_NETWORK_ID) {
+                     if (mSelectedAccessPoint != null) {
+@@ -790,6 +828,8 @@
+                         saveNetwork(config);
+                     } else {
+                         mWifiManager.connectNetwork(config);
++			CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
++         		CountDownTimer.start();
+                     }
+                 }
+                 break;

@@ -9,14 +9,35 @@ diff --git a/vendor/cm/config/common.mk b/vendor/cm/config/common.mk
      VoiceDialer \
      SoundRecorder \
      Basic \
-@@ -107,7 +106,6 @@
+@@ -107,9 +106,7 @@
      DSPManager \
      libcyanogen-dsp \
      audio_effects.conf \
 -    CMWallpapers \
-     Apollo \
-     CMUpdater
+-    Apollo \
+-    CMUpdater
++    Apollo
  
+ # Extra tools in CM
+ PRODUCT_PACKAGES += \
+diff --git a/packages/apps/Settings/res/xml/device_info_settings.xml b/packages/apps/Settings/res/xml/device_info_settings.xml
+--- a/packages/apps/Settings/res/xml/device_info_settings.xml	2013-07-28 14:23:31.734237000 +0600
++++ b/packages/apps/Settings/res/xml/device_info_settings.xml	2013-07-28 14:36:52.484237551 +0600
+@@ -34,14 +34,6 @@
+                     android:targetClass="com.android.settings.deviceinfo.Status" />
+         </PreferenceScreen>
+ 
+-        <!-- CyanogenMod Updates -->
+-        <PreferenceScreen android:key="cm_updates"
+-                android:title="@string/cmupdate_settings_title" 
+-                android:summary="@string/cmupdate_settings_summary">
+-            <intent android:action="android.intent.action.MAIN"
+-                    android:targetPackage="com.cyanogenmod.updater"
+-                    android:targetClass="com.cyanogenmod.updater.UpdatesSettings" />
+-        </PreferenceScreen>
+ 
+         <!-- Anonymous statistics - (CMStats) -->
+         <PreferenceScreen
 diff --git a/vendor/cm/config/common_full_phone.mk b/vendor/cm/config/common_full_phone.mk
 index 8d69ead..342b1c7 100644
 --- a/vendor/cm/config/common_full_phone.mk

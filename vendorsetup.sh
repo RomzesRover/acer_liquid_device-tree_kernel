@@ -47,3 +47,6 @@ for p in $(find device/acer/salsa/patches/ -name "*.diff")
 		echo "" 
 	done
 echo ""
+echo "Copying ic_settings_liquidp.png to packages/apps/Settings/res/drawable-hdpi/ic_settings_liquidp.png..."
+cp device/acer/salsa/proprietary/system/app/Settings/res/drawable-hdpi/ic_settings_liquidp.png packages/apps/Settings/res/drawable-hdpi/ic_settings_liquidp.png
+echo ""

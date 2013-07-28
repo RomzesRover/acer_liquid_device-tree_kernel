@@ -12,8 +12,8 @@ diff --git a/packages/apps/Settings/res/xml/settings_headers.xml b/packages/apps
 +        android:title="Liquid Parts">
 +        <intent
 +            android:action="android.intent.action.MAIN"
-+            android:targetPackage="com.example.liquidparts"
-+            android:targetClass="com.example.liquidparts.LiquidPartsActivity" />
++            android:targetPackage="com.BBsRs.liquidparts"
++            android:targetClass="com.BBsRs.liquidparts.LiquidPartsActivity" />
 +    </header>
 +
      <!-- About Device -->

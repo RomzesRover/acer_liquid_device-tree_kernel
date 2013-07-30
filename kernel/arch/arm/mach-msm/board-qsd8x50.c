@@ -118,12 +118,18 @@
 #define TOUCHPAD_IRQ 		38
 #endif //defined(CONFIG_MOUSE_MSM_TOUCHPAD)
 
-#define MSM_PMEM_SF_SIZE	0x1700000
+#define MSM_PMEM_SF_SIZE	0x01C91000
 
 #define SMEM_SPINLOCK_I2C	"S:6"
 
-#define MSM_PMEM_ADSP_SIZE	0xFFF000
-#define MSM_FB_SIZE         	0x2EE000
+#define MSM_PMEM_ADSP_SIZE	0x02196000
+
+#ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
+#define MSM_FB_SIZE       0x2EE000
+#else
+#define MSM_FB_SIZE       0x177000
+#endif
+
 #define MSM_AUDIO_SIZE		0x80000
 
 #ifdef CONFIG_MSM_SOC_REV_A

@@ -607,7 +607,8 @@ static int is_master_owner(struct file *file)
 	master_file = fget_light(data->master_fd, &put_needed);
 	if (master_file && data->master_file == master_file)
 		ret = 1;
-	fput_light(master_file, put_needed);
+	if (master_file)
+		fput_light(master_file, put_needed);
 	return ret;
 }
 
@@ -1073,17 +1074,17 @@ static void bitmap_bits_set_all(uint32_t *bitp, int bit_start, int bit_end)
 
 static int
 bitmap_allocate_contiguous(uint32_t *bitp, int num_bits_to_alloc,
-		int total_bits, int spacing)
+		int total_bits, int spacing, int start_bit)
 {
 	int bit_start, last_bit, word_index;
 
 	if (num_bits_to_alloc <= 0)
 		return -1;
 
-	for (bit_start = 0; ;
-		bit_start = (last_bit +
+	for (bit_start = start_bit; ;
+		bit_start = ((last_bit +
 			(word_index << PMEM_32BIT_WORD_ORDER) + spacing - 1)
-			& ~(spacing - 1)) {
+			& ~(spacing - 1)) + start_bit) {
 		int bit_end = bit_start + num_bits_to_alloc, total_words;
 
 		if (bit_end > total_bits)
@@ -1161,7 +1162,8 @@ static int reserve_quanta(const unsigned int quanta_needed,
 	ret = bitmap_allocate_contiguous(pmem[id].allocator.bitmap.bitmap,
 		quanta_needed,
 		(pmem[id].size + pmem[id].quantum - 1) / pmem[id].quantum,
-		spacing);
+		spacing,
+		start_bit);
 
 #if PMEM_DEBUG
 	if (ret < 0)
@@ -1559,6 +1561,10 @@ static int pmem_mmap(struct file *file, struct vm_area_struct *vma)
 	unsigned long vma_size =  vma->vm_end - vma->vm_start;
 	int ret = 0, id = get_id(file);
 
+	if (!data) {
+		pr_err("pmem: Invalid file descriptor, no private data\n");
+		return -EINVAL;
+	}
 #if PMEM_DEBUG_MSGS
 	char currtask_name[FIELD_SIZEOF(struct task_struct, comm) + 1];
 #endif
@@ -1576,7 +1582,7 @@ static int pmem_mmap(struct file *file, struct vm_area_struct *vma)
 	down_write(&data->sem);
 	/* check this file isn't already mmaped, for submaps check this file
 	 * has never been mmaped */
-	if ((data->flags & PMEM_FLAGS_MASTERMAP) ||
+	if (/*(data->flags & PMEM_FLAGS_MASTERMAP) || */
 	    (data->flags & PMEM_FLAGS_SUBMAP) ||
 	    (data->flags & PMEM_FLAGS_UNSUBMAP)) {
 #if PMEM_DEBUG
@@ -1587,24 +1593,21 @@ static int pmem_mmap(struct file *file, struct vm_area_struct *vma)
 		goto error;
 	}
 	/* if file->private_data == unalloced, alloc*/
-	if (data && data->index == -1) {
+	if (data->index == -1) {
 		mutex_lock(&pmem[id].arena_mutex);
 		index = pmem[id].allocate(id,
 				vma->vm_end - vma->vm_start,
 				SZ_4K);
 		mutex_unlock(&pmem[id].arena_mutex);
-		data->index = index;
-		if (data->index == -1) {
+		/* either no space was available or an error occured */
+		if (index == -1) {
 			pr_err("pmem: mmap unable to allocate memory"
 				"on %s\n", get_name(file));
+			ret = -ENOMEM;
+			goto error;
 		}
-	}
-
-	/* either no space was available or an error occured */
-	if (!has_allocation(file)) {
-		ret = -ENOMEM;
-		pr_err("pmem: could not find allocation for map.\n");
-		goto error;
+		/* store the index of a successful allocation */
+		data->index = index;
 	}
 
 	if (pmem[id].len(id, data) < vma_size) {
@@ -1912,6 +1915,13 @@ int pmem_cache_maint(struct file *file, unsigned int cmd,
 	/* Called from kernel-space so file may be NULL */
 	if (!file)
 		return -EBADF;
+
+	/*
+	 * check that the vaddr passed for flushing is valid
+	 * so that you don't crash the kernel
+	 */
+	if (!pmem_addr->vaddr)
+		return -EINVAL;
 
 	data = file->private_data;
 	id = get_id(file);

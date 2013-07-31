@@ -604,6 +604,9 @@ static int __init lcdc_auo_init(void)
 	pinfo->clk_rate = 24576000;
 	//pinfo->bl_max = MAX_BACKLIGHT_LEVEL;
 	//pinfo->bl_min = 1;
+
+	//disable vsync
+	pinfo->lcd.hw_vsync_mode = 0;
 	
 	// here edited to beat display flickering ([ray, RomzesRover)
 	pinfo->lcdc.h_back_porch = 12;

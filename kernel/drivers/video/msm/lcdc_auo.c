@@ -605,7 +605,7 @@ static int __init lcdc_auo_init(void)
 	//pinfo->bl_max = MAX_BACKLIGHT_LEVEL;
 	//pinfo->bl_min = 1;
 
-	//disable vsync
+  	//disable vsync
 	pinfo->lcd.hw_vsync_mode = 0;
 	
 	// here edited to beat display flickering ([ray, RomzesRover)

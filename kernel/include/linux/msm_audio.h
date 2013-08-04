@@ -115,6 +115,15 @@
 #define HEADSET_STEREO_PLUS_SPKR_MONO_RX       0x13
 #define HEADSET_STEREO_PLUS_SPKR_STEREO_RX     0x14
 
+/* SEMC:<closed> CRS: 2009-09-04: add the DeviceID(BT Acc Identification).start */
+#define BTDSP_SCO_MIC		0x16
+#define BTDSP_SCO_SPKR		0x17
+#define BTC_SCO_MIC			0x18
+#define BTC_SCO_SPKR		0x19
+#define BTCDSP_SCO_MIC		0x1A
+#define BTCDSP_SCO_SPKR		0x1B
+/* SEMC:<closed> CRS: 2009-09-04: add the DeviceID(BT Acc Identification).end */
+
 #define I2S_RX				0x20
 #define I2S_TX				0x21
 

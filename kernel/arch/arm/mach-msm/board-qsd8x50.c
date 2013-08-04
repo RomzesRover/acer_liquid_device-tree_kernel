@@ -118,11 +118,11 @@
 #define TOUCHPAD_IRQ 		38
 #endif //defined(CONFIG_MOUSE_MSM_TOUCHPAD)
 
-#define MSM_PMEM_SF_SIZE	0x2000000
+#define MSM_PMEM_SF_SIZE	0x1700000
 
 #define SMEM_SPINLOCK_I2C	"S:6"
 
-#define MSM_PMEM_ADSP_SIZE	0x2000000
+#define MSM_PMEM_ADSP_SIZE	0xFFF000
 
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_SIZE       0x2EE000
@@ -138,9 +138,9 @@
 #define MSM_SMI_BASE		0x00000000
 #endif
 
-#define MSM_SHARED_RAM_PHYS	(MSM_SMI_BASE + 0x00100000)
+#define MSM_SHARED_RAM_PHYS	0x00100000
 
-#define MSM_PMEM_SMI_BASE	(MSM_SMI_BASE + 0x02B00000)
+#define MSM_PMEM_SMI_BASE	0x02B00000
 #define MSM_PMEM_SMI_SIZE	0x01500000
 
 #define MSM_FB_BASE		MSM_PMEM_SMI_BASE
@@ -1727,18 +1727,14 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.pwr_data = {
 		.pwrlevel = {
 			{
-				.gpu_freq = 128000000,
+				.gpu_freq = 0,
 				.bus_freq = 128000000,
-			},
-			{
-				.gpu_freq = 128000000,
-				.bus_freq = 0,
 			},
 		},
 		.init_level = 0,
-		.num_levels = 2,
+		.num_levels = 1,
 		.set_grp_async = NULL,
-		.idle_timeout = HZ/20,
+		.idle_timeout = HZ/5,
 		.nap_allowed = true,
 	},
 	.clk = {
@@ -2993,6 +2989,12 @@ static struct msm_pm_platform_data msm_pm_data[MSM_PM_SLEEP_MODE_NR] = {
 	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_NO_XO_SHUTDOWN].latency = 4594,
 	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_NO_XO_SHUTDOWN].residency = 23740,
 
+	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_STANDALONE].supported = 1,
+	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_STANDALONE].suspend_enabled = 0,
+	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_STANDALONE].idle_enabled = 1,
+	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_STANDALONE].latency = 500,
+	[MSM_PM_SLEEP_MODE_POWER_COLLAPSE_STANDALONE].residency = 6000,
+
 	[MSM_PM_SLEEP_MODE_RAMP_DOWN_AND_WAIT_FOR_INTERRUPT].supported = 1,
 	[MSM_PM_SLEEP_MODE_RAMP_DOWN_AND_WAIT_FOR_INTERRUPT].suspend_enabled
 		= 1,
@@ -3007,8 +3009,7 @@ static struct msm_pm_platform_data msm_pm_data[MSM_PM_SLEEP_MODE_NR] = {
 	[MSM_PM_SLEEP_MODE_WAIT_FOR_INTERRUPT].residency = 0,
 };
 
-static void
-msm_i2c_gpio_config(int iface, int config_type)
+static void msm_i2c_gpio_config(int iface, int config_type)
 {
 	int gpio_scl;
 	int gpio_sda;
@@ -3085,7 +3086,7 @@ early_param("pmem_kernel_smi_size", pmem_kernel_smi_size_setup);
 #endif
 
 static unsigned pmem_sf_size = MSM_PMEM_SF_SIZE;
-static int __init pmem_sf_size_setup(char *p)
+static void __init pmem_sf_size_setup(char *p)
 {
 	pmem_sf_size = memparse(p, NULL);
 	return 0;
@@ -3093,7 +3094,7 @@ static int __init pmem_sf_size_setup(char *p)
 early_param("pmem_sf_size", pmem_sf_size_setup);
 
 static unsigned pmem_adsp_size = MSM_PMEM_ADSP_SIZE;
-static int __init pmem_adsp_size_setup(char *p)
+static void __init pmem_adsp_size_setup(char *p)
 {
 	pmem_adsp_size = memparse(p, NULL);
 	return 0;

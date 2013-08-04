@@ -584,6 +584,8 @@ void mddi_window_adjust_ext(struct msm_fb_data_type *mfd,
 	struct msm_fb_panel_data *pdata;
 	pdata = (struct msm_fb_panel_data *)mfd->pdev->dev.platform_data;
 
+	if (pdata && pdata->panel_ext && pdata->panel_ext->window_adjust)
+		pdata->panel_ext->window_adjust(x1, x2, y1, y2);
 #endif
 }
 

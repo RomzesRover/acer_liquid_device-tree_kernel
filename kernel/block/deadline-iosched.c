@@ -17,10 +17,10 @@
 /*
  * See Documentation/block/deadline-iosched.txt
  */
-static const int read_expire = HZ / 2;  /* max time before a read is submitted. */
+static const int read_expire = HZ / 4;  /* max time before a read is submitted. */
 static const int write_expire = 5 * HZ; /* ditto for writes, these limits are SOFT! */
-static const int writes_starved = 2;    /* max times reads can starve a write */
-static const int fifo_batch = 16;       /* # of sequential requests treated as one
+static const int writes_starved = 4;    /* max times reads can starve a write */
+static const int fifo_batch = 1;       /* # of sequential requests treated as one
 				     by the above parameters. For throughput. */
 
 struct deadline_data {
@@ -138,7 +138,7 @@ deadline_merge(struct request_queue *q, struct request **req, struct bio *bio)
 
 		__rq = elv_rb_find(&dd->sort_list[bio_data_dir(bio)], sector);
 		if (__rq) {
-			BUG_ON(sector != __rq->sector);
+			BUG_ON(sector != blk_rq_pos(__rq));
 
 			if (elv_rq_merge_ok(__rq, bio)) {
 				ret = ELEVATOR_FRONT_MERGE;
@@ -362,7 +362,7 @@ static void *deadline_init_queue(struct request_queue *q)
 	dd->fifo_expire[READ] = read_expire;
 	dd->fifo_expire[WRITE] = write_expire;
 	dd->writes_starved = writes_starved;
-	dd->front_merges = 1;
+	dd->front_merges = 0;
 	dd->fifo_batch = fifo_batch;
 	return dd;
 }

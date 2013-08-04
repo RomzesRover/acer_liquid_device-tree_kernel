@@ -58,7 +58,7 @@ static void evdev_pass_event(struct evdev_client *client,
 	 * Interrupts are disabled, just acquire the lock
 	 */
 	spin_lock(&client->buffer_lock);
-	wake_lock_timeout(&client->wake_lock, HZ / 10);
+	wake_lock_timeout(&client->wake_lock, 5 * HZ);
 	client->buffer[client->head++] = *event;
 	client->head &= EVDEV_BUFFER_SIZE - 1;
 	spin_unlock(&client->buffer_lock);
@@ -295,7 +295,6 @@ static int evdev_open(struct inode *inode, struct file *file)
 
  err_free_client:
 	evdev_detach_client(evdev, client);
-	wake_lock_destroy(&client->wake_lock);
 	kfree(client);
  err_put_evdev:
 	put_device(&evdev->dev);

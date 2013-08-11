@@ -667,13 +667,14 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 
 int calc_fb_offset(struct msm_fb_data_type *mfd, struct fb_info *fbi, int bpp)
 {
+	struct msm_panel_info *panel_info = &mfd->panel_info;
 	int remainder, yres, offset;
 
 	if (align_buffer){
        		 return fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length;
     	}
 
-	yres = 400;
+	yres = panel_info->yres;
 	remainder = (fbi->fix.line_length*yres) & (PAGE_SIZE - 1);
 
 	if (!remainder)
@@ -692,7 +693,6 @@ int calc_fb_offset(struct msm_fb_data_type *mfd, struct fb_info *fbi, int bpp)
 	}
 	return offset;
 }
-
 
 static int msm_fb_blank(int blank_mode, struct fb_info *info)
 {
@@ -945,13 +945,13 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 		return ret;
 	}
 
-	fix->line_length = msm_fb_line_length(mfd->index, 240,
+	fix->line_length = msm_fb_line_length(mfd->index, panel_info->xres,
 					      bpp);
 
 	/* Make sure all buffers can be addressed on a page boundary by an x
 	 * and y offset */
 
-	remainder = (fix->line_length * 400) & (PAGE_SIZE - 1);
+	remainder = (fix->line_length * panel_info->yres) & (PAGE_SIZE - 1);
 					/* PAGE_SIZE is a power of 2 */
 	if (!remainder)
 		remainder = PAGE_SIZE;
@@ -963,9 +963,9 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 
 	if (mfd->index == 0)
 		fix->smem_len = (msm_fb_line_length(mfd->index,
-							240,
+							panel_info->xres,
 							bpp) *
-				     400 + PAGE_SIZE -
+				     panel_info->yres + PAGE_SIZE -
 				     remainder) * mfd->fb_page;
 	else if (mfd->index == 1 || mfd->index == 2) {
 		pr_debug("%s:%d no memory is allocated for fb%d!\n",
@@ -973,16 +973,16 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 		fix->smem_len = 0;
 	}
 
-	mfd->var_xres = 240;
-	mfd->var_yres = 400;
+	mfd->var_xres = panel_info->xres;
+	mfd->var_yres = panel_info->yres;
 
 	var->pixclock = mfd->panel_info.clk_rate;
 	mfd->var_pixclock = var->pixclock;
 
-	var->xres = 240;
-	var->yres = 400;
-	var->xres_virtual = 240;
-	var->yres_virtual = 400 * mfd->fb_page +
+	var->xres = panel_info->xres;
+	var->yres = panel_info->yres;
+	var->xres_virtual = panel_info->xres;
+	var->yres_virtual = panel_info->yres * mfd->fb_page +
 		((PAGE_SIZE - remainder)/fix->line_length) * mfd->fb_page;
 	var->bits_per_pixel = bpp * 8;	/* FrameBuffer color depth */
 	if (mfd->dest == DISPLAY_LCD) {
@@ -992,11 +992,11 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	    	((panel_info->lcdc.h_back_porch +
 	    	  panel_info->lcdc.h_front_porch +
 	    	  panel_info->lcdc.h_pulse_width +
-	    	  240) *
+	    	  panel_info->xres) *
 	    	 (panel_info->lcdc.v_back_porch +
 	    	  panel_info->lcdc.v_front_porch +
 	    	  panel_info->lcdc.v_pulse_width +
-	    	  400));
+	    	  panel_info->yres));
 	}
 	pr_debug("reserved[3] %u\n", var->reserved[3]);
 

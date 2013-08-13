@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, LiquidPartsActivity!</string>
+
+    <string name="app_name">Liquid Parts</string>
+    <string-array name="settings">
+        <item >Твики</item>
+        <item >Свап</item>
+    </string-array>
+    <string-array name="help">
+        <item >Ч.а.в.о.</item>
+        <item >Проблемы</item>
+        <item >пожертвовать</item>
+    </string-array>
+    <string-array name="info">
+        <item >&lt;b&gt;Как Liquid Parts работает?&lt;/b&gt;&lt;br&gt;
+Оно работает изменяя системные файлы, благодаря Руту. Так, что, вы нужно дать разрешение.&lt;br&gt;&lt;br&gt;
+&lt;b&gt;Кто разработчик этого приложения?&lt;/b&gt;&lt;br&gt;
+Первый разработчик Suxsem, потом Thepasto, Разработчик именно этого приложения RomzesRover&lt;br&gt;&lt;br&gt;
+&lt;b&gt;Что я могу тут делать ?&lt;/b&gt;&lt;br&gt;
+• Изменять чувствительность тач-скрина и нажних кнопок&lt;br&gt;
+• Изменять шум тач-скрина&lt;br&gt;
+• Выключать или включать виброотдачу&lt;br&gt;
+• Изменять силу вибрации нижних кнопок&lt;br&gt;
+• Выключать или включать свап&lt;br&gt;
+• Изменять свапиннес&lt;br&gt;
+• Изменять sdCardReadAhead</item>
+ <item >&lt;b&gt;Я не могу применить настройки&lt;/b&gt;&lt;br&gt;
+• Удостоверьтесь, что вы дали права Рут&lt;br&gt;
+• Попробуйте перезапустить приложение&lt;br&gt;&lt;br&gt;
+&lt;b&gt;После применения новых настроек тач-скрин стал сходить с ума&lt;/b&gt;&lt;br&gt;
+• Постарайтесь вернуть настройки на стандартные&lt;br&gt;
+• Прошить сток 2.1 или 2.2</item>
+	<item>&lt;b&gt;RomzesRover:&lt;/b&gt; (Текущий разработчик)&lt;br&gt;
+• PayPal: romzesrover@gmail.com&lt;br&gt;		
+• Yandex money: 41001630559136&lt;br&gt;
+• Play market: &lt;a href="market://search?q=pub:BigBrother\'sRover\'s&gt;BigBrother\'sRover\'s&lt;/a&gt;&lt;br&gt;&lt;br&gt;
+&lt;b&gt;ThePasto:&lt;/b&gt;&lt;br&gt;
+• PayPal: thepasto@gmail.com&lt;br&gt;&lt;br&gt;
+&lt;b&gt;[ray:&lt;/b&gt;&lt;br&gt;
+• WebMoney: R300598343390&lt;br&gt;
+• WebMoney: Z939099130798
+	    </item>
+    </string-array>
+    <string-array name="sdaheads">
+        <item>512</item>
+        <item>1024</item>
+        <item>2048</item>
+        <item>4096</item>
+    </string-array>
+    <string name="separator"/>
+    <string name="sens">Чувствительность</string>
+    <string name="vibtime">Время вибрации</string>
+    <string name="hf">Виброотдача</string>
+    <string name="softk">Кнопки снизу</string>
+    <string name="noise">Шум</string>
+    <string name="touchscreen">Тач-скрин</string>
+    <string name="help">Помощь</string>
+    <string name="save">Сохранить и применить</string>
+    <string name="swap">Свап</string>
+    <string name="enabled">Включено</string>
+    <string name="Swappiness">Сваппинес</string>
+    <string name="other">Другое</string>
+    <string name="sdcard">SdCardReadAhead</string>
+    <string name="lowMem">LowMemoryKillerFix (for A1)</string>
+
+</resources>

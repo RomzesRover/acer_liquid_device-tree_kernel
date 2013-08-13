@@ -4,7 +4,6 @@
  *
  * Copyright (C) 2007 Google Incorporated
  * Copyright (c) 2008-2010, Code Aurora Forum. All rights reserved.
- * Copyright (C) 2011 Sony Ericsson Mobile Communications AB.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -66,11 +65,10 @@ static unsigned char *fbram;
 static unsigned char *fbram_phys;
 static int fbram_size;
 
-
 static struct platform_device *pdev_list[MSM_FB_MAX_DEV_LIST];
 static int pdev_list_cnt;
 
-int vsync_mode = 1;
+int vsync_mode = 0;
 
 #define MAX_FBI_LIST 32
 static struct fb_info *fbi_list[MAX_FBI_LIST];
@@ -85,13 +83,6 @@ static u32 msm_fb_pseudo_palette[16] = {
 	0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
 	0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff
 };
-
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-static void (*backlight_ctrl_fp) (bool);
-static void msm_fb_resume_backlight_work_handler(struct work_struct *w);
-static DECLARE_DELAYED_WORK(resume_backlight_work,
-				msm_fb_resume_backlight_work_handler);
-#endif
 
 u32 msm_fb_debug_enabled;
 /* Setting msm_fb_msg_level to 8 prints out ALL messages */
@@ -604,27 +595,6 @@ void msm_fb_set_backlight(struct msm_fb_data_type *mfd, __u32 bkl_lvl, u32 save)
 	}
 }
 
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-
-static void msm_fb_resume_backlight_work_handler(struct work_struct *w)
-{
-	MSM_FB_DEBUG("%s\n", __func__);
-
-	if (backlight_ctrl_fp)
-		backlight_ctrl_fp(true);
-}
-
-static void msm_fb_resume_backlight_workqueue(unsigned int delay_ms)
-{
-	unsigned long j;
-
-	MSM_FB_DEBUG("%s: delay_ms = %d\n", __func__, delay_ms);
-	j = delay_ms * HZ / 1000;
-	schedule_delayed_work(&resume_backlight_work, j);
-}
-
-#endif
-
 static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 			    boolean op_enable)
 {
@@ -644,33 +614,12 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 	switch (blank_mode) {
 	case FB_BLANK_UNBLANK:
 		if (!mfd->panel_power_on) {
-#if !defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
-			mdelay(16);
+#if !defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
+			mdelay(100);
 #endif
 			ret = pdata->on(mfd->pdev);
 			if (ret == 0) {
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-				struct fb_var_screeninfo var;
-#endif
 				mfd->panel_power_on = TRUE;
-
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-				var = info->var;
-				var.reserved[0] = 0x54445055;
-				var.reserved[1] = 0;
-				var.reserved[2] = pdata->panel_info.yres << 16 |
-							pdata->panel_info.xres;
-
-				/* Refresh display memory since it may have been
-				   lost (depends on type of display and power
-				   off mode) */
-				(void)msm_fb_pan_display(&var, info);
-				/* Delay backlight on until frambuffer has
-				   been updated to avoid flickering*/
-				backlight_ctrl_fp =
-					pdata->panel_ext->backlight_ctrl;
-				msm_fb_resume_backlight_workqueue(100);
-#endif
 				msm_fb_set_backlight(mfd,
 						     mfd->bl_level, 0);
 
@@ -700,11 +649,6 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 			curr_pwr_state = mfd->panel_power_on;
 			mfd->panel_power_on = FALSE;
 
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-			if (pdata->panel_ext->backlight_ctrl)
-				pdata->panel_ext->backlight_ctrl(false);
-#endif
-
 			mdelay(100);
 		        memset((void *)info->screen_base, 0,
     			     info->fix.smem_len);
@@ -726,10 +670,9 @@ int calc_fb_offset(struct msm_fb_data_type *mfd, struct fb_info *fbi, int bpp)
 	struct msm_panel_info *panel_info = &mfd->panel_info;
 	int remainder, yres, offset;
 
-if (!align_buffer)
-    {
-        return fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length;
-    }
+	if (align_buffer){
+       		 return fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length;
+    	}
 
 	yres = panel_info->yres;
 	remainder = (fbi->fix.line_length*yres) & (PAGE_SIZE - 1);
@@ -749,65 +692,6 @@ if (!align_buffer)
 		fbi->fix.line_length + 2 * (PAGE_SIZE - remainder));
 	}
 	return offset;
-}
-
-static void msm_fb_fillrect(struct fb_info *info,
-			    const struct fb_fillrect *rect)
-{
-	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
-
-	cfb_fillrect(info, rect);
-	if (!mfd->hw_refresh && (info->var.yoffset == 0) &&
-		!mfd->sw_currently_refreshing) {
-		struct fb_var_screeninfo var;
-
-		var = info->var;
-		var.reserved[0] = 0x54445055;
-		var.reserved[1] = (rect->dy << 16) | (rect->dx);
-		var.reserved[2] = ((rect->dy + rect->height) << 16) |
-		    (rect->dx + rect->width);
-
-		msm_fb_pan_display(&var, info);
-	}
-}
-
-static void msm_fb_copyarea(struct fb_info *info,
-			    const struct fb_copyarea *area)
-{
-	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
-
-	cfb_copyarea(info, area);
-	if (!mfd->hw_refresh && (info->var.yoffset == 0) &&
-		!mfd->sw_currently_refreshing) {
-		struct fb_var_screeninfo var;
-
-		var = info->var;
-		var.reserved[0] = 0x54445055;
-		var.reserved[1] = (area->dy << 16) | (area->dx);
-		var.reserved[2] = ((area->dy + area->height) << 16) |
-		    (area->dx + area->width);
-
-		msm_fb_pan_display(&var, info);
-	}
-}
-
-static void msm_fb_imageblit(struct fb_info *info, const struct fb_image *image)
-{
-	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
-
-	cfb_imageblit(info, image);
-	if (!mfd->hw_refresh && (info->var.yoffset == 0) &&
-		!mfd->sw_currently_refreshing) {
-		struct fb_var_screeninfo var;
-
-		var = info->var;
-		var.reserved[0] = 0x54445055;
-		var.reserved[1] = (image->dy << 16) | (image->dx);
-		var.reserved[2] = ((image->dy + image->height) << 16) |
-		    (image->dx + image->width);
-
-		msm_fb_pan_display(&var, info);
-	}
 }
 
 static int msm_fb_blank(int blank_mode, struct fb_info *info)
@@ -895,9 +779,6 @@ static struct fb_ops msm_fb_ops = {
 	.fb_setcolreg = NULL,	/* set color register */
 	.fb_blank = msm_fb_blank,	/* blank display */
 	.fb_pan_display = msm_fb_pan_display,	/* pan display */
-	.fb_fillrect = msm_fb_fillrect,	/* Draws a rectangle */
-	.fb_copyarea = msm_fb_copyarea,	/* Copy data from area to another */
-	.fb_imageblit = msm_fb_imageblit,	/* Draws a image to the display */
 	.fb_rotate = NULL,
 	.fb_sync = NULL,	/* wait for blit idle, optional */
 	.fb_ioctl = msm_fb_ioctl,	/* perform fb specific ioctl (optional) */
@@ -1221,7 +1102,7 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 
 #ifdef CONFIG_FB_MSM_LOGO
 	ret = load_565rle_image(INIT_IMAGE_FILE);	/* Flip buffer */
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+#if defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
 	if (!ret) {
 		struct fb_var_screeninfo var;
 		int ret;

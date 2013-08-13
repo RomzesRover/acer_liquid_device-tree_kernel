@@ -270,7 +270,7 @@ static void h353vl01_work_func(struct work_struct *work)
 			memcpy(coord, oldcoord, isize);
 		else
 			memcpy(coord, rawcoord, isize);
-
+		
 		//coord[0][0]=rawcoord[0][0];
 		//coord[0][1]=rawcoord[0][1];
 		//coord[1][0]=rawcoord[1][0];

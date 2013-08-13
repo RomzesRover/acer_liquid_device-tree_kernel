@@ -1,44 +1,43 @@
-Device tree to compile Cyanogenmod 10 for acer liquid (salsa)
+Device tree to compile Cyanogenmod 9 for acer liquid (salsa)
 =========================================
 
 Not working in this stuff:
 ```
-# sensors
-# camera
-# wifi, usb tether.
+# camera (photo works, but laggy. pano and video stacked)
+# usb tether (I check it, but I found this https://github.com/thepasto/android_device_acer_salsa/commit/8bee993d41b78d30dadfb3d9811d2fe078c5d4c7).
 # may be anything else, need more testers..
 ```
 
 How to compile:
 ```
-#1 first you need to download cyanogenmod 10 sources into (~/sources/cm10):
-"repo init -u git://github.com/CyanogenMod/android.git -b jellybean"
+#1 first you need to download cyanogenmod 9 sources into (~/sources/cm9):
+"repo init -u git://github.com/CyanogenMod/android.git -b ics"
 
-#2 then goto cm10, device folder:
-"cd ~/sources/cm10/device"
+#2 then goto cm9, device folder:
+"cd ~/sources/cm9/device"
 
 #3 and make and move folder named "acer":
 "mkdir acer"
 "cd acer"
 
 #4 then clone this sources:
-"git clone https://github.com/RomzesRover/acer_liquid_device-tree_kernel.git -b cm10"
+"git clone https://github.com/RomzesRover/acer_liquid_device-tree_kernel.git -b cm9"
 
 #5 and rename folder "acer_liquid_device-tree_kernel" to "salsa":
-"mv ~/sources/cm10/device/acer/acer_liquid_device-tree_kernel  ~/sources/cm10/device/acer/salsa"
+"mv ~/sources/cm9/device/acer/acer_liquid_device-tree_kernel  ~/sources/cm9/device/acer/salsa"
 
-#6 then move to cm10 root directory:
-"cd ~/sources/cm10"
+#6 then move to cm9 root directory:
+"cd ~/sources/cm9"
 
-#7 and prepare to compile cm10;
-"~/sources/cm10/vendor/cm/get-prebuilts"
-"cd ~/sources/cm10"
+#7 and prepare to compile cm9;
+"~/sources/cm9/vendor/cm/get-prebuilts"
+"cd ~/sources/cm9"
 ". build/envsetup.sh"
 
-#8 and now you can compile cm10 for liquid:
+#8 and now you can compile cm9 for liquid:
 "brunch salsa -j5"
 
-#9 That's all the result will be in ~/sources/cm10/out/target/salsa
+#9 That's all the result will be in ~/sources/cm9/out/target/salsa
 thx.
 ```
 
@@ -55,7 +54,7 @@ Usefull commands with commets in russian language:
 repo forall -c git reset --hard			- Очистка исходников android от патчей
 make clean					- Очистка от итогов компиляции (для ядра и android)
 make mrproper					- Очистка ядра от конфигов (ВАЖНО если компилируешь в первый раз)
-/sources/cm10_1/vendor/cm/get-prebuilts	- Получить пребуилтс (Приложения, которые не собираются из исходников)
+/sources/cm9_1/vendor/cm/get-prebuilts	- Получить пребуилтс (Приложения, которые не собираются из исходников)
 . build/envsetup.sh				- Обязательно перед компиляцией
 brunch salsa -j5				- Собрать прошивку для ливкида (на 4х ядерном хосте)
 

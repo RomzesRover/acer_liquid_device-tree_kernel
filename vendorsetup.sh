@@ -46,4 +46,12 @@ for p in $(find device/acer/salsa/patches/ -name "*.diff")
 		fi
 		echo "" 
 	done
+echo "Copying ic_settings_liquidp.png to packages/apps/Settings/res/drawable-hdpi/ic_settings_liquidp.png..."
+cp device/acer/salsa/proprietary/system/app/Settings/res/drawable-hdpi/ic_settings_liquidp.png packages/apps/Settings/res/drawable-hdpi/ic_settings_liquidp.png
+echo ""
+echo "Remove temporary files to fix build error"
+rm packages/apps/Settings/res/xml/settings_headers.xml.rej
+rm packages/apps/Settings/res/xml/settings_headers.xml.orig
+rm packages/apps/Settings/res/xml/device_info_settings.xml.rej
+rm packages/apps/Settings/res/xml/device_info_settings.xml.orig
 echo ""

@@ -1,27 +1,47 @@
 diff --git a/vendor/cm/config/common.mk b/vendor/cm/config/common.mk
-index 56cd33d..071132e 100644
---- a/vendor/cm/config/common.mk
-+++ b/vendor/cm/config/common.mk
-@@ -133,7 +133,6 @@ PRODUCT_PACKAGES += \
+--- a/vendor/cm/config/common.mk	2013-06-09 12:41:27.719460114 +0600
++++ b/vendor/cm/config/common.mk	2013-06-10 15:58:06.277579651 +0600
+@@ -88,7 +88,6 @@
  
  # Optional CM packages
  PRODUCT_PACKAGES += \
 -    VideoEditor \
      VoiceDialer \
      SoundRecorder \
-     Basic
-@@ -146,7 +145,6 @@ PRODUCT_PACKAGES += \
+     Basic \
+@@ -107,9 +106,7 @@
+     DSPManager \
+     libcyanogen-dsp \
      audio_effects.conf \
 -    CMWallpapers \
-     Apollo \
-     CMUpdater \
-     CMFileManager
+-    Apollo \
+-    CMUpdater
++    Apollo
  
  # Extra tools in CM
-diff --git a/vendor/cm/config/common_full.mk b/vendor/cm/config/common_full.mk
+ PRODUCT_PACKAGES += \
+diff --git a/packages/apps/Settings/res/xml/device_info_settings.xml b/packages/apps/Settings/res/xml/device_info_settings.xml
+--- a/packages/apps/Settings/res/xml/device_info_settings.xml	2013-07-28 14:23:31.734237000 +0600
++++ b/packages/apps/Settings/res/xml/device_info_settings.xml	2013-07-28 14:36:52.484237551 +0600
+@@ -34,14 +34,6 @@
+                     android:targetClass="com.android.settings.deviceinfo.Status" />
+         </PreferenceScreen>
+ 
+-        <!-- CyanogenMod Updates -->
+-        <PreferenceScreen android:key="cm_updates"
+-                android:title="@string/cmupdate_settings_title" 
+-                android:summary="@string/cmupdate_settings_summary">
+-            <intent android:action="android.intent.action.MAIN"
+-                    android:targetPackage="com.cyanogenmod.updater"
+-                    android:targetClass="com.cyanogenmod.updater.UpdatesSettings" />
+-        </PreferenceScreen>
+ 
+         <!-- Anonymous statistics - (CMStats) -->
+         <PreferenceScreen
+diff --git a/vendor/cm/config/common_full_phone.mk b/vendor/cm/config/common_full_phone.mk
 index 8d69ead..342b1c7 100644
---- a/vendor/cm/config/common_full.mk
-+++ b/vendor/cm/config/common_full.mk
+--- a/vendor/cm/config/common_full_phone.mk
++++ b/vendor/cm/config/common_full_phone.mk
 @@ -8,7 +8,7 @@ include frameworks/base/data/sounds/NewAudio.mk
  include frameworks/base/data/sounds/AudioPackageNewWave.mk
  
@@ -31,3 +51,4 @@ index 8d69ead..342b1c7 100644
  
  # Include CM audio files
  include vendor/cm/config/cm_audio.mk
+

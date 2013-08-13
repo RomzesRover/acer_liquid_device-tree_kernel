@@ -732,7 +732,7 @@ static irqreturn_t bma150_interrupt(int irq, void *dev_id)
 }
 
 #ifdef CONFIG_HAS_EARLYSUSPEND
-void bma150_early_suspend(struct early_suspend *h)
+static int bma150_early_suspend(struct early_suspend *h)
 {
 	pr_debug("%s ++ entering\n", __FUNCTION__);
 	disable_irq(bma150_data->client->irq);
@@ -741,7 +741,7 @@ void bma150_early_suspend(struct early_suspend *h)
 	return 0;
 }
 
-void bma150_early_resume(struct early_suspend *h)
+static int bma150_early_resume(struct early_suspend *h)
 {
 	pr_debug("%s ++ entering\n", __FUNCTION__);
 	enable_irq(bma150_data->client->irq);

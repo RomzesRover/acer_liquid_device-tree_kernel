@@ -26,46 +26,25 @@
  *
  */
 
-#ifndef __MSM_AUDIO_QCP_H
-#define __MSM_AUDIO_QCP_H
+#ifndef __MSM_AUDIO_WMAPRO_H
+#define __MSM_AUDIO_WMAPRO_H
 
-#include <linux/msm_audio.h>
+#define AUDIO_GET_WMAPRO_CONFIG  _IOR(AUDIO_IOCTL_MAGIC, \
+	  (AUDIO_MAX_COMMON_IOCTL_NUM+0), unsigned)
+#define AUDIO_SET_WMAPRO_CONFIG  _IOW(AUDIO_IOCTL_MAGIC, \
+	  (AUDIO_MAX_COMMON_IOCTL_NUM+1), unsigned)
 
-#define AUDIO_SET_QCELP_ENC_CONFIG  _IOW(AUDIO_IOCTL_MAGIC, \
-	0, struct msm_audio_qcelp_enc_config)
-
-#define AUDIO_GET_QCELP_ENC_CONFIG  _IOR(AUDIO_IOCTL_MAGIC, \
-	1, struct msm_audio_qcelp_enc_config)
-
-#define AUDIO_SET_EVRC_ENC_CONFIG  _IOW(AUDIO_IOCTL_MAGIC, \
-	2, struct msm_audio_evrc_enc_config)
-
-#define AUDIO_GET_EVRC_ENC_CONFIG  _IOR(AUDIO_IOCTL_MAGIC, \
-	3, struct msm_audio_evrc_enc_config)
-
-#define CDMA_RATE_BLANK		0x00
-#define CDMA_RATE_EIGHTH	0x01
-#define CDMA_RATE_QUARTER	0x02
-#define CDMA_RATE_HALF		0x03
-#define CDMA_RATE_FULL		0x04
-#define CDMA_RATE_ERASURE	0x05
-
-struct msm_audio_qcelp_enc_config {
-	uint32_t channels;
-	uint32_t cdma_rate;
-	uint32_t min_bit_rate;
-	uint32_t max_bit_rate;
+struct msm_audio_wmapro_config {
+	unsigned short 	armdatareqthr;
+	uint8_t         validbitspersample;
+	uint8_t         numchannels;
+	unsigned short  formattag;
+	unsigned short  samplingrate;
+	unsigned short  avgbytespersecond;
+	unsigned short  asfpacketlength;
+	unsigned short 	channelmask;
+	unsigned short 	encodeopt;
+	unsigned short	advancedencodeopt;
+	uint32_t	advancedencodeopt2;
 };
-
-struct msm_audio_evrc_enc_config {
-	uint32_t channels;
-	uint32_t cdma_rate;
-	uint32_t min_bit_rate;
-	uint32_t max_bit_rate;
-	uint8_t bit_rate_reduction;
-	uint8_t hi_pass_filter;
-	uint8_t	noise_suppressor;
-	uint8_t	post_filter;
-};
-
-#endif /* __MSM_AUDIO_QCP_H */
+#endif /* __MSM_AUDIO_WMAPRO_H */

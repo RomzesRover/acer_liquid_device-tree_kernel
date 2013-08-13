@@ -13,44 +13,44 @@ index aafe474..f8af35e 100644
      private static final float PROXIMITY_THRESHOLD = 5.0f;
 
 diff --git a/packages/apps/Phone/src/com/android/phone/CallNotifier.java b/packages/apps/Phone/src/com/android/phone/CallNotifier.java
-index 2e82543..8a404ff 100755
 --- a/packages/apps/Phone/src/com/android/phone/CallNotifier.java
 +++ b/packages/apps/Phone/src/com/android/phone/CallNotifier.java
-@@ -35,6 +35,7 @@ import android.media.ToneGenerator;
+@@ -39,6 +39,7 @@
  import android.os.AsyncResult;
  import android.os.Handler;
  import android.os.Message;
 +import android.os.PowerManager;
  import android.os.RemoteException;
  import android.os.SystemProperties;
- import android.os.Vibrator;
-@@ -103,6 +104,8 @@ public class CallNotifier extends Handler
+ import android.os.SystemVibrator;
+@@ -108,6 +109,9 @@
      // out...)
      private boolean mCallWaitingTimeOut = false;
  
 +    private static PowerManager.WakeLock wakelockcall = null;
 +
++
      // values used to track the query state
      private static final int CALLERINFO_QUERY_READY = 0;
      private static final int CALLERINFO_QUERYING = -1;
-@@ -176,6 +179,8 @@ public class CallNotifier extends Handler
+@@ -181,6 +185,8 @@
      // Cached AudioManager
      private AudioManager mAudioManager;
  
 +    private PowerManager mPowerManager;
 +
+     private Vibrator mVibrator;
+ 
      /**
-      * Initialize the singleton CallNotifier instance.
-      * This is only done once, at startup, from PhoneApp.onCreate().
-@@ -200,6 +205,7 @@ public class CallNotifier extends Handler
-         mCallLog = callLog;
+@@ -208,6 +214,7 @@
  
          mAudioManager = (AudioManager) mApplication.getSystemService(Context.AUDIO_SERVICE);
+         mVibrator = (Vibrator) mApplication.getSystemService(Context.VIBRATOR_SERVICE);
 +	mPowerManager = (PowerManager) mApplication.getSystemService(Context.POWER_SERVICE);
  
          registerForNotifications();
  
-@@ -762,8 +768,30 @@ public class CallNotifier extends Handler
+@@ -760,8 +767,30 @@
       *   - see onNewRingingConnection() for new incoming calls
       *   - see onDisconnect() for calls being hung up or disconnected
       */

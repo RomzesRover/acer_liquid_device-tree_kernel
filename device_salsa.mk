@@ -37,7 +37,6 @@ PRODUCT_PACKAGES += \
 	hwcomposer.default \
    	hwcomposer.qsd8k\
         gralloc.qsd8k \
-        camera.qsd8k \
 	libgenlock \
         libqdutils \
 	libmemalloc \

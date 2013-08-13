@@ -9,7 +9,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
  import android.preference.Preference;
  import android.preference.PreferenceActivity;
  import android.preference.PreferenceScreen;
-@@ -82,6 +83,50 @@
+@@ -87,6 +88,50 @@
   */
  public class WifiSettings extends SettingsPreferenceFragment
          implements DialogInterface.OnClickListener  {
@@ -58,9 +58,9 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
 +
 +
      private static final String TAG = "WifiSettings";
-     private static final int MENU_ID_SCAN = Menu.FIRST;
-     private static final int MENU_ID_ADD_NETWORK = Menu.FIRST + 1;
-@@ -238,6 +283,7 @@
+     private static final int MENU_ID_WPS_PBC = Menu.FIRST;
+     private static final int MENU_ID_WPS_PIN = Menu.FIRST + 1;
+@@ -365,6 +410,7 @@
  
      @Override
      public void onResume() {
@@ -68,10 +68,10 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          super.onResume();
          if (mWifiEnabler != null) {
              mWifiEnabler.resume();
-@@ -247,10 +293,13 @@
+@@ -374,10 +420,13 @@
          if (mKeyStoreNetworkId != INVALID_NETWORK_ID &&
                  KeyStore.getInstance().state() == KeyStore.State.UNLOCKED) {
-             mWifiManager.connectNetwork(mKeyStoreNetworkId);
+             mWifiManager.connect(mChannel, mKeyStoreNetworkId, mConnectListener);
 +		CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
 +         	CountDownTimer.start();
          }
@@ -82,16 +82,18 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
      }
  
      @Override
-@@ -303,6 +352,8 @@
+@@ -467,7 +516,9 @@
+                 return true;
              case MENU_ID_SCAN:
                  if (mWifiManager.isWifiEnabled()) {
-                     mScanner.forceScan();
+-                    mScanner.forceScan();
++                    //mScanner.forceScan();
 +			CountDownTimer = new timer (1000, 1000);
 +			CountDownTimer.start();
                  }
                  return true;
              case MENU_ID_ADD_NETWORK:
-@@ -350,6 +401,7 @@
+@@ -513,6 +564,7 @@
  
      @Override
      public boolean onContextItemSelected(MenuItem item) {
@@ -99,23 +101,24 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          if (mSelectedAccessPoint == null) {
              return super.onContextItemSelected(item);
          }
-@@ -358,11 +410,15 @@
-                 if (mSelectedAccessPoint.networkId != INVALID_NETWORK_ID) {
+@@ -522,12 +574,16 @@
                      if (!requireKeyStore(mSelectedAccessPoint.getConfig())) {
-                         mWifiManager.connectNetwork(mSelectedAccessPoint.networkId);
+                         mWifiManager.connect(mChannel, mSelectedAccessPoint.networkId,
+                                 mConnectListener);
 +			CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
 +         		CountDownTimer.start();
                      }
                  } else if (mSelectedAccessPoint.security == AccessPoint.SECURITY_NONE) {
                      /** Bypass dialog for unsecured networks */
                      mSelectedAccessPoint.generateOpenNetworkConfig();
-                     mWifiManager.connectNetwork(mSelectedAccessPoint.getConfig());
+                     mWifiManager.connect(mChannel, mSelectedAccessPoint.getConfig(),
+                             mConnectListener);
 +			CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
 +         		CountDownTimer.start();
                  } else {
-                     showConfigUi(mSelectedAccessPoint, true);
+                     showDialog(mSelectedAccessPoint, true);
                  }
-@@ -377,11 +433,13 @@
+@@ -542,11 +598,13 @@
                  return true;
              }
          }
@@ -129,14 +132,14 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          if (preference instanceof AccessPoint) {
              mSelectedAccessPoint = (AccessPoint) preference;
              /** Bypass dialog for unsecured, unsaved networks */
-@@ -389,12 +447,15 @@
+@@ -554,12 +612,15 @@
                      mSelectedAccessPoint.networkId == INVALID_NETWORK_ID) {
                  mSelectedAccessPoint.generateOpenNetworkConfig();
-                 mWifiManager.connectNetwork(mSelectedAccessPoint.getConfig());
+                 mWifiManager.connect(mChannel, mSelectedAccessPoint.getConfig(), mConnectListener);
 +		CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
 +         	CountDownTimer.start();
              } else {
-                 showConfigUi(mSelectedAccessPoint, false);
+                 showDialog(mSelectedAccessPoint, false);
              }
          } else {
              return super.onPreferenceTreeClick(screen, preference);
@@ -145,15 +148,15 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          return true;
      }
  
-@@ -454,6 +515,7 @@
+@@ -615,6 +676,7 @@
       * the strength of network and the security for it.
       */
      private void updateAccessPoints() {
 +	if (RoverGiveYourAccess){
-         final int wifiState = mWifiManager.getWifiState();
+         // Safeguard from some delayed event handling
+         if (getActivity() == null) return;
  
-         switch (wifiState) {
-@@ -483,6 +545,7 @@
+@@ -645,6 +707,7 @@
                  addMessagePreference(R.string.wifi_empty_list_wifi_off);
                  break;
          }
@@ -161,7 +164,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
      }
  
      private void addMessagePreference(int messageId) {
-@@ -634,6 +697,7 @@
+@@ -781,6 +844,7 @@
      }
  
      private void updateWifiState(int state) {
@@ -169,7 +172,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          getActivity().invalidateOptionsMenu();
  
          switch (state) {
-@@ -653,6 +717,7 @@
+@@ -800,6 +864,7 @@
          mLastInfo = null;
          mLastState = null;
          mScanner.pause();
@@ -177,37 +180,37 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
      }
  
      private class Scanner extends Handler {
-@@ -765,6 +830,7 @@
+@@ -856,6 +921,7 @@
      }
  
      /* package */ void submit(WifiConfigController configController) {
 +	if (RoverGiveYourAccess) {
-         int networkSetup = configController.chosenNetworkSetupMethod();
-         switch(networkSetup) {
-             case WifiConfigController.WPS_PBC:
-@@ -780,6 +846,8 @@
-                             && !requireKeyStore(mSelectedAccessPoint.getConfig())
-                             && mSelectedAccessPoint.networkId != INVALID_NETWORK_ID) {
-                         mWifiManager.connectNetwork(mSelectedAccessPoint.networkId);
+ 
+         final WifiConfiguration config = configController.getConfig();
+ 
+@@ -865,6 +931,8 @@
+                     && mSelectedAccessPoint.networkId != INVALID_NETWORK_ID) {
+                 mWifiManager.connect(mChannel, mSelectedAccessPoint.networkId,
+                         mConnectListener);
 +			CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
 +         		CountDownTimer.start();
-                     }
-                 } else if (config.networkId != INVALID_NETWORK_ID) {
-                     if (mSelectedAccessPoint != null) {
-@@ -790,6 +858,8 @@
-                         saveNetwork(config);
-                     } else {
-                         mWifiManager.connectNetwork(config);
+             }
+         } else if (config.networkId != INVALID_NETWORK_ID) {
+             if (mSelectedAccessPoint != null) {
+@@ -875,6 +943,8 @@
+                 mWifiManager.save(mChannel, config, mSaveListener);
+             } else {
+                 mWifiManager.connect(mChannel, config, mConnectListener);
 +			CountDownTimer = new timer (1000, 1000);   		//timer to 1 seconds (tick one second)
 +         		CountDownTimer.start();
-                     }
-                 }
-                 break;
-@@ -799,6 +869,7 @@
+             }
+         }
+ 
+@@ -882,6 +952,7 @@
              mScanner.resume();
          }
          updateAccessPoints();
 +	}
      }
  
-     private void saveNetwork(WifiConfiguration config) {
+     /* package */ void forget() {

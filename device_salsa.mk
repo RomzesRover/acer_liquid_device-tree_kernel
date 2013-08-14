@@ -185,6 +185,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.composition.type=mdp
     debug.gr.numframebuffers=3
 
+# Qcom Properties
+PRODUCT_PROPERTY_OVERRIDES += \
+    com.qc.hardware=1 \
+    dev.pm.dyn_samplingrate=1 \
+    ro.vendor.extension_library=/system/lib/libqc-opt.so
+
 # proprietary side of the device
 $(call inherit-product-if-exists, device/acer/salsa/SalsaProprietary.mk)
 

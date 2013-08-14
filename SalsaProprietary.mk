@@ -135,7 +135,10 @@ PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/lib/libloc.so:system/lib/libloc.so \
     device/acer/salsa/proprietary/system/lib/libloc.so:obj/lib/libloc.so \
     device/acer/salsa/proprietary/system/lib/libloc-rpc.so:system/lib/libloc-rpc.so \
-    device/acer/salsa/proprietary/system/lib/libcommondefs.so:system/lib/libcommondefs.so
+    device/acer/salsa/proprietary/system/lib/libcommondefs.so:system/lib/libcommondefs.so \
+    device/acer/salsa/proprietary/system/lib/libqc-opt.so:system/lib/libqc-opt.so
+
+
 
 ## (13) # Configs
 # Added by RomzesRover to get work dsp manager

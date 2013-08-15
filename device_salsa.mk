@@ -18,7 +18,8 @@ PRODUCT_PACKAGES += \
 	lights.salsa \
 	gps.salsa \
         libcamera \
-	LiquidParts
+	LiquidParts \
+	power.qsd8k
 
 # OMX
 PRODUCT_PACKAGES += \

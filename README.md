@@ -61,6 +61,8 @@ to end of file add one string:
 #6 create work directory:
 "mkdir ~/sources"
 "mkdir ~/sources/cm9"
+
+#7 After prepareing you'll need to reboot computer !
 ```
 
 How to compile:

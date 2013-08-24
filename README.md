@@ -8,6 +8,61 @@ Not working in this stuff:
 # may be anything else, need more testers..
 ```
 
+Prepare to compile:
+```
+#0 first of all you need to use an 64bit nix system, for exapmpe ubuntu 12.04 LTS x64 or ubuntu 10.04 x64, and system need
+to be full updated
+
+#1 Install req packages:
+"sudo apt-get install git-core gnupg flex bison gperf build-essential zip curl 
+libc6-dev libncurses5-dev:i386 x11proto-core-dev libx11-dev:i386 libreadline6-dev:i386 
+libgl1-mesa-dev:i386 g++-multilib mingw32 pngcrush schedtool tofrodos python-markdown 
+libxml2-utils xsltproc zlib1g-dev:i386"
+
+#2 Install java jdk 6 by this instruction:
+1.) download java 6 from http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html
+you need .bin file no rpm.bin!
+2.) create path for java:
+"sudo mkdir /usr/local/java"
+3.) move downloaded file to this folder:
+"sudo mv ~/Загрузки/jdk-6u45-linux-x64.bin /usr/local/java/"
+4.) go to work directory:
+"cd /usr/local/java"
+5.) create right rights:
+"sudo chmod +x jdk-6u45-linux-x64.bin"
+6.) launch .bin file
+"sudo ./jdk-6u45-linux-x64.bin"
+7.) update work paths to java:
+"sudo update-alternatives --install /usr/bin/java java /usr/local/java/jdk1.6.0_45/bin/java 1
+sudo update-alternatives --install /usr/bin/javac javac /usr/local/java/jdk1.6.0_45/bin/javac 1
+sudo update-alternatives --install /usr/bin/javaws javaws /usr/local/java/jdk1.6.0_35/bin/javaws 1"
+8.) set config:
+"sudo update-alternatives --config java
+sudo update-alternatives --config javac
+sudo update-alternatives --config javaws"
+9.) edit bashrc to current user:
+"gedit ~/.bashrc"
+to end of file add two strings:
+"export PATH=$PATH:/usr/local/java/jdk1.6.0_45/bin
+export PATH=$PATH:/usr/local/java/jdk1.6.0_45/jre/bin"
+
+#3 Create the directories:
+"mkdir -p ~/bin"
+
+#4 Install the repo command:
+"curl https://dl-ssl.google.com/dl/googlesource/git-repo/repo > ~/bin/repo
+chmod a+x ~/bin/repo"
+
+#5 edit bashrc to current user:
+"gedit ~/.bashrc"
+to end of file add one string:
+"export PATH=${PATH}:~/bin"
+
+#6 create work directory:
+"mkdir ~/sources"
+"mkdir ~/sources/cm10"
+```
+
 How to compile:
 ```
 #1 first you need to download cyanogenmod 9 sources into (~/sources/cm9):

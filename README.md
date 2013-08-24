@@ -60,7 +60,7 @@ to end of file add one string:
 
 #6 create work directory:
 "mkdir ~/sources"
-"mkdir ~/sources/cm10"
+"mkdir ~/sources/cm9"
 ```
 
 How to compile:

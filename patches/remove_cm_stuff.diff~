@@ -1,7 +1,7 @@
 diff --git a/vendor/cm/config/common.mk b/vendor/cm/config/common.mk
 --- a/vendor/cm/config/common.mk	2013-06-09 12:41:27.719460114 +0600
 +++ b/vendor/cm/config/common.mk	2013-06-10 15:58:06.277579651 +0600
-@@ -86,7 +86,6 @@
+@@ -88,7 +88,6 @@
  
  # Optional CM packages
  PRODUCT_PACKAGES += \
@@ -9,14 +9,17 @@ diff --git a/vendor/cm/config/common.mk b/vendor/cm/config/common.mk
      VoiceDialer \
      SoundRecorder \
      Basic \
-@@ -105,7 +104,6 @@
+@@ -107,9 +106,7 @@
      DSPManager \
      libcyanogen-dsp \
      audio_effects.conf \
 -    CMWallpapers \
-     Apollo
+-    Apollo \
+-    CMUpdater
++    Apollo
  
  # Extra tools in CM
+ PRODUCT_PACKAGES += \
 diff --git a/vendor/cm/config/common_full_phone.mk b/vendor/cm/config/common_full_phone.mk
 index 8d69ead..342b1c7 100644
 --- a/vendor/cm/config/common_full_phone.mk

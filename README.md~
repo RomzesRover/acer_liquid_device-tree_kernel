@@ -1,4 +1,4 @@
-Device tree to compile Cyanogenmod 9.1 for acer liquid (salsa)
+Device tree to compile Cyanogenmod 9 for acer liquid (salsa)
 =========================================
 
 Not working in this stuff:
@@ -68,7 +68,7 @@ to end of file add one string:
 How to compile:
 ```
 #1 first you need to download cyanogenmod 9 sources into (~/sources/cm9):
-"repo init -u git://github.com/CyanogenMod/android.git -b cm-9.1.0"
+"repo init -u git://github.com/CyanogenMod/android.git -b ics"
 
 #2 then goto cm9, device folder:
 "cd ~/sources/cm9/device"

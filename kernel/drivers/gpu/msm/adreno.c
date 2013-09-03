@@ -1,4 +1,15 @@
-/* FeraEdit */
+/* Copyright (c) 2002,2007-2011, Code Aurora Forum. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ */
 #include <linux/delay.h>
 #include <linux/uaccess.h>
 #include <linux/vmalloc.h>
@@ -524,10 +535,7 @@ static int adreno_start(struct kgsl_device *device, unsigned int init_ram)
 
 	adreno_regwrite(device, REG_RBBM_SOFT_RESET, 0x00000000);
 
-  if (adreno_is_a200(adreno_dev))
-    adreno_regwrite(device, REG_RBBM_CNTL, 0x0000FFFF);
-  else
-    adreno_regwrite(device, REG_RBBM_CNTL, 0x00004442); 
+	adreno_regwrite(device, REG_RBBM_CNTL, 0x00004442);
 
 	if (adreno_is_a225(adreno_dev)) {
 		/* Enable large instruction store for A225 */
@@ -1237,8 +1245,8 @@ static long adreno_ioctl(struct kgsl_device_private *dev_priv,
 
 static inline s64 adreno_ticks_to_us(u32 ticks, u32 gpu_freq)
 {
- s64 ticksus = (s64)ticks*1000000;
- return div_u64(ticksus, gpu_freq);
+	gpu_freq /= 1000000;
+	return ticks / gpu_freq;
 }
 
 static void adreno_power_stats(struct kgsl_device *device,

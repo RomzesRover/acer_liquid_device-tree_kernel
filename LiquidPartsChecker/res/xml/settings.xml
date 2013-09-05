@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+     <PreferenceCategory 
+    android:title="@string/download">
+    <Preference
+        android:key="free"
+        android:title="@string/free"
+        android:summary="@string/free_d">
+    </Preference>
+    
+     <Preference
+        android:key="paid"
+        android:title="@string/paid"
+        android:summary="@string/paid_d">
+    </Preference>
+   
+</PreferenceCategory>
+     <PreferenceCategory 
+    android:title="@string/next">
+    <Preference android:key="next" 
+                style="?android:preferenceInformationStyle"
+                android:title="@string/next_two"
+                android:summary="@string/next_three"/>
+   
+</PreferenceCategory>
+ </PreferenceScreen>

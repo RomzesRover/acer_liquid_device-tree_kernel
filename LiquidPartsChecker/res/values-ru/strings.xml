@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LiquidPartsStarter</string>
+    <string name="app_name_norm">Liquid Parts</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <string name="download">Choose version to download</string>
+    <string name="free">Бесплатная версия</string>
+    <string name="paid">Платная версия</string>
+    
+    <string name="free_d">Бесплатная версия Liquid parts не имеет отличий от платной версии</string>
+    <string name="paid_d">Покупая приложение Liquid parts на play market Вы поддержете разработку для нашего liquid! Всего 1$!</string>
+
+    <string name="next">Что мне нужно сделать дальше?</string>
+    <string name="next_two">После установки LiquidParts:</string>
+    <string name="next_three">После того, как вы скачаете и установите приложение, просто снова кликнете по пункту LiquidParts в настройках. Ваше приложение запустится без этой заставки :)</string>
+
+</resources>

@@ -195,7 +195,6 @@ struct mdp_img {
 	uint32_t format;
 	uint32_t offset;
 	int memory_id;		/* the file descriptor */
-	uint32_t priv;
 };
 
 /*

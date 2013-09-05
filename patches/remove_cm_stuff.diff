@@ -1,7 +1,15 @@
 diff --git a/vendor/cm/config/common.mk b/vendor/cm/config/common.mk
 --- a/vendor/cm/config/common.mk	2013-06-09 12:41:27.719460114 +0600
 +++ b/vendor/cm/config/common.mk	2013-06-10 15:58:06.277579651 +0600
-@@ -86,7 +86,6 @@
+@@ -51,7 +51,6 @@
+     vendor/cm/prebuilt/common/bin/handle_compcache:system/bin/handle_compcache
+ 
+ PRODUCT_COPY_FILES +=  \
+-    vendor/cm/proprietary/RomManager.apk:system/app/RomManager.apk \
+     vendor/cm/proprietary/Term.apk:system/app/Term.apk \
+     vendor/cm/proprietary/lib/armeabi/libjackpal-androidterm4.so:system/lib/libjackpal-androidterm4.so \
+ 	vendor/cm/prebuilt/common/apps/Superuser.apk:system/app/Superuser.apk
+@@ -86,7 +85,6 @@
  
  # Optional CM packages
  PRODUCT_PACKAGES += \
@@ -9,7 +17,7 @@ diff --git a/vendor/cm/config/common.mk b/vendor/cm/config/common.mk
      VoiceDialer \
      SoundRecorder \
      Basic \
-@@ -105,7 +104,6 @@
+@@ -105,7 +103,6 @@
      DSPManager \
      libcyanogen-dsp \
      audio_effects.conf \

@@ -1,15 +1,4 @@
-/* Copyright (c) 2002,2007-2011, Code Aurora Forum. All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
+/* FeraEdit */
 
 #include <linux/slab.h>
 
@@ -35,16 +24,6 @@ static unsigned int gmem_copy_texcoord[TEXCOORD_LEN] = {
 	0x00000000, 0x00000000,
 	0x3f800000, 0x00000000
 };
-
-/*
- * Helper functions
- * These are global helper functions used by the GPUs during context switch
- */
-
-/**
- * uint2float - convert a uint to IEEE754 single precision float
- * @ uintval - value to convert
- */
 
 unsigned int uint2float(unsigned int uintval)
 {
@@ -84,14 +63,6 @@ static void set_gmem_copy_quad(struct gmem_shadow_t *shadow)
 		TEXCOORD_LEN << 2);
 }
 
-/**
- * build_quad_vtxbuff - Create a quad for saving/restoring GMEM
- * @ context - Pointer to the context being created
- * @ shadow - Pointer to the GMEM shadow structure
- * @ incmd - Pointer to pointer to the temporary command buffer
- */
-
-/* quad for saving/restoring gmem */
 void build_quad_vtxbuff(struct adreno_context *drawctxt,
 		struct gmem_shadow_t *shadow, unsigned int **incmd)
 {
@@ -113,16 +84,6 @@ void build_quad_vtxbuff(struct adreno_context *drawctxt,
 	*incmd = cmd;
 }
 
-/**
- * adreno_drawctxt_create - create a new adreno draw context
- * @device - KGSL device to create the context on
- * @pagetable - Pagetable for the context
- * @context- Generic KGSL context structure
- * @flags - flags for the context (passed from user space)
- *
- * Create a new draw context for the 3D core.  Return 0 on success,
- * or error code on failure.
- */
 int adreno_drawctxt_create(struct kgsl_device *device,
 			struct kgsl_pagetable *pagetable,
 			struct kgsl_context *context, uint32_t flags)
@@ -198,6 +159,9 @@ void adreno_drawctxt_destroy(struct kgsl_device *device,
 	}
 
 	adreno_idle(device, KGSL_TIMEOUT_DEFAULT);
+
+  if (adreno_is_a20x(adreno_dev))
+    kgsl_setstate(device, KGSL_MMUFLAGS_PTUPDATE);
 
 	kgsl_sharedmem_free(&drawctxt->gpustate);
 	kgsl_sharedmem_free(&drawctxt->context_gmem_shadow.gmemshadow);

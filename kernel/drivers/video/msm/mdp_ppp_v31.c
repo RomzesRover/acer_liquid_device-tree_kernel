@@ -805,7 +805,10 @@ void mdp_adjust_start_addr(uint8 **src0,
 	case 1:
 		/* MDP 3.1 HW bug workaround */
 		if (iBuf->ibuf_type == MDP_YCRYCB_H2V1) {
-			*src0 += (x + y * width) * bpp;
+			  if (iBuf->mdpImg.imgType == MDP_Y_CBCR_H2V2_ADRENO && layer == 0)
+    *src0 += (x + y * ALIGN(width, 32)) * bpp;
+  else
+    *src0 += (x + y * width) * bpp;
 			x = y = 0;
 			width = iBuf->roi.dst_width;
 			height = iBuf->roi.dst_height;

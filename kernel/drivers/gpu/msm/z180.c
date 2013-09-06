@@ -157,13 +157,6 @@ static struct z180_device device_2d0 = {
 		.active_cnt = 0,
 		.iomemname = KGSL_2D0_REG_MEMORY,
 		.ftbl = &z180_functable,
-#ifdef CONFIG_HAS_EARLYSUSPEND
-		.display_off = {
-			.level = EARLY_SUSPEND_LEVEL_STOP_DRAWING,
-			.suspend = kgsl_early_suspend_driver,
-			.resume = kgsl_late_resume_driver,
-		},
-#endif
 	},
 };
 
@@ -196,13 +189,6 @@ static struct z180_device device_2d1 = {
 		.active_cnt = 0,
 		.iomemname = KGSL_2D1_REG_MEMORY,
 		.ftbl = &z180_functable,
-		.display_off = {
-#ifdef CONFIG_HAS_EARLYSUSPEND
-			.level = EARLY_SUSPEND_LEVEL_STOP_DRAWING,
-			.suspend = kgsl_early_suspend_driver,
-			.resume = kgsl_late_resume_driver,
-#endif
-		},
 	},
 };
 
@@ -406,7 +392,7 @@ z180_cmdstream_issueibcmds(struct kgsl_device_private *dev_priv,
 	unsigned int index	= 0;
 	unsigned int nextindex;
 	unsigned int nextcnt    = Z180_STREAM_END_CMD | 5;
-	struct kgsl_memdesc tmp = {0};
+	struct kgsl_mem_entry *entry = NULL;
 	unsigned int cmd;
 	struct kgsl_device *device = dev_priv->device;
 	struct kgsl_pagetable *pagetable = dev_priv->process_priv->pagetable;
@@ -425,11 +411,25 @@ z180_cmdstream_issueibcmds(struct kgsl_device_private *dev_priv,
 	cmd = ibdesc[0].gpuaddr;
 	sizedwords = ibdesc[0].sizedwords;
 
-	tmp.hostptr = (void *)*timestamp;
+  entry = kgsl_sharedmem_find_region(dev_priv->process_priv, cmd,
+    sizedwords);
+  if (entry == NULL) {
+    KGSL_DRV_ERR(device, "Bad ibdesc: gpuaddr 0x%x size %d\n",
+           cmd, sizedwords);
+    result = -EINVAL;
+    goto error;
+  } 
+
+  if (kgsl_gpuaddr_to_vaddr(&entry->memdesc, cmd) == NULL) {
+    KGSL_DRV_ERR(device,
+           "Cannot make kernel mapping for gpuaddr 0x%x\n",
+           cmd);
+    result = -EINVAL;
+    goto error;
+  }
 
 	KGSL_CMD_INFO(device, "ctxt %d ibaddr 0x%08x sizedwords %d\n",
 		context->id, cmd, sizedwords);
-	/* context switch */
 	if ((context->id != (int)z180_dev->ringbuffer.prevctx) ||
 	    (ctrl & KGSL_CONTEXT_CTX_SWITCH)) {
 		KGSL_CMD_INFO(device, "context switch %d -> %d\n",
@@ -460,20 +460,18 @@ z180_cmdstream_issueibcmds(struct kgsl_device_private *dev_priv,
 
 	addcmd(&z180_dev->ringbuffer, index, cmd + ofs, cnt);
 
-	/* Make sure the next ringbuffer entry has a marker */
 	addmarker(&z180_dev->ringbuffer, nextindex);
 
 	nextaddr = z180_dev->ringbuffer.cmdbufdesc.gpuaddr
 		+ rb_offset(nextindex);
 
-	tmp.hostptr = (void *)(tmp.hostptr +
-			(sizedwords * sizeof(unsigned int)));
-	tmp.size = 12;
+  kgsl_sharedmem_writel(&entry->memdesc,
+            ((sizedwords + 1) * sizeof(unsigned int)),
+            nextaddr);
+  kgsl_sharedmem_writel(&entry->memdesc,
+            ((sizedwords + 2) * sizeof(unsigned int)),
+            nextcnt);
 
-	kgsl_sharedmem_writel(&tmp, 4, nextaddr);
-	kgsl_sharedmem_writel(&tmp, 8, nextcnt);
-
-	/* sync memory before activating the hardware for the new command*/
 	mb();
 
 	cmd = (int)(((2) & VGV3_CONTROL_MARKADD_FMASK)

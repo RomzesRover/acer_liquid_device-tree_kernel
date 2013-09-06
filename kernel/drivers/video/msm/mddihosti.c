@@ -1,59 +1,4 @@
-/* Copyright (c) 2008-2009, Code Aurora Forum. All rights reserved.
- * Copyright (C) 2010 Sony Ericsson Mobile Communications AB.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Code Aurora Forum nor
- *       the names of its contributors may be used to endorse or promote
- *       products derived from this software without specific prior written
- *       permission.
- *
- * Alternatively, provided that this notice is retained in full, this software
- * may be relicensed by the recipient under the terms of the GNU General Public
- * License version 2 ("GPL") and only version 2, in which case the provisions of
- * the GPL apply INSTEAD OF those given above.  If the recipient relicenses the
- * software under the GPL, then the identification text in the MODULE_LICENSE
- * macro must be changed to reflect "GPLv2" instead of "Dual BSD/GPL".  Once a
- * recipient changes the license terms to the GPL, subsequent recipients shall
- * not relicense under alternate licensing terms, including the BSD or dual
- * BSD/GPL terms.  In addition, the following license statement immediately
- * below and between the words START and END shall also then apply when this
- * software is relicensed under the GPL:
- *
- * START
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 2 and only version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * END
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+/* FeraLab 2013
  */
 
 #include <linux/module.h>
@@ -1805,9 +1750,6 @@ void mddi_host_init(mddi_host_type host_idx)
 	pmhctl = &(mhctl[host_idx]);
 }
 
-/*
- * XXX: #ifdef CONFIG_FB_MSM_MDDI_AUTO_DETECT
- */
 static uint32 mddi_client_id;
 
 uint32 mddi_get_client_id(void)
@@ -1872,50 +1814,10 @@ uint32 mddi_get_client_id(void)
 		if (!mddi_client_id)
 			mddi_disable(1);
 	}
-
-#if 0
-	switch (mddi_client_capability_pkt.Mfr_Name) {
-	case 0x4474:
-		if ((mddi_client_capability_pkt.Product_Code != 0x8960) &&
-		    (target == DISPLAY_1)) {
-			ret = PRISM_WVGA;
-		}
-		break;
-
-	case 0xD263:
-		if (target == DISPLAY_1)
-			ret = TOSHIBA_VGA_PRIM;
-		else if (target == DISPLAY_2)
-			ret = TOSHIBA_QCIF_SECD;
-		break;
-
-	case 0:
-		if (mddi_client_capability_pkt.Product_Code == 0x8835) {
-			if (target == DISPLAY_1)
-				ret = SHARP_QVGA_PRIM;
-			else if (target == DISPLAY_2)
-				ret = SHARP_128x128_SECD;
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	if ((!client_detection_try) && (ret != TOSHIBA_VGA_PRIM)
-	    && (ret != TOSHIBA_QCIF_SECD)) {
-		/* Not a Toshiba display, so change drive_lo back to default value */
-		mddi_host_reg_out(DRIVE_LO, 0x0032);
-	}
-#endif
-
 #endif
 
 	return mddi_client_id;
 }
-/*
- * XXX: #endif
- */
 
 void mddi_host_powerdown(mddi_host_type host_idx)
 {

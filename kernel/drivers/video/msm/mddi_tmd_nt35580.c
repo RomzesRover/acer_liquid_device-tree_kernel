@@ -707,7 +707,7 @@ static int nt35580_lcd_get_nv_vsync(void)
 	rc = msm_rpc_call_reply(endpoint, NV_CMD_REMOTE_PROC,
 						  &req, sizeof(req),
 						  &rep, sizeof(rep),
-						  5 * HZ);
+						  6 * HZ);
 	if (rc < 0) {
 		MDDI_MSG_ERR("%s: msm_rpc_call_reply failed!\n", __func__);
 		return 0;
@@ -740,7 +740,8 @@ static int __init mddi_nt35580_lcd_lcd_probe(struct platform_device *pdev)
 	if ((MIN_NV > nv_vsync) || (nv_vsync > MAX_NV))
 		nv_vsync = DEF_NV ;
 	panel_data->panel_info.lcd.refx100 = 100000000 / nv_vsync;
-
+	panel_data->panel_info.width = 51;
+	panel_data->panel_info.height = 89;
 	msm_fb_add_device(pdev);
 	return 0;
 }

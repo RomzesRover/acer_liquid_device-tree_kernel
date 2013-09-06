@@ -1732,17 +1732,10 @@ extern void putname(const char *name);
 extern int register_blkdev(unsigned int, const char *);
 extern void unregister_blkdev(unsigned int, const char *);
 extern struct block_device *bdget(dev_t);
-extern struct block_device *bdgrab(struct block_device *bdev);
 extern void bd_set_size(struct block_device *, loff_t size);
 extern void bd_forget(struct inode *inode);
 extern void bdput(struct block_device *);
 extern struct block_device *open_by_devnum(dev_t, fmode_t);
-extern void invalidate_bdev(struct block_device *);
-extern int sync_blockdev(struct block_device *bdev);
-extern struct super_block *freeze_bdev(struct block_device *);
-extern void emergency_thaw_all(void);
-extern int thaw_bdev(struct block_device *bdev, struct super_block *sb);
-extern int fsync_bdev(struct block_device *);
 #else
 static inline void bd_forget(struct inode *inode) {}
 #endif

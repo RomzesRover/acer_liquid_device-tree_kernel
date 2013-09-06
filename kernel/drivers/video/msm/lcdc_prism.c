@@ -75,14 +75,14 @@ static int __init lcdc_prism_init(void)
 		return 0;
 #endif
 
-	pinfo.xres = 800;
-	pinfo.yres = 480;
+	pinfo.xres = 480;
+	pinfo.yres = 800;
 	pinfo.type = LCDC_PANEL;
 	pinfo.pdest = DISPLAY_1;
 	pinfo.wait_cycle = 0;
-	pinfo.bpp = 24;
+	pinfo.bpp = 16;
 	pinfo.fb_num = 2;
-	pinfo.clk_rate = 38400000;
+	pinfo.clk_rate = 24576000;
 
 	pinfo.lcdc.h_back_porch = 21;
 	pinfo.lcdc.h_front_porch = 81;

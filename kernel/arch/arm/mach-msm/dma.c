@@ -206,7 +206,7 @@ int msm_dmov_exec_cmd_polling(unsigned id, unsigned int cmdptr)
 		del_timer(&timer);
 	clk_ctl = CLK_EN;
 
-	udelay(2);  //TODO:DVT2 timing issue//
+	udelay(1);  //TODO:DVT2 timing issue//
 
 	writel(cmdptr, DMOV_CMD_PTR(id));
 	while(!(readl(DMOV_STATUS(id)) & DMOV_STATUS_RSLT_VALID)) ;

@@ -240,8 +240,8 @@
         android:title="Liquid Parts">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetPackage="com.BBsRs.liquidparts"
-            android:targetClass="com.BBsRs.liquidparts.LiquidPartsActivity" />
+            android:targetPackage="com.BBsRs.liquidpartsstarter"
+            android:targetClass="com.BBsRs.liquidpartsstarter.MainActivity" />
     </header>
 
     <!-- About Device -->

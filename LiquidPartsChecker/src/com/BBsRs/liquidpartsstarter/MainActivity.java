@@ -17,10 +17,10 @@ public class MainActivity extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//setContentView(R.layout.activity_main);
-		
+
 		try {
 		Intent intent = new Intent();
-		intent.setComponent(new ComponentName("com.BBsRs.liquidpartsPaid", "com.BBsRs.liquidparts.LiquidPartsActivity"));
+		intent.setComponent(new ComponentName("com.BBsRs.liquidpartsDonate", "com.BBsRs.liquidparts.LiquidPartsActivity"));
 		startActivity(intent);
 		finish();
 		} catch (ActivityNotFoundException e){
@@ -31,7 +31,7 @@ public class MainActivity extends PreferenceActivity {
 			finish();
 			} catch (ActivityNotFoundException e1){
 				addPreferencesFromResource(R.xml.settings);
-				
+
 				Preference myPref = (Preference) findPreference("free");
 				myPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				             public boolean onPreferenceClick(Preference preference) {
@@ -43,12 +43,12 @@ public class MainActivity extends PreferenceActivity {
 				                 //open browser or intent here
 				             }
 				         });
-				
+
 				Preference myPref2 = (Preference) findPreference("paid");
 				myPref2.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				             public boolean onPreferenceClick(Preference preference) {
 				            	 Intent intent = new Intent(Intent.ACTION_VIEW);
-				            	 intent.setData(Uri.parse("market://details?id=com.BBsRs.liquidpartsPaid"));
+				            	 intent.setData(Uri.parse("market://details?id=com.BBsRs.liquidpartsDonate"));
 				            	 startActivity(intent);
 				            	 finish();
 								return false;
@@ -56,12 +56,12 @@ public class MainActivity extends PreferenceActivity {
 				             }
 				         });
 			}
-			
+
 		}
-		
-		
-		
-		
+
+
+
+
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class MainActivity extends PreferenceActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
-	
+
+
 
 }

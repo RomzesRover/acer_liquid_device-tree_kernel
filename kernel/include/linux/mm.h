@@ -24,6 +24,7 @@ struct writeback_control;
 extern unsigned long max_mapnr;
 #endif
 
+extern unsigned long totalram_pages;
 extern unsigned long num_physpages;
 extern void * high_memory;
 extern int page_cluster;

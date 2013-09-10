@@ -20,7 +20,7 @@ obj-$(CONFIG_PCF8575)		+= pcf8575.o
 obj-$(CONFIG_SENSORS_PCF8591)	+= pcf8591.o
 obj-$(CONFIG_SENSORS_TSL2550)	+= tsl2550.o
 obj-$(CONFIG_SENSORS_MT9T013)	+= mt9t013.o
-obj-$(CONFIG_BOSCH_SMB380)	+= smb380.o bma150_driver.o smb380calib.o
+obj-$(CONFIG_SENSORS_SMB380)	+= smb380.o smb380calib.o bma150_driver.o
 obj-$(CONFIG_SENSORS_ISL29018)  += isl29018.o
 
 obj-$(CONFIG_AVR)		+= avr.o

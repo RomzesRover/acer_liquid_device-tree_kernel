@@ -108,6 +108,7 @@ struct msm_sensor_ctrl {
 	int (*s_init)(const struct msm_camera_sensor_info *);
 	int (*s_release)(void);
 	int (*s_config)(void __user *);
+	int node;
 };
 
 /* this structure is used in kernel */
@@ -131,10 +132,10 @@ struct msm_device_queue {
 };
 
 struct msm_sync {
-	/* These two queues are accessed from a process context only
-	 * They contain pmem descriptors for the preview frames and the stats
-	 * coming from the camera sensor.
-	*/
+	/* These two queues are accessed from a process context only.  They contain
+	 * pmem descriptors for the preview frames and the stats coming from the
+	 * camera sensor.
+	 */
 	struct hlist_head pmem_frames;
 	struct hlist_head pmem_stats;
 
@@ -155,10 +156,12 @@ struct msm_sync {
 	 * interrupt context, and by the control thread.
 	 */
 	struct msm_device_queue pict_q;
+	int get_pic_abort;
 
 	struct msm_camera_sensor_info *sdata;
 	struct msm_camvfe_fn vfefn;
 	struct msm_sensor_ctrl sctrl;
+	struct wake_lock wake_suspend_lock;
 	struct wake_lock wake_lock;
 	struct platform_device *pdev;
 	uint8_t opencnt;
@@ -168,6 +171,11 @@ struct msm_sync {
 	uint32_t pp_mask;
 	struct msm_queue_cmd *pp_prev;
 	struct msm_queue_cmd *pp_snap;
+
+	/* When this flag is set, we send preview-frame notifications to config
+	 * as well as to the frame queue.  By default, the flag is cleared.
+	 */
+	uint32_t report_preview_to_config;
 
 	const char *apps_id;
 
@@ -258,7 +266,7 @@ void msm_camvfe_init(void);
 int msm_camvfe_check(void *);
 void msm_camvfe_fn_init(struct msm_camvfe_fn *, void *);
 int msm_camera_drv_start(struct platform_device *dev,
-		int (*sensor_probe)(const struct msm_camera_sensor_info *,
+		int (*sensor_probe)(struct msm_camera_sensor_info *,
 					struct msm_sensor_ctrl *));
 
 enum msm_camio_clk_type {

@@ -1,4 +1,14 @@
-/* FeraLab 2013
+/* Copyright (c) 2008-2010, Code Aurora Forum. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  */
 
 #include <linux/module.h>
@@ -416,8 +426,7 @@ static void mddi_report_state_change(uint32 int_reg)
 
 void mddi_host_timer_service(unsigned long data)
 {
-#if !defined(FEATURE_MDDI_DISABLE_REVERSE) &&\
-		!defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+#ifndef FEATURE_MDDI_DISABLE_REVERSE
 	unsigned long flags;
 #endif
 
@@ -426,18 +435,11 @@ void mddi_host_timer_service(unsigned long data)
 
 	unsigned long time_ms = MDDI_DEFAULT_TIMER_LENGTH;
 	init_timer(&mddi_host_timer);
-	mddi_host_timer.function = mddi_host_timer_service;
-	mddi_host_timer.data = 0;
-
-	mddi_host_timer.expires = jiffies + ((time_ms * HZ) / 1000);
-	add_timer(&mddi_host_timer);
-
 	for (host_idx = MDDI_HOST_PRIM; host_idx < MDDI_NUM_HOST_CORES;
 	     host_idx++) {
 		pmhctl = &(mhctl[host_idx]);
 		mddi_log_stats_counter += (uint32) time_ms;
-#if !defined(FEATURE_MDDI_DISABLE_REVERSE) &&\
-		!defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+#ifndef FEATURE_MDDI_DISABLE_REVERSE
 		pmhctl->rtd_counter += (uint32) time_ms;
 		pmhctl->client_status_cnt += (uint32) time_ms;
 
@@ -491,7 +493,7 @@ void mddi_host_timer_service(unsigned long data)
 				}
 			}
 		}
-#endif
+#endif /* #ifndef FEATURE_MDDI_DISABLE_REVERSE */
 	}
 
 	/* Check if logging is turned on */
@@ -602,6 +604,15 @@ void mddi_host_timer_service(unsigned long data)
 	}
 	if (mddi_log_stats_counter >= mddi_log_stats_frequency)
 		mddi_log_stats_counter = 0;
+
+	mutex_lock(&mddi_timer_lock);
+	if (!mddi_timer_shutdown_flag) {
+		mddi_host_timer.function = mddi_host_timer_service;
+		mddi_host_timer.data = 0;
+		mddi_host_timer.expires = jiffies + ((time_ms * HZ) / 1000);
+		add_timer(&mddi_host_timer);
+	}
+	mutex_unlock(&mddi_timer_lock);
 
 	return;
 }				/* mddi_host_timer_cb */
@@ -998,8 +1009,7 @@ static void mddi_process_rev_packets(void)
 					if (mddi_rev_pkt_handler[hdlr].
 					    pkt_type ==
 					    rev_pkt_ptr->packet_type) {
-						(*
-						 (mddi_rev_pkt_handler[hdlr].
+						(*(mddi_rev_pkt_handler[hdlr].
 						  handler)) (rev_pkt_ptr);
 					/* pmhctl->rev_state = MDDI_REV_IDLE; */
 						break;
@@ -1473,9 +1483,6 @@ static void mddi_host_initialize_registers(mddi_host_type host_idx)
 	mddi_host_reg_out(PAD_CTL, 0xa850f);
 #endif
 
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
-	pad_reg_val = 0x00cc0020;
-#else
 	pad_reg_val = 0x00220020;
 #endif
 

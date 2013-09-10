@@ -2227,8 +2227,12 @@ config FB_MSM_LCDC_HW
 	default n
 
 config FB_MSM_TRIPLE_BUFFER
-    bool "Support for triple frame buffer"
-    default n
+	bool "Support for triple frame buffer"
+	default n
+
+config FB_MSM_FIX
+	bool "Fix jump-jump on CM9"
+	default n
 
 choice
 	prompt "MDP HW version"

@@ -2177,6 +2177,26 @@ void mdp_set_scale(MDPIBUF *iBuf,
 			*pppop_reg_ptr |=
 			    (PPP_OP_SCALE_Y_ON | PPP_OP_SCALE_X_ON);
 
+		/* let's use SHIM logic to calculate the partial ROI scaling */
+#if 0
+			phasex_step =
+			    (uint32) mdp_do_div(0x20000000 * iBuf->roi.width,
+						dst_roi_width_scale);
+			phasey_step =
+			    (uint32) mdp_do_div(0x20000000 * iBuf->roi.height,
+						dst_roi_height_scale);
+
+/*
+    phasex_step= ((long long) iBuf->roi.width * 0x20000000)/dst_roi_width_scale;
+    phasey_step= ((long long)iBuf->roi.height * 0x20000000)/dst_roi_height_scale;
+*/
+
+			phasex_init =
+			    (((long long)phasex_step - 0x20000000) >> 1);
+			phasey_init =
+			    (((long long)phasey_step - 0x20000000) >> 1);
+
+#else
 			mdp_calc_scale_params(iBuf->roi.x, iBuf->roi.width,
 					      dst_roi_width_scale, 1,
 					      &phasex_init, &phasex_step,
@@ -2185,6 +2205,7 @@ void mdp_set_scale(MDPIBUF *iBuf,
 					      dst_roi_height_scale, 0,
 					      &phasey_init, &phasey_step,
 					      &dummy, &dummy);
+#endif
 			MDP_OUTP(MDP_CMD_DEBUG_ACCESS_BASE + 0x013c,
 				 phasex_init);
 			MDP_OUTP(MDP_CMD_DEBUG_ACCESS_BASE + 0x0140,
@@ -2401,25 +2422,22 @@ void mdp_adjust_start_addr(uint8 **src0,
 			   uint32 width,
 			   uint32 height, int bpp, MDPIBUF *iBuf, int layer)
 {
+	*src0 += (x + y * width) * bpp;
 
-  if (iBuf->mdpImg.imgType == MDP_Y_CBCR_H2V2_ADRENO && layer == 0)
-    *src0 += (x + y * ALIGN(width, 32)) * bpp;
-  else
-    *src0 += (x + y * width) * bpp; 
-
+	/* if it's dest/bg buffer, we need to adjust it for rotation */
 	if (layer != 0)
 		*src0 = mdp_adjust_rot_addr(iBuf, *src0, 0);
 
 	if (*src1) {
-		    if (iBuf->mdpImg.imgType == MDP_Y_CBCR_H2V2_ADRENO
-              && layer == 0)
-      *src1 += ((x / h_slice) * h_slice + ((y == 0) ? 0 :
-      (((y + 1) / v_slice - 1) * (ALIGN(width/2, 32) * 2))))
-                  * bpp;
-    else
-      *src1 += ((x / h_slice) * h_slice +
-      ((y == 0) ? 0 : ((y + 1) / v_slice - 1) * width)) * bpp; 
+		/*
+		 * MDP_Y_CBCR_H2V2/MDP_Y_CRCB_H2V2 cosite for now
+		 * we need to shift x direction same as y dir for offsite
+		 */
+		*src1 +=
+		    ((x / h_slice) * h_slice +
+		     ((y == 0) ? 0 : ((y + 1) / v_slice - 1) * width)) * bpp;
 
+		/* if it's dest/bg buffer, we need to adjust it for rotation */
 		if (layer != 0)
 			*src1 = mdp_adjust_rot_addr(iBuf, *src1, 1);
 	}
@@ -2430,37 +2448,102 @@ void mdp_set_blend_attr(MDPIBUF *iBuf,
 			uint32 *tpVal,
 			uint32 perPixelAlpha, uint32 *pppop_reg_ptr)
 {
-	if (perPixelAlpha) {
-		*pppop_reg_ptr |= PPP_OP_ROT_ON |
-		    PPP_OP_BLEND_ON | PPP_OP_BLEND_SRCPIXEL_ALPHA;
+	if (mdp_rev == MDP_REV_31) {
+		int bg_alpha;
+
+		*alpha = iBuf->mdpImg.alpha;
+		*tpVal = iBuf->mdpImg.tpVal;
+
+		if (iBuf->mdpImg.mdpOp & MDPOP_FG_PM_ALPHA) {
+			if (perPixelAlpha) {
+				*pppop_reg_ptr |= PPP_OP_ROT_ON |
+						  PPP_OP_BLEND_ON |
+						  PPP_OP_BLEND_CONSTANT_ALPHA;
+			} else {
+				if ((iBuf->mdpImg.mdpOp & MDPOP_ALPHAB)
+					&& (iBuf->mdpImg.alpha == 0xff)) {
+					iBuf->mdpImg.mdpOp &= ~(MDPOP_ALPHAB);
+				}
+
+				if ((iBuf->mdpImg.mdpOp & MDPOP_ALPHAB)
+				   || (iBuf->mdpImg.mdpOp & MDPOP_TRANSP)) {
+
+					*pppop_reg_ptr |= PPP_OP_ROT_ON |
+						PPP_OP_BLEND_ON |
+						PPP_OP_BLEND_CONSTANT_ALPHA |
+						PPP_OP_BLEND_ALPHA_BLEND_NORMAL;
+				}
+			}
+
+			bg_alpha = PPP_BLEND_BG_USE_ALPHA_SEL |
+				PPP_BLEND_BG_ALPHA_REVERSE;
+
+			if (perPixelAlpha) {
+				bg_alpha |= PPP_BLEND_BG_SRCPIXEL_ALPHA;
+			} else {
+				bg_alpha |= PPP_BLEND_BG_CONSTANT_ALPHA;
+				bg_alpha |= iBuf->mdpImg.alpha << 24;
+			}
+			outpdw(MDP_BASE + 0x70010, bg_alpha);
+
+			if (iBuf->mdpImg.mdpOp & MDPOP_TRANSP)
+				*pppop_reg_ptr |= PPP_BLEND_CALPHA_TRNASP;
+		} else if (perPixelAlpha) {
+				*pppop_reg_ptr |= PPP_OP_ROT_ON |
+						  PPP_OP_BLEND_ON |
+						  PPP_OP_BLEND_SRCPIXEL_ALPHA;
+			} else {
+				if ((iBuf->mdpImg.mdpOp & MDPOP_ALPHAB)
+					&& (iBuf->mdpImg.alpha == 0xff)) {
+						iBuf->mdpImg.mdpOp &=
+							~(MDPOP_ALPHAB);
+				}
+
+				if ((iBuf->mdpImg.mdpOp & MDPOP_ALPHAB)
+				   || (iBuf->mdpImg.mdpOp & MDPOP_TRANSP)) {
+					*pppop_reg_ptr |= PPP_OP_ROT_ON |
+						PPP_OP_BLEND_ON |
+						PPP_OP_BLEND_CONSTANT_ALPHA |
+						PPP_OP_BLEND_ALPHA_BLEND_NORMAL;
+				}
+
+				if (iBuf->mdpImg.mdpOp & MDPOP_TRANSP)
+					*pppop_reg_ptr |=
+						PPP_BLEND_CALPHA_TRNASP;
+			}
 	} else {
-		if ((iBuf->mdpImg.mdpOp & MDPOP_ALPHAB)
-		    && (iBuf->mdpImg.alpha == 0xff)) {
-			iBuf->mdpImg.mdpOp &= ~(MDPOP_ALPHAB);
-		}
-
-		if ((iBuf->mdpImg.mdpOp & MDPOP_ALPHAB)
-		    && (iBuf->mdpImg.mdpOp & MDPOP_TRANSP)) {
-			*pppop_reg_ptr |=
-			    PPP_OP_ROT_ON | PPP_OP_BLEND_ON |
-			    PPP_OP_BLEND_CONSTANT_ALPHA |
-			    PPP_OP_BLEND_ALPHA_BLEND_NORMAL |
-			    PPP_BLEND_CALPHA_TRNASP;
-
-			*alpha = iBuf->mdpImg.alpha;
-			*tpVal = iBuf->mdpImg.tpVal;
+		if (perPixelAlpha) {
+			*pppop_reg_ptr |= PPP_OP_ROT_ON |
+			    PPP_OP_BLEND_ON | PPP_OP_BLEND_SRCPIXEL_ALPHA;
 		} else {
-			if (iBuf->mdpImg.mdpOp & MDPOP_TRANSP) {
-				*pppop_reg_ptr |= PPP_OP_ROT_ON |
-				    PPP_OP_BLEND_ON |
-				    PPP_OP_BLEND_SRCPIXEL_TRANSP;
-				*tpVal = iBuf->mdpImg.tpVal;
-			} else if (iBuf->mdpImg.mdpOp & MDPOP_ALPHAB) {
-				*pppop_reg_ptr |= PPP_OP_ROT_ON |
-				    PPP_OP_BLEND_ON |
+			if ((iBuf->mdpImg.mdpOp & MDPOP_ALPHAB)
+			    && (iBuf->mdpImg.alpha == 0xff)) {
+				iBuf->mdpImg.mdpOp &= ~(MDPOP_ALPHAB);
+			}
+
+			if ((iBuf->mdpImg.mdpOp & MDPOP_ALPHAB)
+			    && (iBuf->mdpImg.mdpOp & MDPOP_TRANSP)) {
+				*pppop_reg_ptr |=
+				    PPP_OP_ROT_ON | PPP_OP_BLEND_ON |
+				    PPP_OP_BLEND_CONSTANT_ALPHA |
 				    PPP_OP_BLEND_ALPHA_BLEND_NORMAL |
-				    PPP_OP_BLEND_CONSTANT_ALPHA;
+				    PPP_BLEND_CALPHA_TRNASP;
+
 				*alpha = iBuf->mdpImg.alpha;
+				*tpVal = iBuf->mdpImg.tpVal;
+			} else {
+				if (iBuf->mdpImg.mdpOp & MDPOP_TRANSP) {
+					*pppop_reg_ptr |= PPP_OP_ROT_ON |
+					    PPP_OP_BLEND_ON |
+					    PPP_OP_BLEND_SRCPIXEL_TRANSP;
+					*tpVal = iBuf->mdpImg.tpVal;
+				} else if (iBuf->mdpImg.mdpOp & MDPOP_ALPHAB) {
+					*pppop_reg_ptr |= PPP_OP_ROT_ON |
+					    PPP_OP_BLEND_ON |
+					    PPP_OP_BLEND_ALPHA_BLEND_NORMAL |
+					    PPP_OP_BLEND_CONSTANT_ALPHA;
+					*alpha = iBuf->mdpImg.alpha;
+				}
 			}
 		}
 	}

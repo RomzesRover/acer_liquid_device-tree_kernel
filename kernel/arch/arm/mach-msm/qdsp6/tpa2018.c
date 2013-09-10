@@ -117,7 +117,7 @@ static void tpa2018_arg_init(void)
 {
 	int count;
 	uint8_t tpa_wBuf_v3[8]={1,195,1,1,0,24,24,80}; /* 195,1,1,0,26, limit = 4.5, max = 23 ratio = 1:1 */
-	uint8_t tpa_wBuf[8]=   {1,195,1,1,0,26,24,80}; /* 195,1,1,0,30, limit = 4.5, max = 23 ratio = 1:1 */
+	uint8_t tpa_wBuf[8]={1,195,1,1,0,26,24,80}; /* 195,1,1,0,30, limit = 4.5, max = 23 ratio = 1:1 */
 	uint8_t tpa_rBuf[7]={0};
 	struct i2c_client *client = tpa2018_data.client;
 

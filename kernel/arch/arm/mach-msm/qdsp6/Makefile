@@ -19,4 +19,3 @@ obj-y += dsp_debug.o
 obj-$(CONFIG_QSD_AUDIO) += audiov2/
 
 obj-$(CONFIG_AUDIO_TPA2018)  += tpa2018.o
-obj-$(CONFIG_AUDIO_FM2018)  += fm2018.o

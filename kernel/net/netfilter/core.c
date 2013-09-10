@@ -19,6 +19,7 @@
 #include <linux/inetdevice.h>
 #include <linux/proc_fs.h>
 #include <linux/mutex.h>
+#include <linux/slab.h>
 #include <net/net_namespace.h>
 #include <net/sock.h>
 
@@ -104,10 +105,8 @@ EXPORT_SYMBOL(nf_register_hooks);
 
 void nf_unregister_hooks(struct nf_hook_ops *reg, unsigned int n)
 {
-	unsigned int i;
-
-	for (i = 0; i < n; i++)
-		nf_unregister_hook(&reg[i]);
+	while (n-- > 0)
+		nf_unregister_hook(&reg[n]);
 }
 EXPORT_SYMBOL(nf_unregister_hooks);
 
@@ -134,6 +133,7 @@ unsigned int nf_iterate(struct list_head *head,
 
 		/* Optimization: we don't need to hold module
 		   reference here, since function can't sleep. --RR */
+repeat:
 		verdict = elem->hook(hook, skb, indev, outdev, okfn);
 		if (verdict != NF_ACCEPT) {
 #ifdef CONFIG_NETFILTER_DEBUG
@@ -146,7 +146,7 @@ unsigned int nf_iterate(struct list_head *head,
 #endif
 			if (verdict != NF_REPEAT)
 				return verdict;
-			*i = (*i)->prev;
+			goto repeat;
 		}
 	}
 	return NF_ACCEPT;

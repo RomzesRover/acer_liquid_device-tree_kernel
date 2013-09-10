@@ -48,7 +48,7 @@ struct q6_hw_info {
 };
 
 /* TODO: provide mechanism to configure from board file */
-#ifdef CONFIG_MACH_ACER_A1
+
 static struct q6_hw_info q6_audio_hw[Q6_HW_COUNT] = {
 	[Q6_HW_HANDSET] = {
 		.min_gain = -700,
@@ -75,34 +75,6 @@ static struct q6_hw_info q6_audio_hw[Q6_HW_COUNT] = {
 		.max_gain = 400,
 	},
 };
-#else
-static struct q6_hw_info q6_audio_hw[Q6_HW_COUNT] = {
-	[Q6_HW_HANDSET] = {
-		.min_gain = -400,
-		.max_gain = 1100,
-	},
-	[Q6_HW_HEADSET] = {
-		.min_gain = -1100,
-		.max_gain = 400,
-	},
-	[Q6_HW_SPEAKER] = {
-		.min_gain = -1000,
-		.max_gain = 500,
-	},
-	[Q6_HW_TTY] = {
-		.min_gain = 0,
-		.max_gain = 0,
-	},
-	[Q6_HW_BT_SCO] = {
-		.min_gain = -1100,
-		.max_gain = 400,
-	},
-	[Q6_HW_BT_A2DP] = {
-		.min_gain = -1100,
-		.max_gain = 400,
-	},
-};
-#endif
 
 static struct wake_lock wakelock;
 static struct wake_lock idlelock;
@@ -791,7 +763,7 @@ static int audio_rx_mute(struct audio_client *ac, uint32_t dev_id, int mute)
 static int audio_tx_mute(struct audio_client *ac, uint32_t dev_id, int mute)
 {
 	struct adsp_set_dev_mute_command rpc;
-	
+
 	pr_debug("[%s:%s] mute = %d\n", __MM_FILE__, __func__, mute);
 	if (mute < 0  ||  mute > 3) {
 		pr_err("[%s:%s] invalid mute status %d\n", __MM_FILE__,
@@ -1161,6 +1133,7 @@ static int audio_update_acdb(uint32_t adev, uint32_t acdb_id)
 
 	sz = acdb_get_config_table(acdb_id, sample_rate);
 	audio_set_table(ac_control, adev, sz);
+
 	return 0;
 }
 
@@ -2163,4 +2136,3 @@ int q6audio_async(struct audio_client *ac)
 	rpc.response_type = ADSP_AUDIO_RESPONSE_ASYNC;
 	return audio_ioctl(ac, &rpc, sizeof(rpc));
 }
-

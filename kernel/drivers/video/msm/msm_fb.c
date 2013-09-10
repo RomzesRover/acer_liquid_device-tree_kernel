@@ -1,10 +1,9 @@
-/* drivers/video/msm/src/drv/fb/msm_fb.c
+/* drivers/video/msm/msm_fb.c
  *
  * Core MSM framebuffer driver.
  *
  * Copyright (C) 2007 Google Incorporated
- * Copyright (c) 2008-2010, Code Aurora Forum. All rights reserved.
- * Copyright (C) 2011 Sony Ericsson Mobile Communications AB.
+ * Copyright (c) 2008-2012, Code Aurora Forum. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -42,6 +41,7 @@
 #include <linux/leds.h>
 #include <linux/pm_runtime.h>
 
+
 #define MSM_FB_C
 #include "msm_fb.h"
 #include "mddihosti.h"
@@ -66,11 +66,12 @@ static unsigned char *fbram;
 static unsigned char *fbram_phys;
 static int fbram_size;
 
-
 static struct platform_device *pdev_list[MSM_FB_MAX_DEV_LIST];
 static int pdev_list_cnt;
 
-int vsync_mode = 0;
+int vsync_mode = 1;
+
+#define MAX_BLIT_REQ 256
 
 #define MAX_FBI_LIST 32
 static struct fb_info *fbi_list[MAX_FBI_LIST];
@@ -85,13 +86,6 @@ static u32 msm_fb_pseudo_palette[16] = {
 	0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff,
 	0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff
 };
-
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-static void (*backlight_ctrl_fp) (bool);
-static void msm_fb_resume_backlight_work_handler(struct work_struct *w);
-static DECLARE_DELAYED_WORK(resume_backlight_work,
-				msm_fb_resume_backlight_work_handler);
-#endif
 
 u32 msm_fb_debug_enabled;
 /* Setting msm_fb_msg_level to 8 prints out ALL messages */
@@ -300,7 +294,7 @@ static int msm_fb_probe(struct platform_device *pdev)
 			printk(KERN_ERR "fbram ioremap failed!\n");
 			return -ENOMEM;
 		}
-		MSM_FB_INFO("msm_fb_probe:  phy_Addr = 0x%x virt = 0x%x\n",
+		MSM_FB_DEBUG("msm_fb_probe:  phy_Addr = 0x%x virt = 0x%x\n",
 			     (int)fbram_phys, (int)fbram);
 
 		msm_fb_resource_initialized = 1;
@@ -604,27 +598,6 @@ void msm_fb_set_backlight(struct msm_fb_data_type *mfd, __u32 bkl_lvl, u32 save)
 	}
 }
 
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-
-static void msm_fb_resume_backlight_work_handler(struct work_struct *w)
-{
-	MSM_FB_DEBUG("%s\n", __func__);
-
-	if (backlight_ctrl_fp)
-		backlight_ctrl_fp(true);
-}
-
-static void msm_fb_resume_backlight_workqueue(unsigned int delay_ms)
-{
-	unsigned long j;
-
-	MSM_FB_DEBUG("%s: delay_ms = %d\n", __func__, delay_ms);
-	j = delay_ms * HZ / 1000;
-	schedule_delayed_work(&resume_backlight_work, j);
-}
-
-#endif
-
 static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 			    boolean op_enable)
 {
@@ -644,33 +617,12 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 	switch (blank_mode) {
 	case FB_BLANK_UNBLANK:
 		if (!mfd->panel_power_on) {
-#if !defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+#if !defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
 			mdelay(16);
 #endif
 			ret = pdata->on(mfd->pdev);
 			if (ret == 0) {
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-				struct fb_var_screeninfo var;
-#endif
 				mfd->panel_power_on = TRUE;
-
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-				var = info->var;
-				var.reserved[0] = 0x54445055;
-				var.reserved[1] = 0;
-				var.reserved[2] = pdata->panel_info.yres << 16 |
-							pdata->panel_info.xres;
-
-				/* Refresh display memory since it may have been
-				   lost (depends on type of display and power
-				   off mode) */
-				(void)msm_fb_pan_display(&var, info);
-				/* Delay backlight on until frambuffer has
-				   been updated to avoid flickering*/
-				backlight_ctrl_fp =
-					pdata->panel_ext->backlight_ctrl;
-				msm_fb_resume_backlight_workqueue(100);
-#endif
 				msm_fb_set_backlight(mfd,
 						     mfd->bl_level, 0);
 
@@ -700,12 +652,7 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 			curr_pwr_state = mfd->panel_power_on;
 			mfd->panel_power_on = FALSE;
 
-#ifdef CONFIG_FB_MSM_SEMC_LCD_BACKLIGHT_CONTROL
-			if (pdata->panel_ext->backlight_ctrl)
-				pdata->panel_ext->backlight_ctrl(false);
-#endif
-
-			mdelay(100);
+			mdelay(16);
 		        memset((void *)info->screen_base, 0,
     			     info->fix.smem_len);
 			ret = pdata->off(mfd->pdev);
@@ -946,13 +893,9 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	var->yoffset = 0,	/* resolution */
 	var->grayscale = 0,	/* No graylevels */
 	var->nonstd = 0,	/* standard pixel format */
-	var->activate = FB_ACTIVATE_VBL;	/* activate it at vsync */
-
-	/* height of picture in mm */
-	var->height = -1;
-
-	var->width = -1;
-
+	var->activate = FB_ACTIVATE_VBL,	/* activate it at vsync */
+	var->height = -1,	/* height of picture in mm */
+	var->width = -1,	/* width of picture in mm */
 	var->accel_flags = 0,	/* acceleration flags */
 	var->sync = 0,	/* see FB_SYNC_* */
 	var->rotate = 0,	/* angle we rotate counter clockwise */
@@ -1101,8 +1044,7 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	var->xres = panel_info->xres;
 	var->yres = panel_info->yres;
 	var->xres_virtual = panel_info->xres;
-	var->yres_virtual = panel_info->yres * mfd->fb_page +
-		((PAGE_SIZE - remainder)/fix->line_length) * mfd->fb_page;
+	var->yres_virtual = panel_info->yres * mfd->fb_page;
 	var->bits_per_pixel = bpp * 8;	/* FrameBuffer color depth */
 	if (mfd->dest == DISPLAY_LCD) {
 		var->reserved[3] = panel_info->lcd.refx100 / 100;
@@ -1122,7 +1064,7 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 		/*
 		 * id field for fb app
 		 */
-	id = (int *)&mfd->panel;
+	    id = (int *)&mfd->panel;
 
 #if defined(CONFIG_FB_MSM_MDP22)
 	snprintf(fix->id, sizeof(fix->id), "msmfb22_%x", (__u32) *id);
@@ -1154,26 +1096,14 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	fbram_phys += fbram_offset;
 	fbram_size -= fbram_offset;
 
-	if (mfd->index == 0)
-		if (fbram_size < fix->smem_len) {
-			pr_err("error: no more framebuffer memory!\n");
-			return -ENOMEM;
-		}
+	if (fbram_size < fix->smem_len) {
+		printk(KERN_ERR "error: no more framebuffer memory!\n");
+		return -ENOMEM;
+	}
 
 	fbi->screen_base = fbram;
 	fbi->fix.smem_start = (unsigned long)fbram_phys;
 
-/*
-	mfd->map_buffer = msm_subsystem_map_buffer(
-		fbi->fix.smem_start, fbi->fix.smem_len,
-		flags, subsys_id, 2);
-	if (mfd->map_buffer) {
-		pr_debug("%s(): buf 0x%lx, mfd->map_buffer->iova[0] 0x%lx\n"
-			"mfd->map_buffer->iova[1] 0x%lx", __func__,
-			fbi->fix.smem_start, mfd->map_buffer->iova[0],
-			mfd->map_buffer->iova[1]);
-	}
-*/
 	if (mfd->index == 0)
 		memset(fbi->screen_base, 0x0, fix->smem_len);
 
@@ -1221,7 +1151,7 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 
 #ifdef CONFIG_FB_MSM_LOGO
 	ret = load_565rle_image(INIT_IMAGE_FILE);	/* Flip buffer */
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
+#if defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
 	if (!ret) {
 		struct fb_var_screeninfo var;
 		int ret;
@@ -2417,6 +2347,8 @@ static int msmfb_blit(struct fb_info *info, void __user *p)
 		return -EFAULT;
 	p += sizeof(req_list_header);
 	count = req_list_header.count;
+	if (count < 0 || count >= MAX_BLIT_REQ)
+		return -EINVAL;
 	while (count > 0) {
 		/*
 		 * Access the requests through a narrow window to decrease copy

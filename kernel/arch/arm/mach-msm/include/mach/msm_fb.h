@@ -21,6 +21,10 @@
 
 struct mddi_info;
 
+/* output interface format */
+#define MSM_MDP_OUT_IF_FMT_RGB565 0
+#define MSM_MDP_OUT_IF_FMT_RGB666 1
+
 struct msm_fb_data {
 	int xres;	/* x resolution in pixels */
 	int yres;	/* y resolution in pixels */
@@ -34,9 +38,12 @@ struct msmfb_callback {
 };
 
 enum {
-	MSM_MDDI_PMDH_INTERFACE,
+	MSM_MDDI_PMDH_INTERFACE = 0,
 	MSM_MDDI_EMDH_INTERFACE,
 	MSM_EBI2_INTERFACE,
+	MSM_LCDC_INTERFACE,
+
+	MSM_MDP_NUM_INTERFACES = MSM_LCDC_INTERFACE + 1,
 };
 
 #define MSMFB_CAP_PARTIAL_UPDATES	(1 << 0)
@@ -110,7 +117,7 @@ struct mdp_blit_req;
 struct fb_info;
 struct mdp_device {
 	struct device dev;
-	void (*dma)(struct mdp_device *mpd, uint32_t addr,
+	void (*dma)(struct mdp_device *mdp, uint32_t addr,
 		    uint32_t stride, uint32_t w, uint32_t h, uint32_t x,
 		    uint32_t y, struct msmfb_callback *callback, int interface);
 	void (*dma_wait)(struct mdp_device *mdp);

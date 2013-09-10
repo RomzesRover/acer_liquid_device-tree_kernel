@@ -59,5 +59,5 @@ obj-$(CONFIG_LIBRA_SDIOIF)	+= libra/
 
 obj-$(CONFIG_MMC_WIFI)	+= wifi-power.o
 
-obj-$(CONFIG_BCM4325)  += bcm4325/
-obj-$(CONFIG_BCM4329)  += bcm4329/
+#obj-$(CONFIG_BCM4325)  += bcm4325/
+obj-$(CONFIG_BCM4325)  += bcm4329/

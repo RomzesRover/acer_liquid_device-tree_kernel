@@ -57,6 +57,7 @@ struct evrc {
 	struct evrc_fc *evrc_fc;
 };
 
+
 static int q6_evrc_flowcontrol(void *data)
 {
 	struct audio_client *ac;
@@ -118,7 +119,6 @@ static int q6_evrc_flowcontrol(void *data)
 
 	return 0;
 }
-
 static long q6_evrc_in_ioctl(struct file *file, unsigned int cmd,
 				unsigned long arg)
 {

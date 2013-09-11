@@ -1,13 +1,20 @@
-/* Copyright (c) 2011, Code Aurora Forum. All rights reserved.
+/* arch/arm/mach-msm/acpuclock.c
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
+ * MSM architecture clock driver
+ *
+ * Copyright (C) 2007 Google, Inc.
+ * Copyright (c) 2007-2009, Code Aurora Forum. All rights reserved.
+ * Author: San Mehat <san@android.com>
+ *
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
+ *
  */
 
 #include <linux/version.h>
@@ -345,18 +352,16 @@ static int pc_pll_request(unsigned id, unsigned on)
  *---------------------------------------------------------------------------*/
 
 #define POWER_COLLAPSE_KHZ 19200
-unsigned long acpuclk_power_collapse(void)
-{
-	int ret = acpuclk_get_rate(smp_processor_id());
-	acpuclk_set_rate(smp_processor_id(), POWER_COLLAPSE_KHZ, SETRATE_PC);
+unsigned long acpuclk_power_collapse(void) {
+	int ret = acpuclk_get_rate();
+	acpuclk_set_rate(POWER_COLLAPSE_KHZ, SETRATE_PC);
 	return ret;
 }
 
 #define WAIT_FOR_IRQ_KHZ 128000
-unsigned long acpuclk_wait_for_irq(void)
-{
-	int ret = acpuclk_get_rate(smp_processor_id());
-	acpuclk_set_rate(smp_processor_id(), WAIT_FOR_IRQ_KHZ, SETRATE_SWFI);
+unsigned long acpuclk_wait_for_irq(void) {
+	int ret = acpuclk_get_rate();
+	acpuclk_set_rate(WAIT_FOR_IRQ_KHZ, SETRATE_SWFI);
 	return ret;
 }
 
@@ -424,7 +429,7 @@ static void acpuclk_set_div(const struct clkctl_acpu_speed *hunt_s) {
 	}
 }
 
-int acpuclk_set_rate(int cpu, unsigned long rate, enum setrate_reason reason)
+int acpuclk_set_rate(unsigned long rate, enum setrate_reason reason)
 {
 	uint32_t reg_clkctl;
 	struct clkctl_acpu_speed *cur_s, *tgt_s, *strt_s;
@@ -649,7 +654,7 @@ static void __init acpuclk_init(void)
 	pr_info("ACPU running at %d KHz\n", speed->a11clk_khz);
 }
 
-unsigned long acpuclk_get_rate(int cpu)
+unsigned long acpuclk_get_rate(void)
 {
 	WARN_ONCE(drv_state.current_speed == NULL,
 		  "acpuclk_get_rate: not initialized\n");

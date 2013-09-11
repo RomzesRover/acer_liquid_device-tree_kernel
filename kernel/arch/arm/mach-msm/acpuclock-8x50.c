@@ -1,13 +1,57 @@
-/* Copyright (c) 2008-2011, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2008-2009, Code Aurora Forum. All rights reserved.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 and
- * only version 2 as published by the Free Software Foundation.
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of Code Aurora Forum nor
+ *       the names of its contributors may be used to endorse or promote
+ *       products derived from this software without specific prior written
+ *       permission.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Alternatively, provided that this notice is retained in full, this software
+ * may be relicensed by the recipient under the terms of the GNU General Public
+ * License version 2 ("GPL") and only version 2, in which case the provisions of
+ * the GPL apply INSTEAD OF those given above.  If the recipient relicenses the
+ * software under the GPL, then the identification text in the MODULE_LICENSE
+ * macro must be changed to reflect "GPLv2" instead of "Dual BSD/GPL".  Once a
+ * recipient changes the license terms to the GPL, subsequent recipients shall
+ * not relicense under alternate licensing terms, including the BSD or dual
+ * BSD/GPL terms.  In addition, the following license statement immediately
+ * below and between the words START and END shall also then apply when this
+ * software is relicensed under the GPL:
+ *
+ * START
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License version 2 and only version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ *
+ * END
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
@@ -98,16 +142,16 @@ struct clkctl_acpu_speed acpu_freq_tbl_998[] = {
 };
 
 struct clkctl_acpu_speed acpu_freq_tbl_768[] = {
-	{ 0, 19200, ACPU_PLL_TCXO, 0, 0, 0, 0, 14000, 0, 0, 950},
-	{ 1, 128000, ACPU_PLL_1, 1, 5, 0, 0, 14000, 2, 0, 975},
+	{ 0, 19200, ACPU_PLL_TCXO, 0, 0, 0, 0, 14000, 0, 0, 1000},
+	{ 1, 128000, ACPU_PLL_1, 1, 5, 0, 0, 14000, 2, 0, 1000},
 	{ 1, 245760, ACPU_PLL_0, 4, 0, 0, 0, 29000, 0, 0, 1000},
 	/* Update AXI_S and PLL0_S macros if above row numbers change. */
-	{ 1, 384000, ACPU_PLL_3, 0, 0, 0, 0, 58000, 1, 0xA, 1000},
+	{ 1, 384000, ACPU_PLL_3, 0, 0, 0, 0, 58000, 1, 0xA, 1075},
 	{ 0, 422400, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0xB, 1100},
-	{ 0, 460800, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0xC, 1100},
-	{ 0, 499200, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0xD, 1100},
-	{ 0, 537600, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0xE, 1100},
-	{ 1, 576000, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0xF, 1100},
+	{ 0, 460800, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0xC, 1125},
+	{ 0, 499200, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0xD, 1150},
+	{ 0, 537600, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0xE, 1150},
+	{ 1, 576000, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0xF, 1150},
 	{ 0, 614400, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0x10, 1175},
 	{ 0, 652800, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0x11, 1200},
 	{ 0, 691200, ACPU_PLL_3, 0, 0, 0, 0, 117000, 1, 0x12, 1225},
@@ -116,14 +160,13 @@ struct clkctl_acpu_speed acpu_freq_tbl_768[] = {
 	{ 1, 883200, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x17, 1250},
 	{ 1, 921600, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x18, 1300},
 	{ 1, 960000, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x19, 1300},
-	{ 1, 998400, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1a, 1325},
-	{ 1, 1036800, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1b, 1400},
-	{ 1, 1075200, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1c, 1425},
-	{ 1, 1113600, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1d, 1450},
-	{ 1, 1152000, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1e, 1475},
-	{ 1, 1190400, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1f, 1500},
-	{ 1, 1228800, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x20, 1500},
-	{ 1, 1267200, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x21, 1525},
+	{ 1, 998400, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1a, 1300},
+	{ 1, 1036800, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1b, 1300},
+	{ 1, 1075200, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1c, 1300},
+	{ 1, 1113600, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1d, 1300},
+	{ 1, 1152000, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1e, 1300},
+	{ 1, 1190400, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x1f, 1300},
+	{ 1, 1228800, ACPU_PLL_3, 0, 0, 0, 0, 128000, 1, 0x20, 1300},
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 };
 
@@ -141,7 +184,7 @@ static struct clkctl_acpu_speed *acpu_freq_tbl = acpu_freq_tbl_998;
 #define WAIT_FOR_IRQ_KHZ (PLL0_S->acpuclk_khz)
 
 #ifdef CONFIG_CPU_FREQ_MSM
-static struct cpufreq_frequency_table freq_table[26];
+static struct cpufreq_frequency_table freq_table[20];
 
 static void __init cpufreq_table_init(void)
 {
@@ -416,7 +459,7 @@ static int acpuclk_set_vdd_level(int vdd)
 	}
 }
 
-int acpuclk_set_rate(int cpu, unsigned long rate, enum setrate_reason reason)
+int acpuclk_set_rate(unsigned long rate, enum setrate_reason reason)
 {
 	struct clkctl_acpu_speed *tgt_s, *strt_s;
 	int res, rc = 0;
@@ -596,7 +639,7 @@ static void __init acpuclk_init(void)
 	pr_info("ACPU running at %d KHz\n", speed->acpuclk_khz);
 }
 
-unsigned long acpuclk_get_rate(int cpu)
+unsigned long acpuclk_get_rate(void)
 {
 	return drv_state.current_speed->acpuclk_khz;
 }
@@ -608,15 +651,15 @@ uint32_t acpuclk_get_switch_time(void)
 
 unsigned long acpuclk_power_collapse(void)
 {
-	int ret = acpuclk_get_rate(smp_processor_id());
-	acpuclk_set_rate(smp_processor_id(), POWER_COLLAPSE_KHZ, SETRATE_PC);
+	int ret = acpuclk_get_rate();
+	acpuclk_set_rate(POWER_COLLAPSE_KHZ, SETRATE_PC);
 	return ret;
 }
 
 unsigned long acpuclk_wait_for_irq(void)
 {
-	int ret = acpuclk_get_rate(smp_processor_id());
-	acpuclk_set_rate(smp_processor_id(), WAIT_FOR_IRQ_KHZ, SETRATE_SWFI);
+	int ret = acpuclk_get_rate();
+	acpuclk_set_rate(WAIT_FOR_IRQ_KHZ, SETRATE_SWFI);
 	return ret;
 }
 
@@ -647,7 +690,7 @@ static void __init acpu_freq_tbl_fixup(void)
 	switch (tcsr_spare2 & 0xF0) {
 	case 0x70:
 		acpu_freq_tbl = acpu_freq_tbl_768;
-		max_acpu_khz = 1267200;
+		max_acpu_khz = 1228800;
 		break;
 	case 0x30:
 	case 0x00:
@@ -733,7 +776,7 @@ void __init msm_acpu_clock_init(struct msm_acpu_clock_platform_data *clkdata)
 	/* Set a lower bound for ACPU rate for boot. This limits the
 	 * maximum frequency hop caused by the first CPUFREQ switch. */
 	if (drv_state.current_speed->acpuclk_khz < PLL0_S->acpuclk_khz)
-		acpuclk_set_rate(0, PLL0_S->acpuclk_khz, SETRATE_CPUFREQ);
+		acpuclk_set_rate(PLL0_S->acpuclk_khz, SETRATE_CPUFREQ);
 
 #ifdef CONFIG_CPU_FREQ_MSM
 	cpufreq_table_init();

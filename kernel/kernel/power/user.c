@@ -23,7 +23,7 @@
 #include <linux/console.h>
 #include <linux/cpu.h>
 #include <linux/freezer.h>
-#include <scsi/scsi_scan.h>
+#include <linux/smp_lock.h>
 
 #include <asm/uaccess.h>
 
@@ -92,7 +92,6 @@ static int snapshot_open(struct inode *inode, struct file *filp)
 	filp->private_data = data;
 	memset(&data->handle, 0, sizeof(struct snapshot_handle));
 	if ((filp->f_flags & O_ACCMODE) == O_RDONLY) {
-		/* Hibernating.  The image device should be accessible. */
 		data->swap = swsusp_resume_device ?
 			swap_type_of(swsusp_resume_device, 0, NULL) : -1;
 		data->mode = O_RDONLY;
@@ -100,13 +99,6 @@ static int snapshot_open(struct inode *inode, struct file *filp)
 		if (error)
 			pm_notifier_call_chain(PM_POST_HIBERNATION);
 	} else {
-		/*
-		 * Resuming.  We may need to wait for the image device to
-		 * appear.
-		 */
-		wait_for_device_probe();
-		scsi_complete_async_scans();
-
 		data->swap = -1;
 		data->mode = O_WRONLY;
 		error = pm_notifier_call_chain(PM_RESTORE_PREPARE);
@@ -137,7 +129,7 @@ static int snapshot_release(struct inode *inode, struct file *filp)
 	free_all_swap_pages(data->swap);
 	if (data->frozen)
 		thaw_processes();
-	pm_notifier_call_chain(data->mode == O_RDONLY ?
+	pm_notifier_call_chain(data->mode == O_WRONLY ?
 			PM_POST_HIBERNATION : PM_POST_RESTORE);
 	atomic_inc(&snapshot_device_available);
 
@@ -151,7 +143,6 @@ static ssize_t snapshot_read(struct file *filp, char __user *buf,
 {
 	struct snapshot_data *data;
 	ssize_t res;
-	loff_t pg_offp = *offp & ~PAGE_MASK;
 
 	mutex_lock(&pm_mutex);
 
@@ -160,18 +151,13 @@ static ssize_t snapshot_read(struct file *filp, char __user *buf,
 		res = -ENODATA;
 		goto Unlock;
 	}
-	if (!pg_offp) { /* on page boundary? */
-		res = snapshot_read_next(&data->handle);
-		if (res <= 0)
-			goto Unlock;
-	} else {
-		res = PAGE_SIZE - pg_offp;
+	res = snapshot_read_next(&data->handle, count);
+	if (res > 0) {
+		if (copy_to_user(buf, data_of(data->handle), res))
+			res = -EFAULT;
+		else
+			*offp = data->handle.offset;
 	}
-
-	res = simple_read_from_buffer(buf, count, &pg_offp,
-			data_of(data->handle), res);
-	if (res > 0)
-		*offp += res;
 
  Unlock:
 	mutex_unlock(&pm_mutex);
@@ -184,37 +170,21 @@ static ssize_t snapshot_write(struct file *filp, const char __user *buf,
 {
 	struct snapshot_data *data;
 	ssize_t res;
-	loff_t pg_offp = *offp & ~PAGE_MASK;
 
 	mutex_lock(&pm_mutex);
 
 	data = filp->private_data;
-
-	if (!pg_offp) {
-		res = snapshot_write_next(&data->handle);
-		if (res <= 0)
-			goto unlock;
-	} else {
-		res = PAGE_SIZE - pg_offp;
+	res = snapshot_write_next(&data->handle, count);
+	if (res > 0) {
+		if (copy_from_user(data_of(data->handle), buf, res))
+			res = -EFAULT;
+		else
+			*offp = data->handle.offset;
 	}
 
-	res = simple_write_to_buffer(data_of(data->handle), res, &pg_offp,
-			buf, count);
-	if (res > 0)
-		*offp += res;
-unlock:
 	mutex_unlock(&pm_mutex);
 
 	return res;
-}
-
-static void snapshot_deprecated_ioctl(unsigned int cmd)
-{
-	if (printk_ratelimit())
-		printk(KERN_NOTICE "%pf: ioctl '%.8x' is deprecated and will "
-				"be removed soon, update your suspend-to-disk "
-				"utilities\n",
-				__builtin_return_address(0), cmd);
 }
 
 static long snapshot_ioctl(struct file *filp, unsigned int cmd,
@@ -263,20 +233,17 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
 	case SNAPSHOT_UNFREEZE:
 		if (!data->frozen || data->ready)
 			break;
-		pm_restore_gfp_mask();
 		thaw_processes();
 		usermodehelper_enable();
 		data->frozen = 0;
 		break;
 
-	case SNAPSHOT_ATOMIC_SNAPSHOT:
-		snapshot_deprecated_ioctl(cmd);
 	case SNAPSHOT_CREATE_IMAGE:
+	case SNAPSHOT_ATOMIC_SNAPSHOT:
 		if (data->mode != O_RDONLY || !data->frozen  || data->ready) {
 			error = -EPERM;
 			break;
 		}
-		pm_restore_gfp_mask();
 		error = hibernation_snapshot(data->platform_support);
 		if (!error)
 			error = put_user(in_suspend, (int __user *)arg);
@@ -300,9 +267,8 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
 		data->ready = 0;
 		break;
 
-	case SNAPSHOT_SET_IMAGE_SIZE:
-		snapshot_deprecated_ioctl(cmd);
 	case SNAPSHOT_PREF_IMAGE_SIZE:
+	case SNAPSHOT_SET_IMAGE_SIZE:
 		image_size = arg;
 		break;
 
@@ -316,17 +282,15 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
 		error = put_user(size, (loff_t __user *)arg);
 		break;
 
-	case SNAPSHOT_AVAIL_SWAP:
-		snapshot_deprecated_ioctl(cmd);
 	case SNAPSHOT_AVAIL_SWAP_SIZE:
+	case SNAPSHOT_AVAIL_SWAP:
 		size = count_swap_pages(data->swap, 1);
 		size <<= PAGE_SHIFT;
 		error = put_user(size, (loff_t __user *)arg);
 		break;
 
-	case SNAPSHOT_GET_SWAP_PAGE:
-		snapshot_deprecated_ioctl(cmd);
 	case SNAPSHOT_ALLOC_SWAP_PAGE:
+	case SNAPSHOT_GET_SWAP_PAGE:
 		if (data->swap < 0 || data->swap >= MAX_SWAPFILES) {
 			error = -ENODEV;
 			break;
@@ -349,7 +313,6 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
 		break;
 
 	case SNAPSHOT_SET_SWAP_FILE: /* This ioctl is deprecated */
-		snapshot_deprecated_ioctl(cmd);
 		if (!swsusp_swap_in_use()) {
 			/*
 			 * User space encodes device types as two-byte values,
@@ -391,7 +354,6 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
 		break;
 
 	case SNAPSHOT_PMOPS: /* This ioctl is deprecated */
-		snapshot_deprecated_ioctl(cmd);
 		error = -EINVAL;
 
 		switch (arg) {
@@ -435,7 +397,7 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
 			 * User space encodes device types as two-byte values,
 			 * so we need to recode them
 			 */
-			swdev = new_decode_dev(swap_area.dev);
+			swdev = old_decode_dev(swap_area.dev);
 			if (swdev) {
 				offset = swap_area.offset;
 				data->swap = swap_type_of(swdev, offset, NULL);

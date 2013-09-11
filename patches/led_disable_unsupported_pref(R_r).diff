@@ -1,0 +1,90 @@
+diff --git a/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java b/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
+index 2370a65..cb489cb 100644
+--- a/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
++++ b/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
+@@ -132,8 +132,8 @@
+     public void onResume() {
+         super.onResume();
+         refreshDefault();
+-        refreshCustomApplications();
+-        setCustomEnabled();
++        //refreshCustomApplications();
++       //setCustomEnabled();
+     }
+ 
+     private void refreshDefault() {
+@@ -160,8 +160,8 @@
+             CheckBoxPreference cPref = (CheckBoxPreference) prefSet.findPreference(PULSE_PREF);
+             cPref.setChecked(mLightEnabled);
+             cPref.setOnPreferenceChangeListener(this);
+-
+-            // Default preference
++	
++            /*// Default preference
+             mDefaultPref = (ApplicationLightPreference) prefSet.findPreference(DEFAULT_PREF);
+             mDefaultPref.setAllValues(color, timeOn, timeOff);
+             mDefaultPref.setEnabled(mLightEnabled);
+@@ -191,8 +191,9 @@
+                 mVoicemailPref.setAllValues(vmailColor, vmailTimeOn, vmailTimeOff);
+                 mVoicemailPref.setEnabled(mCustomEnabled);
+                 mVoicemailPref.setOnPreferenceChangeListener(this);
+-            }
++            }*/
+         }
++	
+ 
+     }
+ 
+@@ -266,14 +267,14 @@
+             app = new Application(packageName, DEFAULT_COLOR, DEFAULT_TIME, DEFAULT_TIME);
+             mApplications.put(packageName, app);
+             saveApplicationList(false);
+-            refreshCustomApplications();
++            //refreshCustomApplications();
+         }
+     }
+ 
+     private void removeCustomApplication(String packageName) {
+         if (mApplications.remove(packageName) != null) {
+             saveApplicationList(false);
+-            refreshCustomApplications();
++            //refreshCustomApplications();
+         }
+     }
+ 
+@@ -388,14 +389,14 @@
+             mLightEnabled = (Boolean) objValue;
+             Settings.System.putInt(getContentResolver(), Settings.System.NOTIFICATION_LIGHT_PULSE,
+                     mLightEnabled ? 1 : 0);
+-            mDefaultPref.setEnabled(mLightEnabled);
+-            mCustomEnabledPref.setEnabled(mLightEnabled);
+-            setCustomEnabled();
++            //mDefaultPref.setEnabled(mLightEnabled);
++            //mCustomEnabledPref.setEnabled(mLightEnabled);
++            //setCustomEnabled();
+         } else if (CUSTOM_PREF.equals(key)) {
+             mCustomEnabled = (Boolean) objValue;
+             Settings.System.putInt(getContentResolver(), NOTIFICATION_LIGHT_PULSE_CUSTOM_ENABLE,
+                     mCustomEnabled ? 1 : 0);
+-            setCustomEnabled();
++            //setCustomEnabled();
+         } else {
+             ApplicationLightPreference tPref = (ApplicationLightPreference) preference;
+             updateValues(key, tPref.getColor(), tPref.getOnValue(), tPref.getOffValue());
+@@ -403,7 +404,7 @@
+ 
+         return true;
+     }
+-
++	/*
+     @Override
+     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+         mMenu = menu;
+@@ -421,6 +422,7 @@
+         }
+         return false;
+     }
++	*/
+ 
+     /**
+      * Utility classes and supporting methods

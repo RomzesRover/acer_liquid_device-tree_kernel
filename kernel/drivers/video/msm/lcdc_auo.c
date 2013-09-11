@@ -602,18 +602,18 @@ static int __init lcdc_auo_init(void)
 	pinfo->fb_num = 2;
 #endif
 	pinfo->clk_rate = 24576000; /* 24.576MHz to match the SPEC. from AMSS */
-	pinfo.width = 46; /* physical width in mm */
-	pinfo.height = 77; /* physical height in mm */
+	pinfo->width = 46; /* physical width in mm */
+	pinfo->height = 77; /* physical height in mm */
 
 	//disable vsync
 	pinfo->lcd.hw_vsync_mode = 0;
 
-	pinfo.lcdc.h_back_porch = 12;
-	pinfo.lcdc.h_front_porch = 16;
-	pinfo.lcdc.h_pulse_width = 4;
-	pinfo.lcdc.v_back_porch = 3;
-	pinfo.lcdc.v_front_porch = 3;
-	pinfo.lcdc.v_pulse_width = 2;
+	pinfo->lcdc.h_back_porch = 12;
+	pinfo->lcdc.h_front_porch = 16;
+	pinfo->lcdc.h_pulse_width = 4;
+	pinfo->lcdc.v_back_porch = 3;
+	pinfo->lcdc.v_front_porch = 3;
+	pinfo->lcdc.v_pulse_width = 2;
 	pinfo->lcdc.border_clr = 0;	/* blk */
 	pinfo->lcdc.underflow_clr = 0xff;	/* blue */
 	pinfo->lcdc.hsync_skew = 0;

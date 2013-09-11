@@ -1,0 +1,17 @@
+diff --git a/packages/apps/Settings/src/com/android/settings/SoundSettings.java b/packages/apps/Settings/src/com/android/settings/SoundSettings.java
+index 2370a65..cb489cb 100644
+--- a/packages/apps/Settings/src/com/android/settings/SoundSettings.java
++++ b/packages/apps/Settings/src/com/android/settings/SoundSettings.java
+@@ -184,10 +184,10 @@
+         mSoundEffects.setPersistent(false);
+         mSoundEffects.setChecked(Settings.System.getInt(resolver,
+                 Settings.System.SOUND_EFFECTS_ENABLED, 1) != 0);
+-        mHapticFeedback = (CheckBoxPreference) findPreference(KEY_HAPTIC_FEEDBACK);
++        /*mHapticFeedback = (CheckBoxPreference) findPreference(KEY_HAPTIC_FEEDBACK);
+         mHapticFeedback.setPersistent(false);
+         mHapticFeedback.setChecked(Settings.System.getInt(resolver,
+-                Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) != 0);
++                Settings.System.HAPTIC_FEEDBACK_ENABLED, 1) != 0);*/
+         mLockSounds = (CheckBoxPreference) findPreference(KEY_LOCK_SOUNDS);
+         mLockSounds.setPersistent(false);
+         mLockSounds.setChecked(Settings.System.getInt(resolver,

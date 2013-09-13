@@ -54,12 +54,19 @@
 extern int load_565rle_image(char *filename);
 #endif
 
+#ifdef CONFIG_FB_MSM_DOUBLE_BUFFER
+#define MSM_FB_NUM	2
+static bool align_buffer = false;
+#endif
+
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_NUM	3
 static bool align_buffer = true;
-#else
-#define MSM_FB_NUM	2
-static bool align_buffer = false;
+#endif
+
+#ifdef CONFIG_FB_MSM_QUADRUPLE_BUFFER
+#define MSM_FB_NUM	4
+static bool align_buffer = true;
 #endif
 
 static unsigned char *fbram;

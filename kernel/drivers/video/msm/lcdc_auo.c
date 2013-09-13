@@ -596,10 +596,14 @@ static int __init lcdc_auo_init(void)
 	pinfo->pdest = DISPLAY_1;
 	pinfo->wait_cycle = 0;
 	pinfo->bpp = 16;
+#ifdef CONFIG_FB_MSM_DOUBLE_BUFFER
+	pinfo->fb_num = 2;
+#endif
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 	pinfo->fb_num = 3;
-#else
-	pinfo->fb_num = 2;
+#endif
+#ifdef CONFIG_FB_MSM_QUADRUPLE_BUFFER
+	pinfo->fb_num = 4;
 #endif
 	pinfo->clk_rate = 24576000; /* 24.576MHz to match the SPEC. from AMSS */
 	pinfo->width = 46; /* physical width in mm */

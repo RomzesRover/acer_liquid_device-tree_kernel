@@ -24,7 +24,12 @@
         <CheckBoxPreference
             android:key="pulse_enabled"
             android:title="@string/notification_pulse_title" 
-	    android:summary="Only for sms and call LED's.\nChanges will take effect from the next notice."/>
+	    android:summary="Sms and call LED's.\nChanges will take effect from the next notice."/>
+
+	        <CheckBoxPreference
+            android:key="battery_light"
+            android:title="@string/battery_light_title"
+             android:summary="Battery LED.\nChanges will take effect from the next notice."/>
 	
         </PreferenceCategory>
 

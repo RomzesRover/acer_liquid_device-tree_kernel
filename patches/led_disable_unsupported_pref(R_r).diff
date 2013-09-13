@@ -2,40 +2,67 @@ diff --git a/packages/apps/Settings/src/com/android/settings/notificationlight/N
 index 2370a65..cb489cb 100644
 --- a/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
 +++ b/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
-@@ -132,8 +132,8 @@
+--- NotificationLightSettings.java	2013-09-13 23:07:12.227764986 +0600
++++ NotificationLightSettings2.java	2013-09-13 23:05:29.107764977 +0600
+@@ -69,6 +69,7 @@
+ public class NotificationLightSettings extends SettingsPreferenceFragment implements
+         Preference.OnPreferenceChangeListener, View.OnLongClickListener {
+     private static final String TAG = "NotificationLightSettings";
++    private static final String ENABLED_PREF = "battery_light";
+     private static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_COLOR = "notification_light_pulse_default_color";
+     private static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_ON = "notification_light_pulse_default_led_on";
+     private static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_OFF = "notification_light_pulse_default_led_off";
+@@ -96,6 +97,7 @@
+     private PackageManager mPackageManager;
+     private boolean mCustomEnabled;
+     private boolean mLightEnabled;
++    private boolean mLightBatteryEnabled;
+     private boolean mVoiceCapable;
+     private ApplicationLightPreference mDefaultPref;
+     private ApplicationLightPreference mCallPref;
+@@ -132,8 +134,8 @@
      public void onResume() {
          super.onResume();
          refreshDefault();
 -        refreshCustomApplications();
 -        setCustomEnabled();
 +        //refreshCustomApplications();
-+       //setCustomEnabled();
++        //setCustomEnabled();
      }
  
      private void refreshDefault() {
-@@ -160,8 +160,8 @@
-             CheckBoxPreference cPref = (CheckBoxPreference) prefSet.findPreference(PULSE_PREF);
+@@ -142,6 +144,7 @@
+         int timeOn = Settings.System.getInt(resolver, NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_ON, DEFAULT_TIME);
+         int timeOff = Settings.System.getInt(resolver, NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_OFF, DEFAULT_TIME);
+         mLightEnabled = Settings.System.getInt(resolver, NOTIFICATION_LIGHT_PULSE, 0) == 1;
++	mLightBatteryEnabled = Settings.System.getInt(resolver, Settings.System.BATTERY_LIGHT_ENABLED, 1) == 1;
+         mCustomEnabled = Settings.System.getInt(resolver, NOTIFICATION_LIGHT_PULSE_CUSTOM_ENABLE, 0) == 1;
+ 
+         // Get Missed call and Voicemail values
+@@ -161,7 +164,12 @@
              cPref.setChecked(mLightEnabled);
              cPref.setOnPreferenceChangeListener(this);
--
+ 
 -            // Default preference
-+	
++	    // Enabled battery preference
++            CheckBoxPreference cPref2 = (CheckBoxPreference) prefSet.findPreference(ENABLED_PREF);
++            cPref2.setChecked(mLightBatteryEnabled);
++            cPref2.setOnPreferenceChangeListener(this);
++
 +            /*// Default preference
              mDefaultPref = (ApplicationLightPreference) prefSet.findPreference(DEFAULT_PREF);
              mDefaultPref.setAllValues(color, timeOn, timeOff);
              mDefaultPref.setEnabled(mLightEnabled);
-@@ -191,8 +191,9 @@
+@@ -191,7 +199,7 @@
                  mVoicemailPref.setAllValues(vmailColor, vmailTimeOn, vmailTimeOff);
                  mVoicemailPref.setEnabled(mCustomEnabled);
                  mVoicemailPref.setOnPreferenceChangeListener(this);
 -            }
 +            }*/
          }
-+	
  
      }
- 
-@@ -266,14 +267,14 @@
+@@ -266,14 +274,14 @@
              app = new Application(packageName, DEFAULT_COLOR, DEFAULT_TIME, DEFAULT_TIME);
              mApplications.put(packageName, app);
              saveApplicationList(false);
@@ -52,7 +79,7 @@ index 2370a65..cb489cb 100644
          }
      }
  
-@@ -388,14 +389,14 @@
+@@ -388,23 +396,28 @@
              mLightEnabled = (Boolean) objValue;
              Settings.System.putInt(getContentResolver(), Settings.System.NOTIFICATION_LIGHT_PULSE,
                      mLightEnabled ? 1 : 0);
@@ -69,22 +96,102 @@ index 2370a65..cb489cb 100644
 -            setCustomEnabled();
 +            //setCustomEnabled();
          } else {
-             ApplicationLightPreference tPref = (ApplicationLightPreference) preference;
-             updateValues(key, tPref.getColor(), tPref.getOnValue(), tPref.getOffValue());
-@@ -403,7 +404,7 @@
+-            ApplicationLightPreference tPref = (ApplicationLightPreference) preference;
+-            updateValues(key, tPref.getColor(), tPref.getOnValue(), tPref.getOffValue());
++	    if (ENABLED_PREF.equals(key)) {
++            	mLightBatteryEnabled = (Boolean) objValue;
++            	Settings.System.putInt(getContentResolver(), Settings.System.BATTERY_LIGHT_ENABLED,
++                    mLightBatteryEnabled ? 1 : 0);
++		}
++            //ApplicationLightPreference tPref = (ApplicationLightPreference) preference;
++            //updateValues(key, tPref.getColor(), tPref.getOnValue(), tPref.getOffValue());
+         }
  
          return true;
      }
--
-+	/*
-     @Override
+ 
+-    @Override
++    /*@Override
      public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
          mMenu = menu;
-@@ -421,6 +422,7 @@
+         mMenu.add(0, MENU_ADD, 0, R.string.profiles_add)
+@@ -420,7 +433,7 @@
+                 return true;
          }
          return false;
-     }
-+	*/
+-    }
++    }*/
  
      /**
       * Utility classes and supporting methods
+diff --git a/packages/apps/Settings/src/com/android/settings/DisplaySettings.java b/packages/apps/Settings/src/com/android/settings/DisplaySettings.java
+index 2370a65..cb489cb 100644
+--- a/packages/apps/Settings/src/com/android/settings/DisplaySettings.java
++++ b/packages/apps/Settings/src/com/android/settings/DisplaySettings.java
+@@ -114,7 +114,7 @@
+             }
+         }
+ 
+-        mBatteryPulse = (PreferenceScreen) findPreference(KEY_BATTERY_LIGHT);
++        /*mBatteryPulse = (PreferenceScreen) findPreference(KEY_BATTERY_LIGHT);
+         if (mBatteryPulse != null) {
+             if (getResources().getBoolean(
+                     com.android.internal.R.bool.config_intrusiveBatteryLed) == false) {
+@@ -122,7 +122,7 @@
+             } else {
+                 updateBatteryPulseDescription();
+             }
+-        }
++        }*/
+ 
+         mElectronBeamAnimationOn = (CheckBoxPreference) findPreference(KEY_ELECTRON_BEAM_ANIMATION_ON);
+         mElectronBeamAnimationOff = (CheckBoxPreference) findPreference(KEY_ELECTRON_BEAM_ANIMATION_OFF);
+@@ -263,29 +263,43 @@
+     }
+ 
+     private void updateLightPulseDescription() {
++
++	String summary="";
++
+         if (Settings.System.getInt(getActivity().getContentResolver(),
+                 Settings.System.NOTIFICATION_LIGHT_PULSE, 0) == 1) {
+-            mNotificationPulse.setSummary(getString(R.string.notification_light_enabled));
++            summary+=getString(R.string.notification_light_enabled);
+         } else {
+-            mNotificationPulse.setSummary(getString(R.string.notification_light_disabled));
++	    summary+=getString(R.string.notification_light_disabled);
+         }
++	
++	summary+=" | ";
++
++	 if (Settings.System.getInt(getActivity().getContentResolver(),
++                Settings.System.BATTERY_LIGHT_ENABLED, 1) == 1) {
++            summary+=getString(R.string.notification_light_enabled);
++        } else {
++            summary+=getString(R.string.notification_light_disabled);
++        }
++
++	mNotificationPulse.setSummary(summary);
+     }
+ 
+-    private void updateBatteryPulseDescription() {
++    /*private void updateBatteryPulseDescription() {
+         if (Settings.System.getInt(getActivity().getContentResolver(),
+                 Settings.System.BATTERY_LIGHT_ENABLED, 1) == 1) {
+             mBatteryPulse.setSummary(getString(R.string.notification_light_enabled));
+         } else {
+             mBatteryPulse.setSummary(getString(R.string.notification_light_disabled));
+         }
+-    }
++    }*/
+ 
+     @Override
+     public void onResume() {
+         super.onResume();
+         updateDisplayRotationPreferenceDescription();
+         updateLightPulseDescription();
+-        updateBatteryPulseDescription();
++        //updateBatteryPulseDescription();
+ 
+         getContentResolver().registerContentObserver(
+                 Settings.System.getUriFor(Settings.System.ACCELEROMETER_ROTATION), true,

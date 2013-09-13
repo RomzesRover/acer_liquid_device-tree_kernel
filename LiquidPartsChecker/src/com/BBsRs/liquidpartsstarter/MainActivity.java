@@ -35,24 +35,32 @@ public class MainActivity extends PreferenceActivity {
 				Preference myPref = (Preference) findPreference("free");
 				myPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				             public boolean onPreferenceClick(Preference preference) {
+						try {
 				            	 Intent intent = new Intent(Intent.ACTION_VIEW);
 				            	 intent.setData(Uri.parse("market://details?id=com.BBsRs.liquidparts"));
 				            	 startActivity(intent);
 				            	 finish();
 								return false;
 				                 //open browser or intent here
+						} catch (ActivityNotFoundException e1){
+						 Toast.makeText(getApplicationContext(), "Install google apps first!", Toast.LENGTH_LONG).show();
+						}
 				             }
 				         });
 
 				Preference myPref2 = (Preference) findPreference("paid");
 				myPref2.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				             public boolean onPreferenceClick(Preference preference) {
+						try {
 				            	 Intent intent = new Intent(Intent.ACTION_VIEW);
 				            	 intent.setData(Uri.parse("market://details?id=com.BBsRs.liquidpartsDonate"));
 				            	 startActivity(intent);
 				            	 finish();
 								return false;
 				                 //open browser or intent here
+						} catch (ActivityNotFoundException e1){
+						 Toast.makeText(getApplicationContext(), "Install google apps first!", Toast.LENGTH_LONG).show();
+						}
 				             }
 				         });
 			}

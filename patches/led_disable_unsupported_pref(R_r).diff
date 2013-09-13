@@ -2,8 +2,6 @@ diff --git a/packages/apps/Settings/src/com/android/settings/notificationlight/N
 index 2370a65..cb489cb 100644
 --- a/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
 +++ b/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
---- NotificationLightSettings.java	2013-09-13 23:07:12.227764986 +0600
-+++ NotificationLightSettings2.java	2013-09-13 23:05:29.107764977 +0600
 @@ -69,6 +69,7 @@
  public class NotificationLightSettings extends SettingsPreferenceFragment implements
          Preference.OnPreferenceChangeListener, View.OnLongClickListener {

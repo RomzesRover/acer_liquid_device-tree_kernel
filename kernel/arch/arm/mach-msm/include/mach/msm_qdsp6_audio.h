@@ -85,7 +85,7 @@ struct audio_client *q6audio_open_amrnb(uint32_t bufsz, uint32_t enc_mode,
 					uint32_t dtx_enable, uint32_t flags,
 					uint32_t acdb_id);
 
-extern int q6audio_close(struct audio_client *ac);
+int q6audio_close(struct audio_client *ac);
 int q6audio_auxpcm_close(struct audio_client *ac);
 int q6voice_close(struct audio_client *ac);
 int q6audio_mp3_close(struct audio_client *ac);

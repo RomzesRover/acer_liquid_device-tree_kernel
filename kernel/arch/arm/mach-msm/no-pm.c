@@ -1,4 +1,5 @@
-/* Copyright (c) 2007-2009,2011 Code Aurora Forum. All rights reserved.
+/*
+ * Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -8,18 +9,20 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
  */
 
-#ifndef _ARCH_ARM_MACH_MSM_IDLE_H_
-#define _ARCH_ARM_MACH_MSM_IDLE_H_
+#include <linux/module.h>
 
-int msm_arch_idle(void);
-int msm_pm_collapse(void);
-void msm_pm_collapse_exit(void);
+#include "idle.h"
+#include "pm.h"
 
-#ifdef CONFIG_CPU_V7
-extern unsigned long msm_pm_pc_pgd;
-#endif
+void arch_idle(void)
+{
+	msm_arch_idle();
+}
 
-#endif
+void msm_pm_set_platform_data(struct msm_pm_platform_data *data, int count)
+{ }
+
+void msm_pm_set_max_sleep_time(int64_t max_sleep_time_ns) { }
+EXPORT_SYMBOL(msm_pm_set_max_sleep_time);

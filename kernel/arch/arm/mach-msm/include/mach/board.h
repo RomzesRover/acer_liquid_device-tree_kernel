@@ -216,11 +216,11 @@ struct msm_panel_common_pdata {
 #ifdef CONFIG_MSM_BUS_SCALING
 	struct msm_bus_scale_pdata *mdp_bus_scale_table;
 #endif
-        int mdp_rev;
-        u32 ov0_wb_size;  /* overlay0 writeback size */
-        u32 ov1_wb_size;  /* overlay1 writeback size */
-        u32 mem_hid;
-        char cont_splash_enabled;
+    int mdp_rev;
+    u32 ov0_wb_size;  /* overlay0 writeback size */
+    u32 ov1_wb_size;  /* overlay1 writeback size */
+    u32 mem_hid;
+    char cont_splash_enabled;
 };
 
 struct lcdc_platform_data {

@@ -9,6 +9,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.view.Menu;
+import android.widget.Toast;
 
 public class MainActivity extends PreferenceActivity {
 
@@ -40,11 +41,11 @@ public class MainActivity extends PreferenceActivity {
 				            	 intent.setData(Uri.parse("market://details?id=com.BBsRs.liquidparts"));
 				            	 startActivity(intent);
 				            	 finish();
-								return false;
 				                 //open browser or intent here
 						} catch (ActivityNotFoundException e1){
-						 Toast.makeText(getApplicationContext(), "Install google apps first!", Toast.LENGTH_LONG).show();
+						 Toast.makeText(getApplicationContext(), getResources().getString(R.string.need_gag), Toast.LENGTH_LONG).show();
 						}
+						return false;
 				             }
 				         });
 
@@ -56,11 +57,11 @@ public class MainActivity extends PreferenceActivity {
 				            	 intent.setData(Uri.parse("market://details?id=com.BBsRs.liquidpartsDonate"));
 				            	 startActivity(intent);
 				            	 finish();
-								return false;
 				                 //open browser or intent here
-						} catch (ActivityNotFoundException e1){
-						 Toast.makeText(getApplicationContext(), "Install google apps first!", Toast.LENGTH_LONG).show();
+						} catch (ActivityNotFoundException e1){  
+						 Toast.makeText(getApplicationContext(), getResources().getString(R.string.need_gag), Toast.LENGTH_LONG).show();
 						}
+						return false;
 				             }
 				         });
 			}

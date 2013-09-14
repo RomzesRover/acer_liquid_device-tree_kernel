@@ -15,6 +15,7 @@
 
 
     <string name="next">What next I need to do ?</string>
+    <string name="need_gag">Сперва установите google apps</string>
     <string name="next_two">After installing an LiquidParts client:</string>
     <string name="next_three">After you download and install the application just go again to settings and click Liquid Parts icon your app will be launched without this splash screen.</string>
 

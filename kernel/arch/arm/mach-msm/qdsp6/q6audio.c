@@ -20,6 +20,7 @@
 #include <linux/wait.h>
 #include <linux/dma-mapping.h>
 #include <linux/clk.h>
+
 #include <linux/delay.h>
 #include <linux/wakelock.h>
 #include <linux/android_pmem.h>
@@ -676,14 +677,8 @@ static int audio_set_table(struct audio_client *ac,
 
 	memset(&rpc, 0, sizeof(rpc));
 	rpc.hdr.opcode = ADSP_AUDIO_IOCTL_SET_DEVICE_CONFIG_TABLE;
-	if (q6_device_to_dir(device_id) == Q6_TX) {
-		if (tx_clk_freq > 16000)
-			rpc.hdr.data = 48000;
-		else if (tx_clk_freq > 8000)
-			rpc.hdr.data = 16000;
-		else
-			rpc.hdr.data = 8000;
-	}
+	if (q6_device_to_dir(device_id) == Q6_TX)
+		rpc.hdr.data = tx_clk_freq;
 	rpc.device_id = device_id;
 	rpc.phys_addr = audio_phys;
 	rpc.phys_size = size;
@@ -1123,22 +1118,15 @@ static int audio_update_acdb(uint32_t adev, uint32_t acdb_id)
 {
 	uint32_t sample_rate;
 	int sz;
-
+	
 	pr_debug("[%s:%s] adev = 0x%x, acdb_id = 0x%x\n", __MM_FILE__,
 		__func__, adev, acdb_id);
-	if (q6_device_to_dir(adev) == Q6_RX) {
-		rx_acdb = acdb_id;
-		sample_rate = q6_device_to_rate(adev);
-	} else {
+	sample_rate = q6_device_to_rate(adev);
 
+	if (q6_device_to_dir(adev) == Q6_RX)
+		rx_acdb = acdb_id;
+	else
 		tx_acdb = acdb_id;
-		if (tx_clk_freq > 16000)
-			sample_rate = 48000;
-		else if (tx_clk_freq > 8000)
-			sample_rate = 16000;
-		else
-			sample_rate = 8000;
-	}
 
 	if (acdb_id == 0)
 		acdb_id = q6_device_to_cad_id(adev);
@@ -1193,12 +1181,10 @@ static void _audio_tx_path_enable(int reconf, uint32_t acdb_id)
 		adie_enable();
 		adie_set_path(adie, audio_tx_path_id, ADIE_PATH_TX);
 
-		if (tx_clk_freq > 16000)
-			adie_set_path_freq_plan(adie, ADIE_PATH_TX, 48000);
-		else if (tx_clk_freq > 8000)
-			adie_set_path_freq_plan(adie, ADIE_PATH_TX, 16000);
-		else
-			adie_set_path_freq_plan(adie, ADIE_PATH_TX, 8000);
+		 if (tx_clk_freq > 8000)
+				 adie_set_path_freq_plan(adie, ADIE_PATH_TX, 48000);
+		 else
+				 adie_set_path_freq_plan(adie, ADIE_PATH_TX, 8000);
 
 		adie_proceed_to_stage(adie, ADIE_PATH_TX,
 				ADIE_STAGE_DIGITAL_READY);

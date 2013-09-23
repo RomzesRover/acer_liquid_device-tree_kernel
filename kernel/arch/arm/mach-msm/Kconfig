@@ -322,7 +322,7 @@ choice
 		bool "DG Timer"
 	help
 	  High resolution timer.
-endchoice
+endchoice	  
 
 choice
 	prompt "Suspend sleep mode"
@@ -349,7 +349,7 @@ choice
 
 	config MSM7X00A_SLEEP_WAIT_FOR_INTERRUPT
 		bool "Wait for interrupt"
-endchoice
+endchoice	  
 
 config MSM7X00A_SLEEP_MODE
 	int
@@ -384,7 +384,7 @@ choice
 
 	config MSM7X00A_IDLE_SLEEP_WAIT_FOR_INTERRUPT
 		bool "Wait for interrupt"
-endchoice
+endchoice	  
 
 config MSM7X00A_IDLE_SLEEP_MODE
 	int
@@ -787,6 +787,24 @@ config MSM_QDSP6
 	help
 	  Enable support for qdsp6. This provides audio and video functionality.
 
+config MSM_DMA_TEST
+	tristate "MSM DMA test module"
+	default m
+	help
+	  Intended to be compiled as a module.  Provides a device node
+	  and ioctls for testing the MSM dma system.
+
+config WIFI_CONTROL_FUNC
+	bool "Enable WiFi control function abstraction"
+	help
+	  Enables Power/Reset/Carddetect function abstraction
+	
+config WIFI_MEM_PREALLOC
+	depends on WIFI_CONTROL_FUNC
+	bool "Preallocate memory for WiFi buffers"
+	help
+	  Preallocates memory buffers for WiFi driver
+
 config QSD_AUDIO
 	bool "QSD audio"
 	depends on ARCH_MSM_SCORPION && MSM_DALRPC && ANDROID_PMEM
@@ -807,24 +825,6 @@ config AUDIO_ENHANCED_AAC_PLUS
 	default y
 	help
 	  Provides Enhanced AAC+ decoding
-
-config MSM_DMA_TEST
-	tristate "MSM DMA test module"
-	default m
-	help
-	  Intended to be compiled as a module.  Provides a device node
-	  and ioctls for testing the MSM dma system.
-
-config WIFI_CONTROL_FUNC
-	bool "Enable WiFi control function abstraction"
-	help
-	  Enables Power/Reset/Carddetect function abstraction
-	
-config WIFI_MEM_PREALLOC
-	depends on WIFI_CONTROL_FUNC
-	bool "Preallocate memory for WiFi buffers"
-	help
-	  Preallocates memory buffers for WiFi driver
 
 config SURF_FFA_GPIO_KEYPAD
 	bool "MSM SURF/FFA GPIO keypad"
@@ -883,49 +883,6 @@ config MSM_SLEEP_TIME_OVERRIDE
 	  suspend. The feature is required for automated power management
 	  testing.
 
-config MSM_MEMORY_LOW_POWER_MODE
-	bool "Control the low power modes of memory"
-	default n
-	help
-	  The application processor controls whether memory should enter
-	  which low power mode.
-
-choice
-	prompt "Default Memory Low Power Mode during Idle"
-	depends on MSM_MEMORY_LOW_POWER_MODE
-	default MSM_MEMORY_LOW_POWER_MODE_IDLE_ACTIVE
-	help
-	  Selects the default low power mode of the memory during idle
-	  sleep.
-
-	config MSM_MEMORY_LOW_POWER_MODE_IDLE_ACTIVE
-		bool "Memory active"
-
-	config MSM_MEMORY_LOW_POWER_MODE_IDLE_RETENTION
-		bool "Memory in retention"
-
-	config MSM_MEMORY_LOW_POWER_MODE_IDLE_DEEP_POWER_DOWN
-		bool "Memory in deep power down"
-endchoice
-
-choice
-	prompt "Default Memory Low Power Mode during Suspend"
-	depends on MSM_MEMORY_LOW_POWER_MODE
-	default MSM_MEMORY_LOW_POWER_MODE_SUSPEND_ACTIVE
-	help
-	  Selects the default low power mode of the memory during suspend
-	  sleep.
-
-	config MSM_MEMORY_LOW_POWER_MODE_SUSPEND_ACTIVE
-		bool "Memory active"
-
-	config MSM_MEMORY_LOW_POWER_MODE_SUSPEND_RETENTION
-		bool "Memory in retention"
-
-	config MSM_MEMORY_LOW_POWER_MODE_SUSPEND_DEEP_POWER_DOWN
-		bool "Memory in deep power down"
-endchoice
-
 choice
 	prompt "Power management timeout action"
 	default MSM_PM_TIMEOUT_HALT
@@ -942,14 +899,6 @@ choice
 	config MSM_PM_TIMEOUT_RESET_CHIP
 		bool "Reset the entire chip"
 endchoice
-
-config MSM_IDLE_WAIT_ON_MODEM
-	int "Wait for Modem to become ready for idle power collapse"
-	default 0
-	help
-	  If Modem is not ready to handle Application Processor's request
-	  for idle power collapse, wait the number of microseconds in case
-	  Modem becomes ready soon.
 
 config NPA_REMOTE_ONCRPC
 	bool "Enables NPA remoting through ONCRPC protocol."

@@ -69,15 +69,11 @@ obj-$(CONFIG_MSM_ADSP) += qdsp5/
 obj-$(CONFIG_MSM7KV2_AUDIO) += qdsp5v2/
 obj-$(CONFIG_MSM_RPCSERVER_HANDSET) += rpc_server_handset.o
 obj-$(CONFIG_MSM_QDSP6) += qdsp6/
-obj-$(CONFIG_QSD_AUDIO) += qdsp6/
 obj-$(CONFIG_MSM_HW3D) += hw3d.o
 ifdef CONFIG_MSM_N_WAY_SMSM
 	obj-$(CONFIG_PM) += pm2.o
 else
 	obj-$(CONFIG_PM) += pm.o
-endif
-ifndef CONFIG_PM
-	obj-y += no-pm.o
 endif
 obj-$(CONFIG_MSM_DMA_TEST) += dma_test.o
 obj-$(CONFIG_SURF_FFA_GPIO_KEYPAD) += keypad-surf-ffa.o

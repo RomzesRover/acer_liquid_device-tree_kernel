@@ -3,9 +3,9 @@ Device tree to compile Cyanogenmod 9.1 for acer liquid (salsa)
 
 Not working in this stuff:
 ```
-# camera (photo works, but laggy. pano and video stacked)
+# camera (photo works, pano works, and video 3fps)
 # usb tether (I check it, but I found this https://github.com/thepasto/android_device_acer_salsa/commit/8bee993d41b78d30dadfb3d9811d2fe078c5d4c7).
-# may be anything else, need more testers..
+# video decoder encoder espessially 720p..
 ```
 
 Prepare to compile:
@@ -13,7 +13,7 @@ Prepare to compile:
 #0 first of all you need to use an 64bit nix system, for exapmpe ubuntu 12.04 LTS x64 or ubuntu 10.04 x64, and system need
 to be full updated
 
-#1 Install req packages:
+#1 Install req packages (you perhaps also need to download others libs check your logs!):
 "sudo apt-get install git-core gnupg flex bison gperf libsdl1.2-dev libesd0-dev libwxgtk2.8-dev squashfs-tools build-essential zip curl 
 libncurses5-dev zlib1g-dev openjdk-6-jre openjdk-6-jdk pngcrush schedtool g++-multilib lib32z1-dev lib32ncurses5-dev lib32readline-gplv2-dev gcc-4.7-multilib g++-4.5-multilib pngcrush optipng"
 

@@ -8,10 +8,8 @@
     
     <string name="download">Choose version to download</string>
     <string name="free">Free version</string>
-    <string name="paid">Paid Version</string>
     
-    <string name="free_d">Free version of Liquid parts has no differences from paid version</string>
-    <string name="paid_d">By bying app Liquid parts on play market you\'ll support development to our liquid! Only 1$!</string>
+    <string name="free_d">Free version of Liquid parts\nIf you want to donate you need to go: Liquid Parts, Help, Donate, Donate to developer</string>
 
 
     <string name="next">What next I need to do ?</string>

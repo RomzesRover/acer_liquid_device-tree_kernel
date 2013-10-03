@@ -21,51 +21,27 @@ public class MainActivity extends PreferenceActivity {
 
 		try {
 		Intent intent = new Intent();
-		intent.setComponent(new ComponentName("com.BBsRs.liquidpartsDonate", "com.BBsRs.liquidparts.LiquidPartsActivity"));
+		intent.setComponent(new ComponentName("com.BBsRs.liquidpartsNew", "com.BBsRs.liquidpartsNew.LiquidPartsActivity"));
 		startActivity(intent);
 		finish();
 		} catch (ActivityNotFoundException e){
-			try {
-			Intent intent = new Intent();
-			intent.setComponent(new ComponentName("com.BBsRs.liquidparts", "com.BBsRs.liquidparts.LiquidPartsActivity"));
-			startActivity(intent);
-			finish();
-			} catch (ActivityNotFoundException e1){
-				addPreferencesFromResource(R.xml.settings);
+			addPreferencesFromResource(R.xml.settings);
 
-				Preference myPref = (Preference) findPreference("free");
-				myPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-				             public boolean onPreferenceClick(Preference preference) {
-						try {
-				            	 Intent intent = new Intent(Intent.ACTION_VIEW);
-				            	 intent.setData(Uri.parse("market://details?id=com.BBsRs.liquidparts"));
-				            	 startActivity(intent);
-				            	 finish();
-				                 //open browser or intent here
-						} catch (ActivityNotFoundException e1){
-						 Toast.makeText(getApplicationContext(), getResources().getString(R.string.need_gag), Toast.LENGTH_LONG).show();
-						}
-						return false;
-				             }
-				         });
-
-				Preference myPref2 = (Preference) findPreference("paid");
-				myPref2.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-				             public boolean onPreferenceClick(Preference preference) {
-						try {
-				            	 Intent intent = new Intent(Intent.ACTION_VIEW);
-				            	 intent.setData(Uri.parse("market://details?id=com.BBsRs.liquidpartsDonate"));
-				            	 startActivity(intent);
-				            	 finish();
-				                 //open browser or intent here
-						} catch (ActivityNotFoundException e1){  
-						 Toast.makeText(getApplicationContext(), getResources().getString(R.string.need_gag), Toast.LENGTH_LONG).show();
-						}
-						return false;
-				             }
-				         });
-			}
-
+			Preference myPref = (Preference) findPreference("free");
+			myPref.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			             public boolean onPreferenceClick(Preference preference) {
+					try {
+			            	 Intent intent = new Intent(Intent.ACTION_VIEW);
+			            	 intent.setData(Uri.parse("market://details?id=com.BBsRs.liquidpartsNew"));
+			            	 startActivity(intent);
+			            	 finish();
+			                 //open browser or intent here
+					} catch (ActivityNotFoundException e1){
+					 Toast.makeText(getApplicationContext(), getResources().getString(R.string.need_gag), Toast.LENGTH_LONG).show();
+					}
+					return false;
+			             }
+			         });
 		}
 
 

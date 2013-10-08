@@ -77,26 +77,32 @@ PRODUCT_PACKAGES += \
    dhcpcd.conf
 
 $(call inherit-product, frameworks/base/build/phone-hdpi-512-dalvik-heap.mk)
-#for liquid a1 with 256mb (24 and 32m) Added by RomzesRover to get faster system
-#Added hahaha this basecely doesn't work
-PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.heapstartsize=5m \
-    dalvik.vm.heapgrowthlimit=24m \
-    dalvik.vm.heapsize=32m
  
-
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
 
-PRODUCT_LOCALES := en
+PRODUCT_LOCALES := en_US
 
 # Salsa uses high-density artwork where available
 PRODUCT_AAPT_CONFIG := normal mdpi ldpi
 PRODUCT_AAPT_PREF_CONFIG := ldpi
 
 # Check generic.mk/languages_full.mk to see what applications/languages are installed turns out all languages get included if I don't specify, but some seem to be missing the actuall translation.
-$(call inherit-product, build/target/product/languages_small.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
+
+#string below replaced by real code here to prevent other langs without patch
+PRODUCT_PACKAGES := \
+    drmserver \
+    libdrmframework \
+    libdrmframework_jni \
+    libfwdlockengine \
+    WAPPushManager
+# Get some sounds
+$(call inherit-product-if-exists, frameworks/base/data/sounds/AllAudio.mk)
+# Get the TTS language packs
+$(call inherit-product-if-exists, external/svox/pico/lang/all_pico_languages.mk)
+# Get everything else from the parent package
+$(call inherit-product, $(SRC_TARGET_DIR)/product/generic_no_telephony.mk)
+
 $(call inherit-product, device/common/gps/gps_eu_supl.mk)
 
 # Pick up overlay for features that depend on non-open-source files

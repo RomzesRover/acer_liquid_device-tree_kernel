@@ -84,13 +84,13 @@ PRODUCT_TAGS += dalvik.gc.type-precise
 PRODUCT_LOCALES := en_US
 
 # Salsa uses high-density artwork where available
-PRODUCT_AAPT_CONFIG := normal mdpi ldpi
+PRODUCT_AAPT_CONFIG := normal ldpi
 PRODUCT_AAPT_PREF_CONFIG := ldpi
 
 # Check generic.mk/languages_full.mk to see what applications/languages are installed turns out all languages get included if I don't specify, but some seem to be missing the actuall translation.
 
 #string below replaced by real code here to prevent other langs without patch
-PRODUCT_PACKAGES := \
+PRODUCT_PACKAGES += \
     drmserver \
     libdrmframework \
     libdrmframework_jni \

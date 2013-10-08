@@ -91,8 +91,8 @@ PRODUCT_TAGS += dalvik.gc.type-precise
 PRODUCT_LOCALES := en
 
 # Salsa uses high-density artwork where available
-PRODUCT_AAPT_CONFIG := normal hdpi
-PRODUCT_AAPT_PREF_CONFIG := hdpi
+PRODUCT_AAPT_CONFIG := normal mdpi ldpi
+PRODUCT_AAPT_PREF_CONFIG := ldpi
 
 # Check generic.mk/languages_full.mk to see what applications/languages are installed turns out all languages get included if I don't specify, but some seem to be missing the actuall translation.
 $(call inherit-product, build/target/product/languages_small.mk)
@@ -124,7 +124,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     keyguard.no_require_sim=true \
     ro.com.android.dateformat=MM-dd-yyyy \
     ro.com.android.dataroaming=false \
-    ro.sf.lcd_density=240 \
+    ro.sf.lcd_density=120 \
     rild.libpath=/system/lib/libril-acer-1.so \
     rild.libargs=-d/dev/smd0 \
     ro.ril.hsxpa=1 \

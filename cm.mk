@@ -2,7 +2,7 @@
 $(call inherit-product, device/acer/salsa/device_salsa.mk)
 
 # Inherit some common cyanogenmod stuff.
-$(call inherit-product, vendor/cm/config/common_full_phone.mk)
+$(call inherit-product, vendor/cm/config/common_mini_phone.mk)
 
 # Include GSM stuff
 $(call inherit-product, vendor/cm/config/gsm.mk)

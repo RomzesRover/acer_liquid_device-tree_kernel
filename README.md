@@ -1,9 +1,10 @@
 Device tree to compile Cyanogenmod 9.1 for acer liquid (salsa)
 =========================================
-
+This is 240x400, LDPI screen resolution version
+=========================================
 Not working in this stuff:
 ```
-# camera (photo works, pano works, and video 3fps)
+# camera (video 3fps, and pano sometimes get freezes)
 # usb tether (I check it, but I found this https://github.com/thepasto/android_device_acer_salsa/commit/8bee993d41b78d30dadfb3d9811d2fe078c5d4c7).
 # video decoder encoder espessially 720p..
 ```

@@ -25,17 +25,3 @@ diff --git a/vendor/cm/config/common.mk b/vendor/cm/config/common.mk
      Apollo
  
  # Extra tools in CM
-diff --git a/vendor/cm/config/common_full_phone.mk b/vendor/cm/config/common_full_phone.mk
-index 8d69ead..342b1c7 100644
---- a/vendor/cm/config/common_full_phone.mk
-+++ b/vendor/cm/config/common_full_phone.mk
-@@ -8,7 +8,7 @@ include frameworks/base/data/sounds/NewAudio.mk
- include frameworks/base/data/sounds/AudioPackageNewWave.mk
- 
- # Bring in all video files
--$(call inherit-product, frameworks/base/data/videos/VideoPackage2.mk)
-+#$(call inherit-product, frameworks/base/data/videos/VideoPackage2.mk)
- 
- # Include CM audio files
- include vendor/cm/config/cm_audio.mk
-

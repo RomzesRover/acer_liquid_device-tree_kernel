@@ -682,7 +682,7 @@ int calc_fb_offset(struct msm_fb_data_type *mfd, struct fb_info *fbi, int bpp)
 
 if (align_buffer)
     {
-        return fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length;
+        return (fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length)*4;
     }
 
 	yres = panel_info->yres;
@@ -1053,10 +1053,10 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	var->pixclock = mfd->panel_info.clk_rate;
 	mfd->var_pixclock = var->pixclock;
 
-	var->xres = panel_info->xres;
-	var->yres = panel_info->yres;
-	var->xres_virtual = panel_info->xres;
-	var->yres_virtual = panel_info->yres * mfd->fb_page;
+	var->xres = 240;
+	var->yres = 400;
+	var->xres_virtual = var->xres;
+	var->yres_virtual = var->yres * mfd->fb_page;
 	var->bits_per_pixel = bpp * 8;	/* FrameBuffer color depth */
 	if (mfd->dest == DISPLAY_LCD) {
 		var->reserved[3] = panel_info->lcd.refx100 / 100;

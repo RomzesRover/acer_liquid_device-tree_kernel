@@ -1350,18 +1350,18 @@ int mdp_ppp_blit(struct fb_info *info, struct mdp_blit_req *req)
 		return -1;
 	}
 
-	iBuf.ibuf_width = req->dst.width;
-	iBuf.ibuf_height = req->dst.height;
+	iBuf.ibuf_width = req->dst.width*2;
+	iBuf.ibuf_height = req->dst.height*2;
 	iBuf.bpp = bytes_per_pixel[req->dst.format];
 
 	iBuf.ibuf_type = req->dst.format;
 	iBuf.buf = (uint8 *) dst_start;
-	iBuf.buf += req->dst.offset;
+	iBuf.buf += req->dst.offset*4;
 
-	iBuf.roi.lcd_x = req->dst_rect.x;
-	iBuf.roi.lcd_y = req->dst_rect.y;
-	iBuf.roi.dst_width = req->dst_rect.w;
-	iBuf.roi.dst_height = req->dst_rect.h;
+	iBuf.roi.lcd_x = req->dst_rect.x*2;
+	iBuf.roi.lcd_y = req->dst_rect.y*2;
+	iBuf.roi.dst_width = req->dst_rect.w*2;
+	iBuf.roi.dst_height = req->dst_rect.h*2;
 
 	iBuf.roi.x = req->src_rect.x;
 	iBuf.roi.width = req->src_rect.w;

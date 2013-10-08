@@ -204,10 +204,10 @@ int mdp_lcdc_on(struct platform_device *pdev)
 	/* starting address */
 	MDP_OUTP(MDP_BASE + dma_base + 0x8, (uint32) buf);
 	/* active window width and height */
-	MDP_OUTP(MDP_BASE + dma_base + 0x4, ((fbi->var.yres) << 16) |
-						(fbi->var.xres));
+	MDP_OUTP(MDP_BASE + dma_base + 0x4, ((mfd->panel_info.yres) << 16) |
+						(mfd->panel_info.xres));
 	/* buffer ystride */
-	MDP_OUTP(MDP_BASE + dma_base + 0xc, fbi->fix.line_length);
+	MDP_OUTP(MDP_BASE + dma_base + 0xc, fbi->fix.line_length*2);
 	/* x/y coordinate = always 0 for lcdc */
 	MDP_OUTP(MDP_BASE + dma_base + 0x10, 0);
 	/* dma config */
@@ -247,7 +247,7 @@ int mdp_lcdc_on(struct platform_device *pdev)
 
 	if (lcdc_width != var->xres) {
 		active_h_start = hsync_start_x + first_pixel_start_x;
-		active_h_end = active_h_start + var->xres - 1;
+		active_h_end = active_h_start + mfd->panel_info.xres - 1;
 		active_hctl =
 		    ACTIVE_START_X_EN | (active_h_end << 16) | active_h_start;
 	} else {
@@ -257,7 +257,7 @@ int mdp_lcdc_on(struct platform_device *pdev)
 	if (lcdc_height != var->yres) {
 		active_v_start =
 		    display_v_start + first_pixel_start_y * hsync_period;
-		active_v_end = active_v_start + (var->yres) * hsync_period - 1;
+		active_v_end = active_v_start + (mfd->panel_info.yres) * hsync_period - 1;
 		active_v_start |= ACTIVE_START_Y_EN;
 	} else {
 		active_v_start = 0;

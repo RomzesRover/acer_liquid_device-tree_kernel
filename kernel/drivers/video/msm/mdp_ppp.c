@@ -1187,8 +1187,8 @@ static int mdp_ppp_verify_req(struct mdp_blit_req *req)
 
 	if ((req->src.width == 0) || (req->src.height == 0) ||
 	    (req->src_rect.w == 0) || (req->src_rect.h == 0) ||
-	    (req->dst.width == 0) || (req->dst.height == 0) ||
-	    (req->dst_rect.w == 0) || (req->dst_rect.h == 0)) {
+	    (req->dst.width*2 == 0) || (req->dst.height*2 == 0) ||
+	    (req->dst_rect.w*2 == 0) || (req->dst_rect.h*2 == 0)) {
 		printk(KERN_ERR "\n%s(): Error in Line %u", __func__,
 			__LINE__);
 
@@ -1202,8 +1202,8 @@ static int mdp_ppp_verify_req(struct mdp_blit_req *req)
 		return -1;
 	}
 
-	if (((req->dst_rect.x + req->dst_rect.w) > req->dst.width) ||
-	    ((req->dst_rect.y + req->dst_rect.h) > req->dst.height)) {
+	if (((req->dst_rect.x*2 + req->dst_rect.w*2) > req->dst.width*2) ||
+	    ((req->dst_rect.y*2 + req->dst_rect.h*2) > req->dst.height*2)) {
 		printk(KERN_ERR "\n%s(): Error in Line %u", __func__,
 			__LINE__);
 		return -1;
@@ -1216,11 +1216,11 @@ static int mdp_ppp_verify_req(struct mdp_blit_req *req)
 	src_height = req->src_rect.h;
 
 	if (req->flags & MDP_ROT_90) {
-		dst_width = req->dst_rect.h;
-		dst_height = req->dst_rect.w;
+		dst_width = req->dst_rect.h*2;
+		dst_height = req->dst_rect.w*2;
 	} else {
-		dst_width = req->dst_rect.w;
-		dst_height = req->dst_rect.h;
+		dst_width = req->dst_rect.w*2;
+		dst_height = req->dst_rect.h*2;
 	}
 
 	switch (req->dst.format) {
@@ -1437,11 +1437,11 @@ int mdp_ppp_blit(struct fb_info *info, struct mdp_blit_req *req)
 
 	/* scale check */
 	if (req->flags & MDP_ROT_90) {
-		dst_width = req->dst_rect.h;
-		dst_height = req->dst_rect.w;
+		dst_width = req->dst_rect.h*2;
+		dst_height = req->dst_rect.w*2;
 	} else {
-		dst_width = req->dst_rect.w;
-		dst_height = req->dst_rect.h;
+		dst_width = req->dst_rect.w*2;
+		dst_height = req->dst_rect.h*2;
 	}
 
 	if ((iBuf.roi.width != dst_width) || (iBuf.roi.height != dst_height))
@@ -1493,18 +1493,18 @@ int mdp_ppp_blit(struct fb_info *info, struct mdp_blit_req *req)
 	     (req->src.format == MDP_ARGB_8888) ||
 	     (req->src.format == MDP_BGRA_8888) ||
 	     (req->src.format == MDP_RGBA_8888)) &&
-	    (iBuf.mdpImg.mdpOp & MDPOP_ROT90) && (req->dst_rect.w <= 16)) {
+	    (iBuf.mdpImg.mdpOp & MDPOP_ROT90) && (req->dst_rect.w*2 <= 16)) {
 		int dst_h, src_w, i;
 		uint32 mdpOp = iBuf.mdpImg.mdpOp;
 
 		src_w = req->src_rect.w;
 		dst_h = iBuf.roi.dst_height;
 
-		for (i = 0; i < (req->dst_rect.h / 16); i++) {
+		for (i = 0; i < (req->dst_rect.h*2 / 16); i++) {
 			/* this tile size */
 			iBuf.roi.dst_height = 16;
 			iBuf.roi.width =
-			    (16 * req->src_rect.w) / req->dst_rect.h;
+			    (16 * req->src_rect.w) / req->dst_rect.h*2;
 
 			/* if it's out of scale range... */
 			if (((MDP_SCALE_Q_FACTOR * iBuf.roi.dst_height) /

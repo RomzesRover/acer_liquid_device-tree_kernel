@@ -1,0 +1,9 @@
+diff --git a/build/target/product/languages_small.mk b/build/target/product/languages_small.mk
+--- a/build/target/product/languages_small.mk	2013-06-09 12:41:27.719460114 +0600
++++ b/build/target/product/languages_small.mk	2013-06-10 15:58:06.277579651 +0600
+@@ -21,4 +21,4 @@
+ 
+ # This is the list of languages that originally shipped on ADP1
+ 
+-PRODUCT_LOCALES := en_US en_GB fr_FR it_IT de_DE es_ES
++PRODUCT_LOCALES := ru_RU en_US fr_FR it_IT de_DE

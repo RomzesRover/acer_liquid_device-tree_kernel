@@ -76,34 +76,25 @@ PRODUCT_PACKAGES += \
    wlan_cu \
    dhcpcd.conf
 
+#setting up heap size !
 $(call inherit-product, frameworks/base/build/phone-hdpi-512-dalvik-heap.mk)
- 
+
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
 
-PRODUCT_LOCALES := en_US
+
 
 # Salsa uses high-density artwork where available
-PRODUCT_AAPT_CONFIG := normal ldpi
+PRODUCT_AAPT_CONFIG := normal mdpi
 PRODUCT_AAPT_PREF_CONFIG := ldpi
 
 # Check generic.mk/languages_full.mk to see what applications/languages are installed turns out all languages get included if I don't specify, but some seem to be missing the actuall translation.
-
-#string below replaced by real code here to prevent other langs without patch
-PRODUCT_PACKAGES += \
-    drmserver \
-    libdrmframework \
-    libdrmframework_jni \
-    libfwdlockengine \
-    WAPPushManager
-# Get some sounds
-$(call inherit-product-if-exists, frameworks/base/data/sounds/AllAudio.mk)
-# Get the TTS language packs
-$(call inherit-product-if-exists, external/svox/pico/lang/all_pico_languages.mk)
-# Get everything else from the parent package
-$(call inherit-product, $(SRC_TARGET_DIR)/product/generic_no_telephony.mk)
-
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base.mk)
+$(call inherit-product, build/target/product/languages_small.mk)
 $(call inherit-product, device/common/gps/gps_eu_supl.mk)
+
+#setting up the main language
+PRODUCT_LOCALES := en_US
 
 # Pick up overlay for features that depend on non-open-source files
 DEVICE_PACKAGE_OVERLAYS := device/acer/salsa/overlay

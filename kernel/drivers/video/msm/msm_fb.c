@@ -685,7 +685,7 @@ if (align_buffer)
         return (fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length)*4;
     }
 
-	yres = panel_info->yres;
+	yres = 400;
 	remainder = (fbi->fix.line_length*yres) & (PAGE_SIZE - 1);
 
 	if (!remainder)
@@ -1019,13 +1019,13 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 		return ret;
 	}
 
-	fix->line_length = msm_fb_line_length(mfd->index, panel_info->xres,
+	fix->line_length = msm_fb_line_length(mfd->index, 240,
 					      bpp);
 
 	/* Make sure all buffers can be addressed on a page boundary by an x
 	 * and y offset */
 
-	remainder = (fix->line_length * panel_info->yres) & (PAGE_SIZE - 1);
+	remainder = (fix->line_length * 400) & (PAGE_SIZE - 1);
 					/* PAGE_SIZE is a power of 2 */
 	if (!remainder)
 		remainder = PAGE_SIZE;
@@ -1037,9 +1037,9 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 
 	if (mfd->index == 0)
 		fix->smem_len = (msm_fb_line_length(mfd->index,
-							panel_info->xres,
+							240,
 							bpp) *
-				     panel_info->yres + PAGE_SIZE -
+				     400 + PAGE_SIZE -
 				     remainder) * mfd->fb_page;
 	else if (mfd->index == 1 || mfd->index == 2) {
 		pr_debug("%s:%d no memory is allocated for fb%d!\n",
@@ -1047,16 +1047,16 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 		fix->smem_len = 0;
 	}
 
-	mfd->var_xres = panel_info->xres;
-	mfd->var_yres = panel_info->yres;
+	mfd->var_xres = 240;
+	mfd->var_yres = 400;
 
 	var->pixclock = mfd->panel_info.clk_rate;
 	mfd->var_pixclock = var->pixclock;
 
 	var->xres = 240;
 	var->yres = 400;
-	var->xres_virtual = var->xres;
-	var->yres_virtual = var->yres * mfd->fb_page;
+	var->xres_virtual = 240;
+	var->yres_virtual = 400 * mfd->fb_page;
 	var->bits_per_pixel = bpp * 8;	/* FrameBuffer color depth */
 	if (mfd->dest == DISPLAY_LCD) {
 		var->reserved[3] = panel_info->lcd.refx100 / 100;
@@ -1065,11 +1065,11 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	    	((panel_info->lcdc.h_back_porch +
 	    	  panel_info->lcdc.h_front_porch +
 	    	  panel_info->lcdc.h_pulse_width +
-	    	  panel_info->xres) *
+	    	  240) *
 	    	 (panel_info->lcdc.v_back_porch +
 	    	  panel_info->lcdc.v_front_porch +
 	    	  panel_info->lcdc.v_pulse_width +
-	    	  panel_info->yres));
+	    	  400));
 	}
 	pr_debug("reserved[3] %u\n", var->reserved[3]);
 

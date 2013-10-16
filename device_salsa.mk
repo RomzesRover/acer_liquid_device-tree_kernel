@@ -17,8 +17,7 @@ PRODUCT_PACKAGES += \
         com.android.future.usb.accessory \
 	lights.salsa \
 	gps.salsa \
-        libcamera \
-	LiquidParts
+        libcamera
 
 # OMX
 PRODUCT_PACKAGES += \

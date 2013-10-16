@@ -20,9 +20,6 @@
 #ifdef CONFIG_ACER_HEADSET
 #include <mach/acer_headset.h>
 #endif
-#ifdef CONFIG_AUDIO_FM2018
-#include <mach/fm2018.h>
-#endif
 
 void analog_init(void)
 {
@@ -87,13 +84,6 @@ void analog_speaker_enable(int en)
 void analog_mic_enable(int en)
 {
 	pmic_mic_en(en);
-#ifdef CONFIG_AUDIO_FM2018
-	if (hw_version <= 3) {
-		pr_debug("### open fm2018 !!\n");
-		fm2018_set_pwd(en);
-		fm2018_set_procedure(1);
-	}
-#endif
 }
 
 static struct q6audio_analog_ops ops = {

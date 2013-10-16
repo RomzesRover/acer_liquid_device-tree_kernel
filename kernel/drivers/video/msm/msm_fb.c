@@ -1,9 +1,9 @@
-/* drivers/video/msm/src/drv/fb/msm_fb.c
+/* drivers/video/msm/msm_fb.c
  *
  * Core MSM framebuffer driver.
  *
  * Copyright (C) 2007 Google Incorporated
- * Copyright (c) 2008-2010, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2008-2012, Code Aurora Forum. All rights reserved.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -41,6 +41,7 @@
 #include <linux/leds.h>
 #include <linux/pm_runtime.h>
 
+
 #define MSM_FB_C
 #include "msm_fb.h"
 #include "mddihosti.h"
@@ -53,12 +54,19 @@
 extern int load_565rle_image(char *filename);
 #endif
 
+#ifdef CONFIG_FB_MSM_DOUBLE_BUFFER
+#define MSM_FB_NUM	2
+static bool align_buffer = false;
+#endif
+
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_NUM	3
 static bool align_buffer = true;
-#else
-#define MSM_FB_NUM	2
-static bool align_buffer = false;
+#endif
+
+#ifdef CONFIG_FB_MSM_QUADRUPLE_BUFFER
+#define MSM_FB_NUM	4
+static bool align_buffer = true;
 #endif
 
 static unsigned char *fbram;
@@ -68,7 +76,9 @@ static int fbram_size;
 static struct platform_device *pdev_list[MSM_FB_MAX_DEV_LIST];
 static int pdev_list_cnt;
 
-int vsync_mode = 0;
+int vsync_mode = 1;
+
+#define MAX_BLIT_REQ 256
 
 #define MAX_FBI_LIST 32
 static struct fb_info *fbi_list[MAX_FBI_LIST];
@@ -291,7 +301,7 @@ static int msm_fb_probe(struct platform_device *pdev)
 			printk(KERN_ERR "fbram ioremap failed!\n");
 			return -ENOMEM;
 		}
-		MSM_FB_INFO("msm_fb_probe:  phy_Addr = 0x%x virt = 0x%x\n",
+		MSM_FB_DEBUG("msm_fb_probe:  phy_Addr = 0x%x virt = 0x%x\n",
 			     (int)fbram_phys, (int)fbram);
 
 		msm_fb_resource_initialized = 1;
@@ -615,7 +625,7 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 	case FB_BLANK_UNBLANK:
 		if (!mfd->panel_power_on) {
 #if !defined(CONFIG_FB_MSM_LCDC_AUO_WVGA)
-			mdelay(100);
+			mdelay(16);
 #endif
 			ret = pdata->on(mfd->pdev);
 			if (ret == 0) {
@@ -649,7 +659,7 @@ static int msm_fb_blank_sub(int blank_mode, struct fb_info *info,
 			curr_pwr_state = mfd->panel_power_on;
 			mfd->panel_power_on = FALSE;
 
-			mdelay(100);
+			mdelay(16);
 		        memset((void *)info->screen_base, 0,
     			     info->fix.smem_len);
 			ret = pdata->off(mfd->pdev);
@@ -670,9 +680,10 @@ int calc_fb_offset(struct msm_fb_data_type *mfd, struct fb_info *fbi, int bpp)
 	struct msm_panel_info *panel_info = &mfd->panel_info;
 	int remainder, yres, offset;
 
-	if (!align_buffer){
-       		 return fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length;
-    	}
+if (align_buffer)
+    {
+        return fbi->var.xoffset * bpp + fbi->var.yoffset * fbi->fix.line_length;
+    }
 
 	yres = panel_info->yres;
 	remainder = (fbi->fix.line_length*yres) & (PAGE_SIZE - 1);
@@ -692,6 +703,65 @@ int calc_fb_offset(struct msm_fb_data_type *mfd, struct fb_info *fbi, int bpp)
 		fbi->fix.line_length + 2 * (PAGE_SIZE - remainder));
 	}
 	return offset;
+}
+
+static void msm_fb_fillrect(struct fb_info *info,
+			    const struct fb_fillrect *rect)
+{
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
+
+	cfb_fillrect(info, rect);
+	if (!mfd->hw_refresh && (info->var.yoffset == 0) &&
+		!mfd->sw_currently_refreshing) {
+		struct fb_var_screeninfo var;
+
+		var = info->var;
+		var.reserved[0] = 0x54445055;
+		var.reserved[1] = (rect->dy << 16) | (rect->dx);
+		var.reserved[2] = ((rect->dy + rect->height) << 16) |
+		    (rect->dx + rect->width);
+
+		msm_fb_pan_display(&var, info);
+	}
+}
+
+static void msm_fb_copyarea(struct fb_info *info,
+			    const struct fb_copyarea *area)
+{
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
+
+	cfb_copyarea(info, area);
+	if (!mfd->hw_refresh && (info->var.yoffset == 0) &&
+		!mfd->sw_currently_refreshing) {
+		struct fb_var_screeninfo var;
+
+		var = info->var;
+		var.reserved[0] = 0x54445055;
+		var.reserved[1] = (area->dy << 16) | (area->dx);
+		var.reserved[2] = ((area->dy + area->height) << 16) |
+		    (area->dx + area->width);
+
+		msm_fb_pan_display(&var, info);
+	}
+}
+
+static void msm_fb_imageblit(struct fb_info *info, const struct fb_image *image)
+{
+	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
+
+	cfb_imageblit(info, image);
+	if (!mfd->hw_refresh && (info->var.yoffset == 0) &&
+		!mfd->sw_currently_refreshing) {
+		struct fb_var_screeninfo var;
+
+		var = info->var;
+		var.reserved[0] = 0x54445055;
+		var.reserved[1] = (image->dy << 16) | (image->dx);
+		var.reserved[2] = ((image->dy + image->height) << 16) |
+		    (image->dx + image->width);
+
+		msm_fb_pan_display(&var, info);
+	}
 }
 
 static int msm_fb_blank(int blank_mode, struct fb_info *info)
@@ -779,6 +849,9 @@ static struct fb_ops msm_fb_ops = {
 	.fb_setcolreg = NULL,	/* set color register */
 	.fb_blank = msm_fb_blank,	/* blank display */
 	.fb_pan_display = msm_fb_pan_display,	/* pan display */
+	.fb_fillrect = msm_fb_fillrect,	/* Draws a rectangle */
+	.fb_copyarea = msm_fb_copyarea,	/* Copy data from area to another */
+	.fb_imageblit = msm_fb_imageblit,	/* Draws a image to the display */
 	.fb_rotate = NULL,
 	.fb_sync = NULL,	/* wait for blit idle, optional */
 	.fb_ioctl = msm_fb_ioctl,	/* perform fb specific ioctl (optional) */
@@ -827,13 +900,14 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	var->yoffset = 0,	/* resolution */
 	var->grayscale = 0,	/* No graylevels */
 	var->nonstd = 0,	/* standard pixel format */
-	var->activate = FB_ACTIVATE_VBL;	/* activate it at vsync */
-
-	/* height of picture in mm */
-	var->height = -1;
-
-	var->width = -1;
-
+	var->activate = FB_ACTIVATE_VBL,	/* activate it at vsync */
+#if defined (CONFIG_MACH_ACER_A1)
+	var->height = panel_info->height;       // height of picture in mm
+	var->width = panel_info->width;         // width of picture in mm
+#else
+ 	var->height = -1,  /* height of picture in mm */
+	var->width = -1,  /* width of picture in mm */
+#endif
 	var->accel_flags = 0,	/* acceleration flags */
 	var->sync = 0,	/* see FB_SYNC_* */
 	var->rotate = 0,	/* angle we rotate counter clockwise */
@@ -982,8 +1056,7 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	var->xres = panel_info->xres;
 	var->yres = panel_info->yres;
 	var->xres_virtual = panel_info->xres;
-	var->yres_virtual = panel_info->yres * mfd->fb_page +
-		((PAGE_SIZE - remainder)/fix->line_length) * mfd->fb_page;
+	var->yres_virtual = panel_info->yres * mfd->fb_page;
 	var->bits_per_pixel = bpp * 8;	/* FrameBuffer color depth */
 	if (mfd->dest == DISPLAY_LCD) {
 		var->reserved[3] = panel_info->lcd.refx100 / 100;
@@ -1003,7 +1076,7 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 		/*
 		 * id field for fb app
 		 */
-	id = (int *)&mfd->panel;
+	    id = (int *)&mfd->panel;
 
 #if defined(CONFIG_FB_MSM_MDP22)
 	snprintf(fix->id, sizeof(fix->id), "msmfb22_%x", (__u32) *id);
@@ -1035,26 +1108,14 @@ static int msm_fb_register(struct msm_fb_data_type *mfd)
 	fbram_phys += fbram_offset;
 	fbram_size -= fbram_offset;
 
-	if (mfd->index == 0)
-		if (fbram_size < fix->smem_len) {
-			pr_err("error: no more framebuffer memory!\n");
-			return -ENOMEM;
-		}
+	if (fbram_size < fix->smem_len) {
+		printk(KERN_ERR "error: no more framebuffer memory!\n");
+		return -ENOMEM;
+	}
 
 	fbi->screen_base = fbram;
 	fbi->fix.smem_start = (unsigned long)fbram_phys;
 
-/*
-	mfd->map_buffer = msm_subsystem_map_buffer(
-		fbi->fix.smem_start, fbi->fix.smem_len,
-		flags, subsys_id, 2);
-	if (mfd->map_buffer) {
-		pr_debug("%s(): buf 0x%lx, mfd->map_buffer->iova[0] 0x%lx\n"
-			"mfd->map_buffer->iova[1] 0x%lx", __func__,
-			fbi->fix.smem_start, mfd->map_buffer->iova[0],
-			mfd->map_buffer->iova[1]);
-	}
-*/
 	if (mfd->index == 0)
 		memset(fbi->screen_base, 0x0, fix->smem_len);
 
@@ -2298,6 +2359,8 @@ static int msmfb_blit(struct fb_info *info, void __user *p)
 		return -EFAULT;
 	p += sizeof(req_list_header);
 	count = req_list_header.count;
+	if (count < 0 || count >= MAX_BLIT_REQ)
+		return -EINVAL;
 	while (count > 0) {
 		/*
 		 * Access the requests through a narrow window to decrease copy

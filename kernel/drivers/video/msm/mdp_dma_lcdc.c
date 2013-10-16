@@ -1,57 +1,13 @@
 /* Copyright (c) 2008-2009, Code Aurora Forum. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Code Aurora Forum nor
- *       the names of its contributors may be used to endorse or promote
- *       products derived from this software without specific prior written
- *       permission.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
  *
- * Alternatively, provided that this notice is retained in full, this software
- * may be relicensed by the recipient under the terms of the GNU General Public
- * License version 2 ("GPL") and only version 2, in which case the provisions of
- * the GPL apply INSTEAD OF those given above.  If the recipient relicenses the
- * software under the GPL, then the identification text in the MODULE_LICENSE
- * macro must be changed to reflect "GPLv2" instead of "Dual BSD/GPL".  Once a
- * recipient changes the license terms to the GPL, subsequent recipients shall
- * not relicense under alternate licensing terms, including the BSD or dual
- * BSD/GPL terms.  In addition, the following license statement immediately
- * below and between the words START and END shall also then apply when this
- * software is relicensed under the GPL:
- *
- * START
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 2 and only version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * END
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  */
 
@@ -76,6 +32,21 @@
 #include "mdp.h"
 #include "msm_fb.h"
 #include "mdp4.h"
+
+#if defined(CONFIG_MACH_ACER_A1)
+#include <mach/board.h>
+#include <mach/vreg.h>
+#include <linux/gpio.h>
+
+#define GPIO_LCD_RST  118
+#define LCD_RST_HI         gpio_set_value(GPIO_LCD_RST,1)
+#define LCD_RST_LO         gpio_set_value(GPIO_LCD_RST,0)
+
+extern int ReadID(void);
+
+static struct vreg *vreg_vdd;
+static struct vreg *vreg_vddio;
+#endif
 
 #ifdef CONFIG_FB_MSM_MDP40
 #define LCDC_BASE	0xC0000
@@ -137,6 +108,35 @@ int mdp_lcdc_on(struct platform_device *pdev)
 	uint32 timer_base = LCDC_BASE;
 	uint32 block = MDP_DMA2_BLOCK;
 	int ret;
+
+#if defined(CONFIG_MACH_ACER_A1)
+	int rc = 0;
+
+	vreg_vdd = vreg_get(NULL, "gp5");
+	vreg_vddio = vreg_get(NULL, "gp1");
+
+	if ((lcm_id < 2) && (hw_version <= 2))
+		rc = vreg_set_level(vreg_vddio, 1800);
+	else
+		rc = vreg_set_level(vreg_vddio, 2600);
+	if (!rc)
+		rc = vreg_enable(vreg_vddio);
+	if (rc)
+		printk(KERN_ERR "%s: return val: %d \n",
+				__func__, rc);
+	pr_debug("%s GP1 Enabled[2600]\n", __func__);
+
+	if (lcm_id < 2)
+		rc = vreg_set_level(vreg_vdd, 2400); /* CUT 1.1 */
+	else
+		rc = vreg_set_level(vreg_vdd, 2800);
+	if (!rc)
+		rc = vreg_enable(vreg_vdd);
+	if (rc)
+		printk(KERN_ERR "%s: return val: %d \n",
+				__func__, rc);
+	pr_debug("%s GP5 Enabled[2400]\n", __func__);
+#endif
 
 	mfd = (struct msm_fb_data_type *)platform_get_drvdata(pdev);
 
@@ -286,6 +286,10 @@ int mdp_lcdc_on(struct platform_device *pdev)
 	ctrl_polarity =
 	    (data_en_polarity << 2) | (vsync_polarity << 1) | (hsync_polarity);
 
+#if defined(CONFIG_MACH_ACER_A1)
+	MDP_OUTP(MDP_BASE + LCDC_BASE , 0);
+#endif
+
 	MDP_OUTP(MDP_BASE + timer_base + 0x4, hsync_ctrl);
 	MDP_OUTP(MDP_BASE + timer_base + 0x8, vsync_period);
 	MDP_OUTP(MDP_BASE + timer_base + 0xc, vsync_pulse_width * hsync_period);
@@ -312,6 +316,10 @@ int mdp_lcdc_on(struct platform_device *pdev)
 		MDP_OUTP(MDP_BASE + timer_base + 0x30, active_v_start);
 		MDP_OUTP(MDP_BASE + timer_base + 0x38, active_v_end);
 	}
+
+#if defined(CONFIG_MACH_ACER_A1)
+	MDP_OUTP(MDP_BASE + LCDC_BASE , 1);
+#endif
 
 	ret = panel_next_on(pdev);
 	if (ret == 0) {
@@ -352,6 +360,15 @@ int mdp_lcdc_off(struct platform_device *pdev)
 
 	/* delay to make sure the last frame finishes */
 	mdelay(100);
+
+#if defined(CONFIG_MACH_ACER_A1)
+	vreg_disable(vreg_vdd);
+	pr_debug("%s GP5 Disabled\n", __func__);
+	vreg_disable(vreg_vddio);
+	pr_debug("%s GP1 Disabled\n", __func__);
+
+	LCD_RST_LO;
+#endif
 
 	return ret;
 }

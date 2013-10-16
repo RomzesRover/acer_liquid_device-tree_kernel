@@ -1,58 +1,18 @@
-/* Copyright (c) 2008-2010, Code Aurora Forum. All rights reserved.
+/* drivers/video/msm_fb/mdp.c
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Code Aurora Forum nor
- *       the names of its contributors may be used to endorse or promote
- *       products derived from this software without specific prior written
- *       permission.
+ * MSM MDP Interface (used by framebuffer core)
  *
- * Alternatively, provided that this notice is retained in full, this software
- * may be relicensed by the recipient under the terms of the GNU General Public
- * License version 2 ("GPL") and only version 2, in which case the provisions of
- * the GPL apply INSTEAD OF those given above.  If the recipient relicenses the
- * software under the GPL, then the identification text in the MODULE_LICENSE
- * macro must be changed to reflect "GPLv2" instead of "Dual BSD/GPL".  Once a
- * recipient changes the license terms to the GPL, subsequent recipients shall
- * not relicense under alternate licensing terms, including the BSD or dual
- * BSD/GPL terms.  In addition, the following license statement immediately
- * below and between the words START and END shall also then apply when this
- * software is relicensed under the GPL:
+ * Copyright (c) 2007-2012, Code Aurora Forum. All rights reserved.
+ * Copyright (C) 2007 Google Incorporated
  *
- * START
+ * This software is licensed under the terms of the GNU General Public
+ * License version 2, as published by the Free Software Foundation, and
+ * may be copied, distributed, and modified under those terms.
  *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 2 and only version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * END
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 #include <linux/module.h>
@@ -69,6 +29,7 @@
 #include <linux/debugfs.h>
 #include <linux/delay.h>
 #include <linux/mutex.h>
+#include <linux/pm_runtime.h>
 
 #include <asm/system.h>
 #include <asm/mach-types.h>
@@ -83,10 +44,6 @@
 
 #include <linux/autoconf.h>
 
-#ifdef CONFIG_FB_MSM_MDDI_TMD_NT35580
-#include "mddi_tmd_nt35580.h"
-#endif
-
 static struct clk *mdp_clk;
 static struct clk *mdp_pclk;
 
@@ -94,8 +51,7 @@ struct completion mdp_ppp_comp;
 struct semaphore mdp_ppp_mutex;
 struct semaphore mdp_pipe_ctrl_mutex;
 
-unsigned long mdp_timer_duration = (HZ);   /* 1 sec */
-/* unsigned long mdp_mdp_timer_duration=0; */
+unsigned long mdp_timer_duration = (HZ/20);   /* 50ms */
 
 boolean mdp_ppp_waiting = FALSE;
 uint32 mdp_tv_underflow_cnt;
@@ -126,6 +82,9 @@ struct workqueue_struct *mdp_vsync_wq;	/*mdp vsync wq */
 
 static struct workqueue_struct *mdp_pipe_ctrl_wq; /* mdp mdp pipe ctrl wq */
 static struct delayed_work mdp_pipe_ctrl_worker;
+
+static boolean mdp_suspended = FALSE;
+DEFINE_MUTEX(mdp_suspend_mutex);
 
 #ifdef CONFIG_FB_MSM_MDP40
 struct mdp_dma_data dma2_data;
@@ -340,12 +299,17 @@ static DEFINE_SPINLOCK(mdp_lock);
 static int mdp_irq_mask;
 static int mdp_irq_enabled;
 
+/*
+ * mdp_enable_irq: can not be called from isr
+ */
 void mdp_enable_irq(uint32 term)
 {
 	unsigned long irq_flags;
 
 	spin_lock_irqsave(&mdp_lock, irq_flags);
-	if (!(mdp_irq_mask & term)) {
+	if (mdp_irq_mask & term) {
+		printk(KERN_ERR "MDP IRQ term-0x%x is already set\n", term);
+	} else {
 		mdp_irq_mask |= term;
 		if (mdp_irq_mask && !mdp_irq_enabled) {
 			mdp_irq_enabled = 1;
@@ -355,6 +319,9 @@ void mdp_enable_irq(uint32 term)
 	spin_unlock_irqrestore(&mdp_lock, irq_flags);
 }
 
+/*
+ * mdp_disable_irq: can not be called from isr
+ */
 void mdp_disable_irq(uint32 term)
 {
 	unsigned long irq_flags;
@@ -424,6 +391,7 @@ void mdp_pipe_kickoff(uint32 term, struct msm_fb_data_type *mfd)
 		/* DMA update timestamp */
 		mdp_dma2_last_update_time = ktime_get_real();
 		/* let's turn on DMA2 block */
+
 #ifdef CONFIG_FB_MSM_MDP22
 		outpdw(MDP_CMD_DEBUG_ACCESS_BASE + 0x0044, 0x0);/* start DMA */
 #else
@@ -675,9 +643,6 @@ irqreturn_t mdp_isr(int irq, void *ptr)
 			mdp_pipe_ctrl(MDP_DMA2_BLOCK, MDP_BLOCK_POWER_OFF,
 				      TRUE);
 			complete(&dma->comp);
-#ifdef CONFIG_FB_MSM_MDDI_TMD_NT35580
-			mddi_nt35580_lcd_display_on();
-#endif
 		}
 		/* PPP Complete */
 		if (mdp_interrupt & MDP_PPP_DONE) {
@@ -781,12 +746,6 @@ static void mdp_drv_init(void)
 				msm_fb_debugfs_file_create(mdp_dir,
 					"lcdc_start_y",
 					(u32 *) &first_pixel_start_y);
-				msm_fb_debugfs_file_create(mdp_dir,
-					"mdp_lcdc_pclk_clk_rate",
-					(u32 *) &mdp_lcdc_pclk_clk_rate);
-				msm_fb_debugfs_file_create(mdp_dir,
-					"mdp_lcdc_pad_pclk_clk_rate",
-					(u32 *) &mdp_lcdc_pad_pclk_clk_rate);
 #endif
 			}
 		}
@@ -833,10 +792,6 @@ static int mdp_off(struct platform_device *pdev)
 	return ret;
 }
 
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
-static DEFINE_MUTEX(mdp_on_mutex);
-#endif
-
 static int mdp_on(struct platform_device *pdev)
 {
 #ifdef MDP_HW_VSYNC
@@ -844,24 +799,11 @@ static int mdp_on(struct platform_device *pdev)
 #endif
 
 	int ret = 0;
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
-	int i;
-#endif
 
 #ifdef MDP_HW_VSYNC
 	mdp_hw_vsync_clk_enable(mfd);
 #endif
 
-#if defined(CONFIG_FB_MSM_MDDI_TMD_NT35580)
-	mutex_lock(&mdp_on_mutex);
-	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
-	for (i = 0; i < MDP_CCS_SIZE; i++)
-		writel(mdp_ccs_yuv2rgb.ccs[i], MDP_CSC_PRMVn(i));
-	for (i = 0; i < MDP_BV_SIZE; i++)
-		writel(mdp_ccs_yuv2rgb.bv[i], MDP_CSC_PRE_BV1n(i));
-	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
-	mutex_unlock(&mdp_on_mutex);
-#endif
 	ret = panel_next_on(pdev);
 
 	return ret;
@@ -1132,6 +1074,10 @@ static void mdp_suspend_sub(void)
 
 	/* try to power down */
 	mdp_pipe_ctrl(MDP_MASTER_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
+
+	mutex_lock(&mdp_suspend_mutex);
+	mdp_suspended = TRUE;
+	mutex_unlock(&mdp_suspend_mutex);
 }
 
 #if defined(CONFIG_PM) && !defined(CONFIG_HAS_EARLYSUSPEND)
@@ -1147,11 +1093,19 @@ static void mdp_early_suspend(struct early_suspend *h)
 {
 	mdp_suspend_sub();
 }
+
+static void mdp_early_resume(struct early_suspend *h)
+{
+	mutex_lock(&mdp_suspend_mutex);
+	mdp_suspended = FALSE;
+	mutex_unlock(&mdp_suspend_mutex);
+}
 #endif
 
 static int mdp_remove(struct platform_device *pdev)
 {
 	iounmap(msm_mdp_base);
+	pm_runtime_disable(&pdev->dev);
 	return 0;
 }
 
@@ -1160,6 +1114,7 @@ static int mdp_register_driver(void)
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	early_suspend.level = EARLY_SUSPEND_LEVEL_DISABLE_FB - 1;
 	early_suspend.suspend = mdp_early_suspend;
+	early_suspend.resume = mdp_early_resume;
 	register_early_suspend(&early_suspend);
 #endif
 
@@ -1187,228 +1142,3 @@ static int __init mdp_driver_init(void)
 }
 
 module_init(mdp_driver_init);
-
-/***********************************************************************/
-
-#ifdef CONFIG_DEBUG_FS
-
-#define MDP_DEBUG_BUF	1024
-
-static uint32	mdp_offset;
-static uint32	mdp_count;
-
-static char	debug_buf[MDP_DEBUG_BUF];
-
-static int mdp_offset_open(struct inode *inode, struct file *file)
-{
-	/* non-seekable */
-	file->f_mode &= ~(FMODE_LSEEK | FMODE_PREAD | FMODE_PWRITE);
-	return 0;
-}
-
-static int mdp_offset_release(struct inode *inode, struct file *file)
-{
-	return 0;
-}
-
-static ssize_t mdp_offset_write(
-	struct file *file,
-	const char __user *buff,
-	size_t count,
-	loff_t *ppos)
-{
-	uint32 off, cnt;
-
-	if (count > sizeof(debug_buf))
-		return -EFAULT;
-
-	if (copy_from_user(debug_buf, buff, count))
-		return -EFAULT;
-
-	debug_buf[count] = 0;	/* end of string */
-
-	sscanf(debug_buf, "%x %d", &off, &cnt);
-
-	if (cnt <= 0)
-		cnt = 1;
-
-	mdp_offset = off;
-	mdp_count = cnt;
-
-	printk(KERN_INFO "%s: offset=%x cnt=%d\n", __func__,
-				mdp_offset, mdp_count);
-
-	return count;
-}
-
-static ssize_t mdp_offset_read(
-	struct file *file,
-	char __user *buff,
-	size_t count,
-	loff_t *ppos)
-{
-	int len = 0;
-
-
-	if (*ppos)
-		return 0;	/* the end */
-
-	len = snprintf(debug_buf, sizeof(debug_buf), "0x%08x %d\n",
-					mdp_offset, mdp_count);
-
-	if (copy_to_user(buff, debug_buf, len))
-		return -EFAULT;
-
-	if (len < 0)
-		return 0;
-
-	*ppos += len;	/* increase offset */
-
-	return len;
-}
-
-static const struct file_operations mdp_off_fops = {
-	.open = mdp_offset_open,
-	.release = mdp_offset_release,
-	.read = mdp_offset_read,
-	.write = mdp_offset_write,
-};
-
-static int mdp_reg_open(struct inode *inode, struct file *file)
-{
-	/* non-seekable */
-	file->f_mode &= ~(FMODE_LSEEK | FMODE_PREAD | FMODE_PWRITE);
-	return 0;
-}
-
-static int mdp_reg_release(struct inode *inode, struct file *file)
-{
-	return 0;
-}
-
-static ssize_t mdp_reg_write(
-	struct file *file,
-	const char __user *buff,
-	size_t count,
-	loff_t *ppos)
-{
-	uint32 off, data;
-	int cnt;
-
-	if (count > sizeof(debug_buf))
-		return -EFAULT;
-
-	if (copy_from_user(debug_buf, buff, count))
-		return -EFAULT;
-
-	debug_buf[count] = 0;	/* end of string */
-
-	cnt = sscanf(debug_buf, "%x %x", &off, &data);
-
-	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
-	outpdw(MDP_BASE + off, data);
-	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
-
-	printk(KERN_INFO "%s: addr=%x data=%x\n", __func__, off, data);
-
-	return count;
-}
-
-static ssize_t mdp_reg_read(
-	struct file *file,
-	char __user *buff,
-	size_t count,
-	loff_t *ppos)
-{
-	int len = 0;
-	uint32 data;
-	int i, j, off, dlen, num;
-	char *bp, *cp;
-	int tot = 0;
-
-
-	if (*ppos)
-		return 0;	/* the end */
-
-	j = 0;
-	num = 0;
-	bp = debug_buf;
-	cp = MDP_BASE + mdp_offset;
-	dlen = sizeof(debug_buf);
-	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_ON, FALSE);
-	while (j++ < 8) {
-		len = snprintf(bp, dlen, "0x%08x: ", (int)cp);
-		tot += len;
-		bp += len;
-		dlen -= len;
-		off = 0;
-		i = 0;
-		while (i++ < 4) {
-			data = inpdw(cp + off);
-			len = snprintf(bp, dlen, "%08x ", data);
-			tot += len;
-			bp += len;
-			dlen -= len;
-			off += 4;
-			num++;
-			if (num >= mdp_count)
-				break;
-		}
-		*bp++ = '\n';
-		tot++;
-		cp += off;
-		if (num >= mdp_count)
-			break;
-	}
-	mdp_pipe_ctrl(MDP_CMD_BLOCK, MDP_BLOCK_POWER_OFF, FALSE);
-	*bp = 0;
-	tot++;
-
-	if (copy_to_user(buff, debug_buf, tot))
-		return -EFAULT;
-
-	if (tot < 0)
-		return 0;
-
-	*ppos += tot;	/* increase offset */
-
-	return tot;
-}
-
-static const struct file_operations mdp_reg_fops = {
-	.open = mdp_reg_open,
-	.release = mdp_reg_release,
-	.read = mdp_reg_read,
-	.write = mdp_reg_write,
-};
-
-static int __init mdp_debugfs_init(void)
-{
-	struct dentry *dent = debugfs_create_dir("mdp", NULL);
-
-	if (IS_ERR(dent)) {
-		printk(KERN_ERR "%s(%d): debugfs_create_dir fail, error %ld\n",
-			__FILE__, __LINE__, PTR_ERR(dent));
-		return -1;
-	}
-
-	if (debugfs_create_file("off", 0644, dent, 0, &mdp_off_fops)
-			== NULL) {
-		printk(KERN_ERR "%s(%d): debugfs_create_file: index fail\n",
-			__FILE__, __LINE__);
-		return -1;
-	}
-
-	if (debugfs_create_file("reg", 0644, dent, 0, &mdp_reg_fops)
-			== NULL) {
-		printk(KERN_ERR "%s(%d): debugfs_create_file: debug fail\n",
-			__FILE__, __LINE__);
-		return -1;
-	}
-
-	return 0;
-}
-
-late_initcall(mdp_debugfs_init);
-
-#endif	/* CONFIG_DEBUG_FS */

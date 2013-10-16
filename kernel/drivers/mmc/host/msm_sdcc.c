@@ -3,7 +3,7 @@
  *
  *  Copyright (C) 2007 Google Inc,
  *  Copyright (C) 2003 Deep Blue Solutions, Ltd, All Rights Reserved.
- *  Copyright (c) 2009-2010, Code Aurora Forum. All rights reserved.
+ *  Copyright (c) 2009-2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -39,6 +39,7 @@
 #include <linux/debugfs.h>
 #include <linux/io.h>
 #include <linux/memory.h>
+#include <linux/slab.h>
 
 #include <asm/cacheflush.h>
 #include <asm/div64.h>
@@ -1873,7 +1874,7 @@ msmsdcc_dbg_state_read(struct file *file, char __user *ubuf,
 		       size_t count, loff_t *ppos)
 {
 	struct msmsdcc_host *host = (struct msmsdcc_host *) file->private_data;
-	char buf[1024];
+	char buf[256];
 	int max, i;
 
 	i = 0;

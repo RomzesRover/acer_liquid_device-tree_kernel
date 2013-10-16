@@ -2226,9 +2226,20 @@ config FB_MSM_LCDC_HW
 	bool
 	default n
 
-config FB_MSM_TRIPLE_BUFFER
+choice
+	prompt "Number of FrameBuffer"
+	default FB_MSM_TRIPLE_BUFFER
+
+	config FB_MSM_DOUBLE_BUFFER
+	bool "Support for double frame buffer"
+
+	config FB_MSM_TRIPLE_BUFFER
 	bool "Support for triple frame buffer"
-	default n
+
+	config FB_MSM_QUADRUPLE_BUFFER
+	bool "Support for QUAD frame buffer"
+
+endchoice
 
 choice
 	prompt "MDP HW version"

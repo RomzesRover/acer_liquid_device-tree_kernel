@@ -20,11 +20,11 @@
 #include <linux/miscdevice.h>
 #include <linux/mutex.h>
 #include <linux/sched.h>
+#include <linux/wait.h>
 #include <linux/uaccess.h>
 #include <linux/kthread.h>
 #include <linux/time.h>
 #include <linux/wait.h>
-
 
 #include <linux/msm_audio.h>
 #include <linux/msm_audio_aac.h>
@@ -40,14 +40,13 @@ struct aac_fc_buff {
 	int size;
 	int actual_size;
 };
- 
+
 struct aac_fc {
 	struct task_struct *task;
 	wait_queue_head_t fc_wq;
 	struct aac_fc_buff fc_buff[AAC_FC_BUFF_CNT];
 	int buff_index;
 };
-
 struct aac {
 	struct mutex lock;
 	struct msm_audio_aac_enc_config cfg;
@@ -117,7 +116,6 @@ static int q6_aac_flowcontrol(void *data)
 
 	return 0;
 }
-
 static long q6_aac_in_ioctl(struct file *file,
 				 unsigned int cmd, unsigned long arg)
 {
@@ -237,7 +235,7 @@ fc_fail:
 		if (copy_to_user((void *)arg, &aac->str_cfg,
 			sizeof(struct msm_audio_stream_config)))
 			rc = -EFAULT;
-			pr_debug("[%s:%s] GET_STREAM_CONFIG: buffsz=%d, buffcnt=%d\n",
+		pr_debug("[%s:%s] GET_STREAM_CONFIG: buffsz=%d, buffcnt=%d\n",
 			 __MM_FILE__, __func__, aac->str_cfg.buffer_size,
 			aac->str_cfg.buffer_count);
 		break;
@@ -346,7 +344,6 @@ static int q6_aac_in_open(struct inode *inode, struct file *file)
 	}
 	/*initialize wait queue head*/
 	init_waitqueue_head(&fc->fc_wq);
-
 	return 0;
 }
 
@@ -368,7 +365,6 @@ static ssize_t q6_aac_in_read(struct file *file, char __user *buf,
 		res = -ENODEV;
 		goto fail;
 	}
-
 	fc = aac->aac_fc;
 
 	/*wait for buffer to full*/
@@ -376,7 +372,7 @@ static ssize_t q6_aac_in_read(struct file *file, char __user *buf,
 		res = wait_event_interruptible_timeout(fc->fc_wq,
 			(fc->fc_buff[fc->buff_index].empty == 0),
 				msecs_to_jiffies(AAC_READ_TIMEOUT));
-	
+
 		pr_debug("[%s:%s] buff_index = %d\n", __MM_FILE__,
 			__func__, fc->buff_index);
 		if (res == 0) {
@@ -401,7 +397,7 @@ static ssize_t q6_aac_in_read(struct file *file, char __user *buf,
 		goto fail;
 	}
 
-	if (copy_to_user(buf, fc->fc_buff[fc->buff_index].data,xfer)) {
+	if (copy_to_user(buf, fc->fc_buff[fc->buff_index].data,	xfer)) {
 		mutex_unlock(&(fc->fc_buff[fc->buff_index].lock));
 		pr_err("[%s:%s] copy_to_user failed at index %d\n",
 				__MM_FILE__, __func__, fc->buff_index);
@@ -430,7 +426,6 @@ static int q6_aac_in_release(struct inode *inode, struct file *file)
 {
 	int rc = 0;
 	struct aac *aac = file->private_data;
-
 	int i = 0;
 	struct aac_fc *fc;
 

@@ -393,6 +393,7 @@ void auo_gpio_init(void)
 
 	//HWIO_OUTM(GPIO1SH1_OE_5, 0x4000, 0x4000);
 	gpio_output_enable(GPIO_LCD_RST, 1);
+	gpio_set_value(GPIO_LCD_RST, 1);
 	//HWIO_OUTM(GPIO1SH1_OE_6,0x8001c00,0x8001c00);
 	gpio_output_enable(GPIO_SPI_CLK,1);   //0x400
 	gpio_output_enable(GPIO_SPI_DI, 1);   //0x800
@@ -595,20 +596,22 @@ static int __init lcdc_auo_init(void)
 	pinfo->pdest = DISPLAY_1;
 	pinfo->wait_cycle = 0;
 	pinfo->bpp = 16;
-	//3 buffers need this action (RomzesRover)
-#ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
-	pinfo->fb_num = 3;
-#else
+#ifdef CONFIG_FB_MSM_DOUBLE_BUFFER
 	pinfo->fb_num = 2;
 #endif
-	pinfo->clk_rate = 24576000;
-	//pinfo->bl_max = MAX_BACKLIGHT_LEVEL;
-	//pinfo->bl_min = 1;
+#ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
+	pinfo->fb_num = 3;
+#endif
+#ifdef CONFIG_FB_MSM_QUADRUPLE_BUFFER
+	pinfo->fb_num = 4;
+#endif
+	pinfo->clk_rate = 24576000; /* 24.576MHz to match the SPEC. from AMSS */
+	pinfo->width = 46; /* physical width in mm */
+	pinfo->height = 77; /* physical height in mm */
 
 	//disable vsync
 	pinfo->lcd.hw_vsync_mode = 0;
-	
-	// here edited to beat display flickering ([ray, RomzesRover)
+
 	pinfo->lcdc.h_back_porch = 12;
 	pinfo->lcdc.h_front_porch = 16;
 	pinfo->lcdc.h_pulse_width = 40;
@@ -625,8 +628,12 @@ static int __init lcdc_auo_init(void)
 
 	ret = platform_device_register(&this_device);
 	if (ret) {
-		pr_err("%s: device register failed, rc=%d\n", __func__, ret);
+		platform_driver_unregister(&this_driver);
 	}
+	else {
+		auo_gpio_init();
+	}
+
 	return ret;
 }
 

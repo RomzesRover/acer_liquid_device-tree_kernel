@@ -82,7 +82,7 @@ static int q6_open(struct inode *inode, struct file *file)
 	return 0;
 }
 
-static int q6_ioctl(struct inode *inode, struct file *file,
+static long q6_ioctl(struct file *file,
 		    unsigned int cmd, unsigned long arg)
 {
 	int rc;
@@ -93,10 +93,10 @@ static int q6_ioctl(struct inode *inode, struct file *file,
 	switch (cmd) {
 	case AUDIO_SWITCH_DEVICE:
 		rc = copy_from_user(&id, (void *)arg, sizeof(id));
-		if (!rc) {
+		pr_info("[%s:%s] SWITCH_DEV: id[0] = 0x%x, id[1] = 0x%x",
+			__MM_FILE__, __func__, id[0], id[1]);
+		if (!rc)
 			rc = q6audio_do_routing(id[0], id[1]);
-			pr_info("[Audio_CTL] id[0] = 0x%x, id[1] = 0x%x\n",id[0], id[1]);
-		}
 		break;
 	case AUDIO_SET_VOLUME:
 		rc = copy_from_user(&n, (void *)arg, sizeof(n));
@@ -107,9 +107,7 @@ static int q6_ioctl(struct inode *inode, struct file *file,
 		break;
 	case AUDIO_SET_MUTE:
 		rc = copy_from_user(&n, (void *)arg, sizeof(n));
-		if (!rc)
-			rc = q6audio_set_tx_mute(n);
-			if (!rc) {
+		if (!rc) {
 			if (voice_started) {
 				if (n == 1)
 					mute_status = STREAM_MUTE;
@@ -130,17 +128,17 @@ static int q6_ioctl(struct inode *inode, struct file *file,
 	case AUDIO_UPDATE_ACDB:
 		rc = copy_from_user(&id, (void *)arg, sizeof(id));
 		pr_debug("[%s:%s] UPDATE_ACDB: id[0] = 0x%x, id[1] = 0x%x\n",
-				__MM_FILE__, __func__, id[0], id[1]);		
+				__MM_FILE__, __func__, id[0], id[1]);
 		if (!rc)
 			rc = q6audio_update_acdb(id[0], 0);
 		break;
 	case AUDIO_START_VOICE:
 		pr_debug("[%s:%s] START_VOICE\n", __MM_FILE__, __func__);
- 		rc = q6_voice_start();
+		rc = q6_voice_start();
 		break;
 	case AUDIO_STOP_VOICE:
 		pr_debug("[%s:%s] STOP_VOICE\n", __MM_FILE__, __func__);
- 		rc = q6_voice_stop();
+		rc = q6_voice_stop();
 		break;
 	case AUDIO_REINIT_ACDB:
 		pr_debug("[%s:%s] REINIT_ACDB\n", __MM_FILE__, __func__);
@@ -163,7 +161,7 @@ static int q6_release(struct inode *inode, struct file *file)
 static struct file_operations q6_dev_fops = {
 	.owner		= THIS_MODULE,
 	.open		= q6_open,
-	.ioctl		= q6_ioctl,
+	.unlocked_ioctl	= q6_ioctl,
 	.release	= q6_release,
 };
 

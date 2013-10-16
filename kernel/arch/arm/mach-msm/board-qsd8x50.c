@@ -1,57 +1,13 @@
-/* Copyright (c) 2008-2010, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2008-2012, Code Aurora Forum. All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Code Aurora Forum nor
- *       the names of its contributors may be used to endorse or promote
- *       products derived from this software without specific prior written
- *       permission.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
  *
- * Alternatively, provided that this notice is retained in full, this software
- * may be relicensed by the recipient under the terms of the GNU General Public
- * License version 2 ("GPL") and only version 2, in which case the provisions of
- * the GPL apply INSTEAD OF those given above.  If the recipient relicenses the
- * software under the GPL, then the identification text in the MODULE_LICENSE
- * macro must be changed to reflect "GPLv2" instead of "Dual BSD/GPL".  Once a
- * recipient changes the license terms to the GPL, subsequent recipients shall
- * not relicense under alternate licensing terms, including the BSD or dual
- * BSD/GPL terms.  In addition, the following license statement immediately
- * below and between the words START and END shall also then apply when this
- * software is relicensed under the GPL:
- *
- * START
- *
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License version 2 and only version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
- *
- * END
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  */
 
@@ -111,7 +67,7 @@
 #include "proc_comm.h"
 #include <linux/msm_kgsl.h>
 #include <linux/usb/android.h>
-
+//test commit
 
 #if defined(CONFIG_MOUSE_MSM_TOUCHPAD)
 #define TOUCHPAD_SUSPEND 	34
@@ -124,10 +80,14 @@
 
 #define MSM_PMEM_ADSP_SIZE	0xFFF000
 
+#ifdef CONFIG_FB_MSM_DOUBLE_BUFFER
+#define MSM_FB_SIZE       0x177000
+#endif
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MSM_FB_SIZE       0x2EE000
-#else
-#define MSM_FB_SIZE       0x177000
+#endif
+#ifdef CONFIG_FB_MSM_QUADRUPLE_BUFFER
+#define MSM_FB_SIZE       0x465000
 #endif
 
 #define MSM_AUDIO_SIZE		0x80000
@@ -138,9 +98,9 @@
 #define MSM_SMI_BASE		0x00000000
 #endif
 
-#define MSM_SHARED_RAM_PHYS	0x00100000
+#define MSM_SHARED_RAM_PHYS	(MSM_SMI_BASE + 0x00100000)
 
-#define MSM_PMEM_SMI_BASE	0x02B00000
+#define MSM_PMEM_SMI_BASE	(MSM_SMI_BASE + 0x02B00000)
 #define MSM_PMEM_SMI_SIZE	0x01500000
 
 #define MSM_FB_BASE		MSM_PMEM_SMI_BASE
@@ -1708,6 +1668,7 @@ static void __init wlan_init(void)
 }
 #endif //def CONFIG_MACH_ACER_A1
 
+/* kgsl-3d0 begin */
 static struct resource kgsl_3d0_resources[] = {
        {
 		.name  = KGSL_3D0_REG_MEMORY,
@@ -1726,6 +1687,11 @@ static struct resource kgsl_3d0_resources[] = {
 static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.pwr_data = {
 		.pwrlevel = {
+
+			{
+				.gpu_freq = 152000000,
+				.bus_freq = 152000000,
+			},
 			{
 				.gpu_freq = 0,
 				.bus_freq = 128000000,
@@ -1735,7 +1701,6 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 		.num_levels = 1,
 		.set_grp_async = NULL,
 		.idle_timeout = HZ/5,
-		.nap_allowed = true,
 	},
 	.clk = {
 		.name = {
@@ -1747,7 +1712,7 @@ static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	},
 };
 
-static struct platform_device msm_kgsl_3d0 = {
+struct platform_device msm_kgsl_3d0 = {
        .name = "kgsl-3d0",
        .id = 0,
        .num_resources = ARRAY_SIZE(kgsl_3d0_resources),
@@ -1756,6 +1721,7 @@ static struct platform_device msm_kgsl_3d0 = {
 		.platform_data = &kgsl_3d0_pdata,
 	},
 };
+/* kgsl-3d0 end */
 
 static struct platform_device msm_device_pmic_leds = {
 	.name	= "pmic-leds",
@@ -3086,7 +3052,7 @@ early_param("pmem_kernel_smi_size", pmem_kernel_smi_size_setup);
 #endif
 
 static unsigned pmem_sf_size = MSM_PMEM_SF_SIZE;
-static void __init pmem_sf_size_setup(char *p)
+static int __init pmem_sf_size_setup(char *p)
 {
 	pmem_sf_size = memparse(p, NULL);
 	return 0;
@@ -3094,7 +3060,7 @@ static void __init pmem_sf_size_setup(char *p)
 early_param("pmem_sf_size", pmem_sf_size_setup);
 
 static unsigned pmem_adsp_size = MSM_PMEM_ADSP_SIZE;
-static void __init pmem_adsp_size_setup(char *p)
+static int __init pmem_adsp_size_setup(char *p)
 {
 	pmem_adsp_size = memparse(p, NULL);
 	return 0;

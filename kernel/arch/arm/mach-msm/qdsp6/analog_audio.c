@@ -8,11 +8,6 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
- * 02110-1301, USA.
  */
 
 #include <linux/init.h>
@@ -28,9 +23,6 @@
 #endif
 #ifdef CONFIG_ACER_HEADSET
 #include <mach/acer_headset.h>
-#endif
-#ifdef CONFIG_AUDIO_FM2018
-#include <mach/fm2018.h>
 #endif
 
 void analog_init(void)
@@ -72,58 +64,42 @@ void analog_speaker_enable(int en)
 		scm.is_left_chan_en = 1;
 		scm.is_stereo_en = 1;
 		scm.is_hpf_en = 1;
-		if (hw_version < 3) {
-			pmic_spkr_en_mute(LEFT_SPKR, 0);
-			pmic_spkr_en_mute(RIGHT_SPKR, 0);
-			pmic_set_spkr_configuration(&scm);
-			pmic_spkr_en(LEFT_SPKR, 1);
-			pmic_spkr_en(RIGHT_SPKR, 1);
-		}
+		pmic_spkr_en_mute(LEFT_SPKR, 0);
+		pmic_spkr_en_mute(RIGHT_SPKR, 0);
+		pmic_set_spkr_configuration(&scm);
+		pmic_spkr_en(LEFT_SPKR, 1);
+		pmic_spkr_en(RIGHT_SPKR, 1);
 		
 #ifdef CONFIG_AUDIO_TPA2018
-		if (hw_version >= 3) {
-			set_adie_flag(1);
-			tpa2018_software_shutdown(0);
-		}
+		set_adie_flag(1);
+		tpa2018_software_shutdown(0);
 #endif
 		pr_info("[Audio] Enable Speaker AMP \n");
+
 		/* unmute */
-		if (hw_version < 3) {
-			pmic_spkr_en_mute(LEFT_SPKR, 1);
-			pmic_spkr_en_mute(RIGHT_SPKR, 1);
-		}
+		pmic_spkr_en_mute(LEFT_SPKR, 1);
+		pmic_spkr_en_mute(RIGHT_SPKR, 1);
 	} else {
-		if (hw_version < 3) {
-			pmic_spkr_en_mute(LEFT_SPKR, 0);
-			pmic_spkr_en_mute(RIGHT_SPKR, 0);
-		}
+		pmic_spkr_en_mute(LEFT_SPKR, 0);
+		pmic_spkr_en_mute(RIGHT_SPKR, 0);
+		
 #ifdef CONFIG_AUDIO_TPA2018
-		if (hw_version >= 3) {
-			set_adie_flag(0);
-			tpa2018_software_shutdown(1);
-		}
+		set_adie_flag(0);
+		tpa2018_software_shutdown(1);
 #endif
 		pr_info("[Audio] Disable Speaker AMP \n");
-		if (hw_version < 3) {
-			pmic_spkr_en(LEFT_SPKR, 0);
-			pmic_spkr_en(RIGHT_SPKR, 0);
+		
+		pmic_spkr_en(LEFT_SPKR, 0);
+		pmic_spkr_en(RIGHT_SPKR, 0);
 
-			pmic_set_spkr_configuration(&scm);
-		}
+		pmic_set_spkr_configuration(&scm);
 	}
 }
 
 void analog_mic_enable(int en)
 {
 	pr_debug("[%s:%s] en = %d\n", __MM_FILE__, __func__, en);
- 	pmic_mic_en(en);
-#ifdef CONFIG_AUDIO_FM2018
-	if (hw_version <= 3) {
-		pr_debug("[Audio] Open fm2018 !!\n");
-		fm2018_set_pwd(en);
-		fm2018_set_procedure(1);
-	}
-#endif
+	pmic_mic_en(en);
 }
 
 static struct q6audio_analog_ops ops = {

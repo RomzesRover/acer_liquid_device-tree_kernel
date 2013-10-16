@@ -59,6 +59,7 @@ struct qcelp {
 	struct qcelp_fc *qcelp_fc;
 };
 
+
 static int q6_qcelp_flowcontrol(void *data)
 {
 	struct audio_client *ac;
@@ -121,7 +122,6 @@ static int q6_qcelp_flowcontrol(void *data)
 
 	return 0;
 }
-
 static long q6_qcelp_in_ioctl(struct file *file, unsigned int cmd,
 				 unsigned long arg)
 {

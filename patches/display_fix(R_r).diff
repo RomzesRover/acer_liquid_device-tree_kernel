@@ -1,0 +1,15 @@
+diff --git a/hardware/qcom/display/Android.mk b/hardware/qcom/display/Android.mk
+--- a/hardware/qcom/display/Android.mk	2013-10-16 22:15:26.645589793 +0600
+--- b/hardware/qcom/display/Android.mk	2013-10-16 22:15:26.645589793 +0600
+@@ -1,5 +1,4 @@
+-ifeq ($(call is-vendor-board-platform,QCOM),true)
+-ifeq ($(TARGET_QCOM_DISPLAY_VARIANT),)
++ifeq ($(TARGET_QCOM_DISPLAY_VARIANT),legacy)
+ display-hals := libgralloc libgenlock libcopybit
+ display-hals += libhwcomposer liboverlay libqdutils libexternal libqservice
+ ifneq ($(TARGET_PROVIDES_LIBLIGHT),true)
+@@ -7,4 +6,3 @@
+ endif
+ include $(call all-named-subdir-makefiles,$(display-hals))
+ endif
+-endif

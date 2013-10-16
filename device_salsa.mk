@@ -75,13 +75,6 @@ PRODUCT_PACKAGES += \
    dhcpcd.conf
 
 $(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
-#for liquid a1 with 256mb (24 and 32m) Added by RomzesRover to get faster system
-#Added hahaha this basecely doesn't work
-PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.heapstartsize=5m \
-    dalvik.vm.heapgrowthlimit=24m \
-    dalvik.vm.heapsize=32m
- 
 
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
@@ -185,10 +178,16 @@ PRODUCT_PROPERTY_OVERRIDES += \
     debug.gr.numframebuffers=3
 
 # Qcom Properties
+#PRODUCT_PROPERTY_OVERRIDES += \
+#    com.qc.hardware=1 \
+#    dev.pm.dyn_samplingrate=1 \
+#   ro.vendor.extension_library=/system/lib/libqc-opt.so
+
+# Set usb type
 PRODUCT_PROPERTY_OVERRIDES += \
-    com.qc.hardware=1 \
-    dev.pm.dyn_samplingrate=1 \
-    ro.vendor.extension_library=/system/lib/libqc-opt.so
+    persist.sys.usb.config=mass_storage,adb \
+    persist.service.adb.enable=1 \
+    sys.usb.config=mass_storage,adb 
 
 # proprietary side of the device
 $(call inherit-product-if-exists, device/acer/salsa/SalsaProprietary.mk)

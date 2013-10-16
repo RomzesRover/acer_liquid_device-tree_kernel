@@ -18,7 +18,7 @@ PRODUCT_PACKAGES += \
 	lights.salsa \
 	gps.salsa \
         libcamera \
-	LiquidParts
+	LiquidPartsChecker
 
 # OMX
 PRODUCT_PACKAGES += \

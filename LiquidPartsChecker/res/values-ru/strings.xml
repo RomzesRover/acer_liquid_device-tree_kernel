@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LiquidPartsStarter</string>
+    <string name="app_name_norm">Liquid Parts</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    
+    <string name="download">Выберете версию для загрузки</string>
+    <string name="free">Бесплатная версия</string>
+    
+    <string name="free_d">Бесплатная версия Liquid parts\nПожертвовать на разработку вы можете внутри приложения: Помощь, Пожертвования, Пожертвовать разработчику</string>
+
+    <string name="next">Что мне нужно сделать дальше?</string>
+    <string name="need_gag">Сперва установите google apps</string>
+    <string name="next_two">После установки LiquidParts:</string>
+    <string name="next_three">После того, как вы скачаете и установите приложение, просто снова кликнете по пункту LiquidParts в настройках. Ваше приложение запустится без этой заставки :)</string>
+
+</resources>

@@ -1,11 +1,9 @@
-Device tree to compile Cyanogenmod 10 for acer liquid (salsa)
+Device tree to compile Cyanogenmod 10.1 for acer liquid (salsa)
 =========================================
 
 Not working in this stuff:
 ```
-# camera 
-# usb, wi-fi tether (I check it, but I found this https://github.com/thepasto/android_device_acer_salsa/commit/8bee993d41b78d30dadfb3d9811d2fe078c5d4c7).
-# may be anything else, need more testers..
+#not boots up
 ```
 
 Prepare to compile:
@@ -60,39 +58,39 @@ to end of file add one string:
 
 #6 create work directory:
 "mkdir ~/sources"
-"mkdir ~/sources/cm10"
+"mkdir ~/sources/cm10_1"
 ```
 
 How to compile:
 ```
-#1 first you need to download cyanogenmod 10 sources into (~/sources/cm10):
-"repo init -u git://github.com/CyanogenMod/android.git -b jellybean"
+#1 first you need to download cyanogenmod 10 sources into (~/sources/cm10_1):
+"repo init -u git://github.com/CyanogenMod/android.git -b cm10.1"
 
-#2 then goto cm10, device folder:
-"cd ~/sources/cm10/device"
+#2 then goto cm10_1, device folder:
+"cd ~/sources/cm10_1/device"
 
 #3 and make and move folder named "acer":
 "mkdir acer"
 "cd acer"
 
 #4 then clone this sources:
-"git clone https://github.com/RomzesRover/acer_liquid_device-tree_kernel.git -b cm10"
+"git clone https://github.com/RomzesRover/acer_liquid_device-tree_kernel.git -b cm10_1"
 
 #5 and rename folder "acer_liquid_device-tree_kernel" to "salsa":
-"mv ~/sources/cm10/device/acer/acer_liquid_device-tree_kernel  ~/sources/cm10/device/acer/salsa"
+"mv ~/sources/cm10_1/device/acer/acer_liquid_device-tree_kernel  ~/sources/cm10_1/device/acer/salsa"
 
-#6 then move to cm10 root directory:
-"cd ~/sources/cm10"
+#6 then move to cm10_1 root directory:
+"cd ~/sources/cm10_1"
 
-#7 and prepare to compile cm10;
-"~/sources/cm10/vendor/cm/get-prebuilts"
-"cd ~/sources/cm10"
+#7 and prepare to compile cm10_1;
+"~/sources/cm10_1/vendor/cm/get-prebuilts"
+"cd ~/sources/cm10_1"
 ". build/envsetup.sh"
 
-#8 and now you can compile cm10 for liquid:
+#8 and now you can compile cm10_1 for liquid:
 "brunch salsa -j5"
 
-#9 That's all the result will be in ~/sources/cm10/out/target/salsa
+#9 That's all the result will be in ~/sources/cm10_1/out/target/salsa
 thx.
 ```
 

@@ -39,7 +39,6 @@ PRODUCT_PACKAGES += \
 	libgenlock \
         libqdutils \
 	libmemalloc \
-        libQcomUI \
         liboverlay \
         librs_jni
 

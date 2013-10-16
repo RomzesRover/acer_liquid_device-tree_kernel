@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+
 #define LOG_TAG "AudioPolicyManager"
 //#define LOG_NDEBUG 0
 #include <utils/Log.h>
@@ -52,10 +53,10 @@ extern "C" void destroyAudioPolicyManager(AudioPolicyInterface *interface)
 audio_devices_t AudioPolicyManager::getDeviceForStrategy(routing_strategy strategy, bool fromCache)
 {
     uint32_t device = 0;
-	//five lines below edited by RomzesRover
+
     if (fromCache) {
         ALOGV("getDeviceForStrategy() from cache strategy %d, device %x", strategy, mDeviceForStrategy[strategy]);
-	 return mDeviceForStrategy[strategy];
+        return mDeviceForStrategy[strategy];
     }
 
     switch (strategy) {

@@ -16,8 +16,7 @@ LOCAL_SHARED_LIBRARIES := \
     libutils \
     libmedia
 
-LOCAL_SRC_FILES:= \
-    AudioPolicyManager.cpp
+LOCAL_SRC_FILES:= AudioPolicyManager.cpp
 
 ifeq ($(BOARD_HAVE_BLUETOOTH),true)
   LOCAL_CFLAGS += -DWITH_A2DP
@@ -41,8 +40,7 @@ LOCAL_SHARED_LIBRARIES := \
     libhardware_legacy \
     libdl
 
-LOCAL_SRC_FILES :=\
-    AudioHardware.cpp
+LOCAL_SRC_FILES += AudioHardware.cpp
 
 LOCAL_CFLAGS += -fno-short-enums
 

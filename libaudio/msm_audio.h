@@ -87,19 +87,19 @@
 #define	AUDIO_MAX_COMMON_IOCTL_NUM	100
 
 
-#define HANDSET_MIC			0x01
-#define HANDSET_SPKR			0x02
-#define HEADSET_MIC			0x03
-#define HEADSET_SPKR_MONO		0x04
-#define HEADSET_SPKR_STEREO		0x05
-#define SPKR_PHONE_MIC			0x06
-#define SPKR_PHONE_MONO			0x07
-#define SPKR_PHONE_STEREO		0x08
-#define BT_SCO_MIC			0x09
-#define BT_SCO_SPKR			0x0A
-#define BT_A2DP_SPKR			0x0B
-#define TTY_HEADSET_MIC			0x0C
-#define TTY_HEADSET_SPKR		0x0D
+//#define HANDSET_MIC			0x01
+//#define HANDSET_SPKR			0x02
+//#define HEADSET_MIC			0x03
+//#define HEADSET_SPKR_MONO		0x04
+//#define HEADSET_SPKR_STEREO		0x05
+//#define SPKR_PHONE_MIC			0x06
+//#define SPKR_PHONE_MONO			0x07
+//#define SPKR_PHONE_STEREO		0x08
+//#define BT_SCO_MIC			0x09
+//#define BT_SCO_SPKR			0x0A
+//#define BT_A2DP_SPKR			0x0B
+//#define TTY_HEADSET_MIC			0x0C
+//#define TTY_HEADSET_SPKR		0x0D
 
 /* Default devices are not supported in a */
 /* device switching context. Only supported */
@@ -114,15 +114,6 @@
 #define HEADSET_MONO_PLUS_SPKR_STEREO_RX       0x12
 #define HEADSET_STEREO_PLUS_SPKR_MONO_RX       0x13
 #define HEADSET_STEREO_PLUS_SPKR_STEREO_RX     0x14
-
-/* SEMC:<closed> CRS: 2009-09-04: add the DeviceID(BT Acc Identification).start */
-#define BTDSP_SCO_MIC		0x16
-#define BTDSP_SCO_SPKR		0x17
-#define BTC_SCO_MIC			0x18
-#define BTC_SCO_SPKR		0x19
-#define BTCDSP_SCO_MIC		0x1A
-#define BTCDSP_SCO_SPKR		0x1B
-/* SEMC:<closed> CRS: 2009-09-04: add the DeviceID(BT Acc Identification).end */
 
 #define I2S_RX				0x20
 #define I2S_TX				0x21

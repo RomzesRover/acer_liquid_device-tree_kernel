@@ -131,7 +131,7 @@ static int set_light_notifications(struct light_device_t* dev,
 	int notification_type = -1;
 	int led_state = LED_OFF;
 
-			if(state->color == 0xffffff) {
+			if(state->color == 0xffffffff) {
 				//Notification on
 				//Slow blink
 				ALOGE("MAIL WRITE");

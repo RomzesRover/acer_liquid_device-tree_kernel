@@ -431,9 +431,6 @@ CameraHAL_FixupParams(android::CameraParameters &settings)
    const char *frame_rate_range     = "(10,25)";
    const char *preferred_horizontal_viewing_angle = "50.82";
    const char *preferred_vertical_viewing_angle = "38.58";
-   // Deduced manually using the Liquid E camera sensor
-   float h_view_angle     = 50.82;
-   float v_view_angle     = 38.58;
 
    settings.set(android::CameraParameters::KEY_VIDEO_FRAME_FORMAT,
                 android::CameraParameters::PIXEL_FORMAT_YUV420SP);

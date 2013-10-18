@@ -24,8 +24,7 @@ PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/etc/media_profiles.xml:system/etc/media_profiles.xml \
     device/acer/salsa/proprietary/system/etc/sysctl.conf:system/etc/sysctl.conf \
     device/acer/salsa/proprietary/system/etc/dhcpcd/dhcpcd.conf:system/etc/dhcpcd/dhcpcd.conf \
-    device/acer/salsa/proprietary/system/etc/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf \
-    device/acer/salsa/proprietary/system/etc/wifi/hostapd.conf:system/etc/wifi/hostapd.conf
+    device/acer/salsa/proprietary/system/etc/wifi/wpa_supplicant.conf:system/etc/wifi/wpa_supplicant.conf 
 #    device/acer/salsa/proprietary/GooManager.apk:system/app/GooManager.apk
 
 ## (2) Keypad and Touchscreen
@@ -139,12 +138,9 @@ PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/lib/libcommondefs.so:system/lib/libcommondefs.so \
     device/acer/salsa/proprietary/system/lib/libqc-opt.so:system/lib/libqc-opt.so
 
-## (13) #wifi tethering
-PRODUCT_COPY_FILES += \
-    device/acer/salsa/proprietary/system/bin/hostapd:system/bin/hostapd
 
 
-## (14) # Configs
+## (13) # Configs
 # Added by RomzesRover to get work dsp manager
 PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/etc/media_codecs.xml:system/etc/media_codecs.xml \

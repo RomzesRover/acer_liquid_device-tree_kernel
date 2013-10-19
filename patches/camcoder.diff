@@ -1,0 +1,26 @@
+diff --git a/frameworks/av/media/libmediaplayerservice/StagefrightRecorder.cpp b/frameworks/av/media/libmediaplayerservice/StagefrightRecorder.cpp
+index 8c89dd9..c5cf4e6 100644
+--- a/frameworks/av/media/libmediaplayerservice/StagefrightRecorder.cpp
++++ b/frameworks/av/media/libmediaplayerservice/StagefrightRecorder.cpp
+@@ -1598,7 +1598,7 @@
+     memset(value, 0, PROPERTY_VALUE_MAX);
+ #endif
+ 
+-    if (mIsMetaDataStoredInVideoBuffers) {
++    if (0 && mIsMetaDataStoredInVideoBuffers) {
+         ALOGW("Camera source supports metadata mode, create OMXCodec for metadata");
+         encoder_flags |= OMXCodec::kHardwareCodecsOnly;
+         encoder_flags |= OMXCodec::kStoreMetaDataInVideoBuffers;
+diff --git a/frameworks/av/media/libstagefright/MPEG4Writer.cpp b/frameworks/av/media/libstagefright/MPEG4Writer.cpp
+index b4c0524..9682b20 100755
+--- a/frameworks/av/media/libstagefright/MPEG4Writer.cpp
++++ b/frameworks/av/media/libstagefright/MPEG4Writer.cpp
+@@ -2059,7 +2059,7 @@
+ #ifndef OMAP_ENHANCEMENT
+         CHECK_GE(timestampUs, 0ll);
+ #endif
+-        if (!mIsAudio) {
++        if (!mIsAudio && 0) {
+             /*
+              * Composition time: timestampUs
+              * Decoding time: decodingTimeUs

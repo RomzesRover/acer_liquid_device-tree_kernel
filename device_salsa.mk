@@ -77,6 +77,12 @@ PRODUCT_PACKAGES += \
    wlan_cu \
    dhcpcd.conf
 
+#remove unused app
+PRODUCT_PACKAGES -= \
+	CMUpdater \
+	DeskClock \
+	VideoEditor
+
 $(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
 
 # we have enough storage space to hold precise GC data

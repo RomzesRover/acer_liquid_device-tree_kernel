@@ -137,9 +137,11 @@ PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/lib/libloc-rpc.so:system/lib/libloc-rpc.so \
     device/acer/salsa/proprietary/system/lib/libcommondefs.so:system/lib/libcommondefs.so
 
+## (13) # clock
+PRODUCT_COPY_FILES += \
+device/acer/salsa/proprietary/system/app/DeskClock.apk:system/app/DeskClock.apk
 
-
-## (13) # Configs
+## (14) # Configs
 # Added by RomzesRover to get work dsp manager
 PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/etc/media_codecs.xml:system/etc/media_codecs.xml \

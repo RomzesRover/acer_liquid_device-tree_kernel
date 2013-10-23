@@ -1,10 +1,12 @@
 Device tree to compile Cyanogenmod 10 for acer liquid (salsa)
 =========================================
+Warning in this version you must use gcc version 4.4.3 otherwise you'll get some errors in kernel and modules
+=========================================
 
 Not working in this stuff:
 ```
-# camera 
-# usb, wi-fi tether (I check it, but I found this https://github.com/thepasto/android_device_acer_salsa/commit/8bee993d41b78d30dadfb3d9811d2fe078c5d4c7).
+# camcoder
+# usb, wi-fi tether.
 # may be anything else, need more testers..
 ```
 

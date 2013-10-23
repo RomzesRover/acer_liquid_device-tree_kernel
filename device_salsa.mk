@@ -13,7 +13,6 @@
 
 # Packages to include
 PRODUCT_PACKAGES += \
-	libtilerenderer \
 	power.qsd8k \
         com.android.future.usb.accessory \
 	lights.salsa \

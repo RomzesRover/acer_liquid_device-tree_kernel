@@ -93,7 +93,23 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
                  }
                  return true;
              case MENU_ID_ADD_NETWORK:
-@@ -513,6 +564,7 @@
+@@ -476,6 +527,7 @@
+                 }
+                 return true;
+             case MENU_ID_ADVANCED:
++		if (RoverGiveYourAccess) {
+                 if (getActivity() instanceof PreferenceActivity) {
+                     ((PreferenceActivity) getActivity()).startPreferencePanel(
+                             AdvancedWifiSettings.class.getCanonicalName(),
+@@ -485,6 +537,7 @@
+                 } else {
+                     startFragment(this, AdvancedWifiSettings.class.getCanonicalName(), -1, null);
+                 }
++		}
+                 return true;
+         }
+         return super.onOptionsItemSelected(item);
+@@ -513,6 +566,7 @@
  
      @Override
      public boolean onContextItemSelected(MenuItem item) {
@@ -101,7 +117,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          if (mSelectedAccessPoint == null) {
              return super.onContextItemSelected(item);
          }
-@@ -522,12 +574,16 @@
+@@ -522,12 +576,16 @@
                      if (!requireKeyStore(mSelectedAccessPoint.getConfig())) {
                          mWifiManager.connect(mChannel, mSelectedAccessPoint.networkId,
                                  mConnectListener);
@@ -118,7 +134,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
                  } else {
                      showDialog(mSelectedAccessPoint, true);
                  }
-@@ -542,11 +598,13 @@
+@@ -542,11 +600,13 @@
                  return true;
              }
          }
@@ -132,7 +148,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          if (preference instanceof AccessPoint) {
              mSelectedAccessPoint = (AccessPoint) preference;
              /** Bypass dialog for unsecured, unsaved networks */
-@@ -554,12 +612,15 @@
+@@ -554,12 +614,15 @@
                      mSelectedAccessPoint.networkId == INVALID_NETWORK_ID) {
                  mSelectedAccessPoint.generateOpenNetworkConfig();
                  mWifiManager.connect(mChannel, mSelectedAccessPoint.getConfig(), mConnectListener);
@@ -148,7 +164,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          return true;
      }
  
-@@ -615,6 +676,7 @@
+@@ -615,6 +678,7 @@
       * the strength of network and the security for it.
       */
      private void updateAccessPoints() {
@@ -156,7 +172,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          // Safeguard from some delayed event handling
          if (getActivity() == null) return;
  
-@@ -645,6 +707,7 @@
+@@ -645,6 +709,7 @@
                  addMessagePreference(R.string.wifi_empty_list_wifi_off);
                  break;
          }
@@ -164,7 +180,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
      }
  
      private void addMessagePreference(int messageId) {
-@@ -781,6 +844,7 @@
+@@ -781,6 +846,7 @@
      }
  
      private void updateWifiState(int state) {
@@ -172,7 +188,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
          getActivity().invalidateOptionsMenu();
  
          switch (state) {
-@@ -800,6 +864,7 @@
+@@ -800,6 +866,7 @@
          mLastInfo = null;
          mLastState = null;
          mScanner.pause();
@@ -180,7 +196,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
      }
  
      private class Scanner extends Handler {
-@@ -856,6 +921,7 @@
+@@ -856,6 +923,7 @@
      }
  
      /* package */ void submit(WifiConfigController configController) {
@@ -188,7 +204,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
  
          final WifiConfiguration config = configController.getConfig();
  
-@@ -865,6 +931,8 @@
+@@ -865,6 +933,8 @@
                      && mSelectedAccessPoint.networkId != INVALID_NETWORK_ID) {
                  mWifiManager.connect(mChannel, mSelectedAccessPoint.networkId,
                          mConnectListener);
@@ -197,7 +213,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
              }
          } else if (config.networkId != INVALID_NETWORK_ID) {
              if (mSelectedAccessPoint != null) {
-@@ -875,6 +943,8 @@
+@@ -875,6 +945,8 @@
                  mWifiManager.save(mChannel, config, mSaveListener);
              } else {
                  mWifiManager.connect(mChannel, config, mConnectListener);
@@ -206,7 +222,7 @@ diff --git a/packages/apps/Settings/src/com/android/settings/wifi/WifiSettings.j
              }
          }
  
-@@ -882,6 +952,7 @@
+@@ -882,6 +954,7 @@
              mScanner.resume();
          }
          updateAccessPoints();

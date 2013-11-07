@@ -76,6 +76,13 @@ PRODUCT_PACKAGES += \
    wlan_cu \
    dhcpcd.conf
 
+#remove unused app
+PRODUCT_PACKAGES -= \
+   CMUpdater \
+   DeskClock \
+   VideoEditor
+ 
+
 $(call inherit-product, frameworks/base/build/phone-hdpi-512-dalvik-heap.mk)
 #for liquid a1 with 256mb (24 and 32m) Added by RomzesRover to get faster system
 #Added hahaha this basecely doesn't work

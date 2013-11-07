@@ -80,18 +80,12 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES -= \
    CMUpdater \
    DeskClock \
-   VideoEditor
+   VideoEditor \
+   CMWallpapers
  
-
+#set vm. size
 $(call inherit-product, frameworks/base/build/phone-hdpi-512-dalvik-heap.mk)
-#for liquid a1 with 256mb (24 and 32m) Added by RomzesRover to get faster system
-#Added hahaha this basecely doesn't work
-PRODUCT_PROPERTY_OVERRIDES += \
-    dalvik.vm.heapstartsize=5m \
-    dalvik.vm.heapgrowthlimit=24m \
-    dalvik.vm.heapsize=32m
  
-
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
 

@@ -142,8 +142,3 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/acer/salsa/proprietary/system/etc/media_codecs.xml:system/etc/media_codecs.xml \
     device/acer/salsa/proprietary/system/etc/audio_policy.conf:system/etc/audio_policy.conf
-
-## (14) # ADBlock
-# Added by RomzesRover to block ad
-PRODUCT_COPY_FILES += \
-    device/acer/salsa/proprietary/system/etc/hosts:system/etc/hosts

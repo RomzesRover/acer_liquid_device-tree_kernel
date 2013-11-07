@@ -2,23 +2,31 @@ diff --git a/packages/apps/Settings/src/com/android/settings/notificationlight/N
 index 2370a65..cb489cb 100644
 --- a/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
 +++ b/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
-@@ -69,6 +69,7 @@
+@@ -69,6 +69,8 @@
  public class NotificationLightSettings extends SettingsPreferenceFragment implements
          Preference.OnPreferenceChangeListener, View.OnLongClickListener {
      private static final String TAG = "NotificationLightSettings";
 +    private static final String ENABLED_PREF = "battery_light";
++    private static final String PULSE_PREF_BATTERY = "battery_low_pulse";
      private static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_COLOR = "notification_light_pulse_default_color";
      private static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_ON = "notification_light_pulse_default_led_on";
      private static final String NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_OFF = "notification_light_pulse_default_led_off";
-@@ -96,6 +97,7 @@
+@@ -96,11 +98,14 @@
      private PackageManager mPackageManager;
      private boolean mCustomEnabled;
      private boolean mLightEnabled;
 +    private boolean mLightBatteryEnabled;
++    private boolean mLightBatteryPulseEnabled;
      private boolean mVoiceCapable;
      private ApplicationLightPreference mDefaultPref;
      private ApplicationLightPreference mCallPref;
-@@ -132,8 +134,8 @@
+     private ApplicationLightPreference mVoicemailPref;
+     private CheckBoxPreference mCustomEnabledPref;
++    private CheckBoxPreference mPulsePref;
+     private Menu mMenu;
+     AppAdapter mAppAdapter;
+     private String mApplicationList;
+@@ -132,8 +137,8 @@
      public void onResume() {
          super.onResume();
          refreshDefault();
@@ -29,15 +37,16 @@ index 2370a65..cb489cb 100644
      }
  
      private void refreshDefault() {
-@@ -142,6 +144,7 @@
+@@ -142,6 +147,8 @@
          int timeOn = Settings.System.getInt(resolver, NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_ON, DEFAULT_TIME);
          int timeOff = Settings.System.getInt(resolver, NOTIFICATION_LIGHT_PULSE_DEFAULT_LED_OFF, DEFAULT_TIME);
          mLightEnabled = Settings.System.getInt(resolver, NOTIFICATION_LIGHT_PULSE, 0) == 1;
 +	mLightBatteryEnabled = Settings.System.getInt(resolver, Settings.System.BATTERY_LIGHT_ENABLED, 1) == 1;
++	mLightBatteryPulseEnabled = Settings.System.getInt(resolver, Settings.System.BATTERY_LIGHT_PULSE, 1) == 1;
          mCustomEnabled = Settings.System.getInt(resolver, NOTIFICATION_LIGHT_PULSE_CUSTOM_ENABLE, 0) == 1;
  
          // Get Missed call and Voicemail values
-@@ -161,7 +164,12 @@
+@@ -161,7 +168,18 @@
              cPref.setChecked(mLightEnabled);
              cPref.setOnPreferenceChangeListener(this);
  
@@ -47,11 +56,17 @@ index 2370a65..cb489cb 100644
 +            cPref2.setChecked(mLightBatteryEnabled);
 +            cPref2.setOnPreferenceChangeListener(this);
 +
++	    // pulse battery preference
++            mPulsePref = (CheckBoxPreference) prefSet.findPreference(PULSE_PREF_BATTERY);
++            mPulsePref.setChecked(mLightBatteryPulseEnabled);
++            mPulsePref.setEnabled(mLightBatteryEnabled);
++            mPulsePref.setOnPreferenceChangeListener(this);
++
 +            /*// Default preference
              mDefaultPref = (ApplicationLightPreference) prefSet.findPreference(DEFAULT_PREF);
              mDefaultPref.setAllValues(color, timeOn, timeOff);
              mDefaultPref.setEnabled(mLightEnabled);
-@@ -191,7 +199,7 @@
+@@ -191,7 +209,7 @@
                  mVoicemailPref.setAllValues(vmailColor, vmailTimeOn, vmailTimeOff);
                  mVoicemailPref.setEnabled(mCustomEnabled);
                  mVoicemailPref.setOnPreferenceChangeListener(this);
@@ -60,7 +75,7 @@ index 2370a65..cb489cb 100644
          }
  
      }
-@@ -266,14 +274,14 @@
+@@ -266,14 +284,14 @@
              app = new Application(packageName, DEFAULT_COLOR, DEFAULT_TIME, DEFAULT_TIME);
              mApplications.put(packageName, app);
              saveApplicationList(false);
@@ -77,7 +92,7 @@ index 2370a65..cb489cb 100644
          }
      }
  
-@@ -388,23 +396,28 @@
+@@ -388,23 +406,33 @@
              mLightEnabled = (Boolean) objValue;
              Settings.System.putInt(getContentResolver(), Settings.System.NOTIFICATION_LIGHT_PULSE,
                      mLightEnabled ? 1 : 0);
@@ -100,6 +115,11 @@ index 2370a65..cb489cb 100644
 +            	mLightBatteryEnabled = (Boolean) objValue;
 +            	Settings.System.putInt(getContentResolver(), Settings.System.BATTERY_LIGHT_ENABLED,
 +                    mLightBatteryEnabled ? 1 : 0);
++		mPulsePref.setEnabled(mLightBatteryEnabled);
++		} else if (PULSE_PREF_BATTERY.equals(key)){
++			mLightBatteryPulseEnabled = (Boolean) objValue;
++            		Settings.System.putInt(getContentResolver(), Settings.System.BATTERY_LIGHT_PULSE,
++                    	mLightBatteryPulseEnabled ? 1 : 0);	
 +		}
 +            //ApplicationLightPreference tPref = (ApplicationLightPreference) preference;
 +            //updateValues(key, tPref.getColor(), tPref.getOnValue(), tPref.getOffValue());
@@ -113,7 +133,7 @@ index 2370a65..cb489cb 100644
      public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
          mMenu = menu;
          mMenu.add(0, MENU_ADD, 0, R.string.profiles_add)
-@@ -420,7 +433,7 @@
+@@ -420,7 +448,7 @@
                  return true;
          }
          return false;

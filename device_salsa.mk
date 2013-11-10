@@ -81,8 +81,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES -= \
 	CMUpdater \
 	DeskClock \
-	VideoEditor
+	VideoEditor \
+	CMWallpapers
 
+# set vm size
 $(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
 
 # we have enough storage space to hold precise GC data

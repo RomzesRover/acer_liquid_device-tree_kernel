@@ -1,4 +1,6 @@
 diff --git a/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java b/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
+--- a/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
++++ b/packages/apps/Settings/src/com/android/settings/notificationlight/NotificationLightSettings.java
 index 2370a65..cb489cb 100644
 @@ -70,6 +70,8 @@
  public class NotificationLightSettings extends SettingsPreferenceFragment implements

@@ -76,6 +76,13 @@ PRODUCT_PACKAGES += \
    wlan_cu \
    dhcpcd.conf
 
+#remove unused app
+PRODUCT_PACKAGES -= \
+   CMUpdater \
+   DeskClock \
+   VideoEditor \
+   CMWallpapers
+
 #setting up heap size !
 $(call inherit-product, frameworks/base/build/phone-hdpi-512-dalvik-heap.mk)
 

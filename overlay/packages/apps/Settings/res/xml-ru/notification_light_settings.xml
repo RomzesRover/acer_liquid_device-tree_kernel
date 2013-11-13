@@ -19,18 +19,29 @@
 
     <PreferenceCategory
         android:key="general_section"
-        android:title="@string/notification_light_general_title">
+        android:title="Sms and call LED's.">
 
         <CheckBoxPreference
             android:key="pulse_enabled"
             android:title="@string/notification_pulse_title" 
-	    android:summary="Sms и call LED.\nИзменения вступят в силу со следующего уведомления."/>
-	
-        </PreferenceCategory>
+	    android:summary="Изменения вступят в силу со следующего уведомления."/>
+   </PreferenceCategory>
+
+   <PreferenceCategory
+       android:key="general_section_battery"
+       android:title="Battery LED.">
 
 	<CheckBoxPreference
             android:key="battery_light"
             android:title="@string/battery_light_title"
-             android:summary="Battery LED.\nИзменения вступят в силу со следующего уведомления"/>
+            android:summary="Изменения вступят в силу немедленно."/>
+
+	<CheckBoxPreference
+            android:key="battery_low_pulse"
+            android:title="@string/battery_low_pulse_title"
+            android:summary="Изменения вступят в силу немедленно."/>
+   </PreferenceCategory>
+	
+
 
 </PreferenceScreen>

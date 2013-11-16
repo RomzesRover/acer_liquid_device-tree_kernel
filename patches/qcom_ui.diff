@@ -1,0 +1,61 @@
+diff --git a/hardware/qcom/display/libqcomui/qcom_ui.cpp b/hardware/qcom/display/libqcomui/qcom_ui.cpp
+--- a/hardware/qcom/display/libqcomui/qcom_ui.cpp	2013-06-09 12:41:27.719460114 +0600
++++ b/hardware/qcom/display/libqcomui/qcom_ui.cpp	2013-06-10 15:58:06.277579651 +0600
+@@ -422,55 +422,8 @@
+  */
+ int qcomuiClearRegion(Region region, EGLDisplay dpy, EGLSurface sur)
+ {
+-    int ret = 0;
+-
+-    if (-1 == sCompositionType) {
+-        sCompositionType = getCompositionType();
+-    }
+-
+-    if ((COMPOSITION_TYPE_MDP != sCompositionType) &&
+-        (COMPOSITION_TYPE_C2D != sCompositionType) &&
+-        (COMPOSITION_TYPE_CPU != sCompositionType)) {
+-        // For non CPU/C2D/MDP composition, return an error, so that SF can use
+-        // the GPU to draw the wormhole.
+-        return -1;
+-    }
+-
+-    android_native_buffer_t *renderBuffer = (android_native_buffer_t *)
+-                                        eglGetRenderBufferANDROID(dpy, sur);
+-    if (!renderBuffer) {
+-        LOGE("%s: eglGetRenderBufferANDROID returned NULL buffer",
+-            __FUNCTION__);
+-            return -1;
+-    }
+-    private_handle_t *fbHandle = (private_handle_t *)renderBuffer->handle;
+-    if(!fbHandle) {
+-        LOGE("%s: Framebuffer handle is NULL", __FUNCTION__);
+-        return -1;
+-    }
+-
+-    int bytesPerPixel = 4;
+-    if (HAL_PIXEL_FORMAT_RGB_565 == fbHandle->format) {
+-        bytesPerPixel = 2;
+-    }
+-
+-    Region::const_iterator it = region.begin();
+-    Region::const_iterator const end = region.end();
+-    const int32_t stride = renderBuffer->stride*bytesPerPixel;
+-    while (it != end) {
+-        const Rect& r = *it++;
+-        uint8_t* dst = (uint8_t*) fbHandle->base +
+-                       (r.left + r.top*renderBuffer->stride)*bytesPerPixel;
+-        int w = r.width()*bytesPerPixel;
+-        int h = r.height();
+-        do {
+-            if(4 == bytesPerPixel)
+-                android_memset32((uint32_t*)dst, 0, w);
+-            else
+-                android_memset16((uint16_t*)dst, 0, w);
+-            dst += stride;
+-        } while(--h);
+-    }
++	// we need to delete this module to prevent 240x400 visual artefacts
++	// we using full mdp copmosition here
+     return 0;
+ }
+ 

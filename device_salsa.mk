@@ -81,7 +81,9 @@ PRODUCT_PACKAGES -= \
    CMUpdater \
    DeskClock \
    VideoEditor \
-   CMWallpapers
+   CMWallpapers \
+   PinyinIME \
+   OpenWnn
 
 #setting up heap size !
 $(call inherit-product, frameworks/base/build/phone-hdpi-512-dalvik-heap.mk)

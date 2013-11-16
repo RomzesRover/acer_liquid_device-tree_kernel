@@ -1,0 +1,14 @@
+diff --git a/frameworks/base/services/java/com/android/server/wm/WindowManagerService.java b/frameworks/base/services/java/com/android/server/wm/WindowManagerService.java
+--- a/frameworks/base/services/java/com/android/server/wm/WindowManagerService.java	2013-07-27 04:20:10.881842101 +0600
++++ b/frameworks/base/services/java/com/android/server/wm/WindowManagerService.java	2013-07-27 04:13:40.931842000 +0600
+@@ -561,8 +561,8 @@
+ 
+     PowerManagerService mPowerManager;
+ 
+-    float mWindowAnimationScale = 1.0f;
+-    float mTransitionAnimationScale = 1.0f;
++    float mWindowAnimationScale = fixScale(0);
++    float mTransitionAnimationScale = fixScale(0);
+ 
+     final InputManager mInputManager;
+ 

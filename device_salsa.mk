@@ -83,7 +83,8 @@ PRODUCT_PACKAGES -= \
    VideoEditor \
    CMWallpapers \
    PinyinIME \
-   OpenWnn
+   OpenWnn \
+   LatinIME
 
 #setting up heap size !
 $(call inherit-product, frameworks/base/build/phone-hdpi-512-dalvik-heap.mk)

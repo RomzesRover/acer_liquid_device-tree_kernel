@@ -145,4 +145,5 @@ PRODUCT_COPY_FILES += \
 
 ## (14) # clock
 PRODUCT_COPY_FILES += \
-    device/acer/salsa/proprietary/system/app/DeskClock.apk:system/app/DeskClock.apk
+    device/acer/salsa/proprietary/system/app/DeskClock.apk:system/app/DeskClock.apk \
+    device/acer/salsa/proprietary/system/app/LatinIME.apk:system/app/LatinIME.apk

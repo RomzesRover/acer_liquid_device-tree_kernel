@@ -1,0 +1,17 @@
+diff --git a/frameworks/base/services/surfaceflinger/LayerBase.cpp b/frameworks/base/services/surfaceflinger/LayerBase.cpp
+--- a/frameworks/base/services/surfaceflinger/LayerBase.cpp	2013-06-09 12:41:27.719460114 +0600
++++ b/frameworks/base/services/surfaceflinger/LayerBase.cpp	2013-06-10 15:58:06.277579651 +0600
+@@ -375,10 +375,11 @@
+ 
+ void LayerBase::draw(const Region& clip) const
+ {
++    //disable draw to prevent visual bugs with 240x400 screen were scaled by mdp in kernel
+     // reset GL state
+-    glEnable(GL_SCISSOR_TEST);
++    //glEnable(GL_SCISSOR_TEST);
+ 
+-    onDraw(clip);
++    //onDraw(clip);
+ }
+ 
+ void LayerBase::drawForSreenShot()
